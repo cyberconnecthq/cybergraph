@@ -1,0 +1,12 @@
+{
+  "plugins": ["prettier"],
+  "extends": "solhint:recommended",
+  "rules": {
+    "prettier/prettier": "error",
+    "compiler-version": ["error", "^0.8.14"],
+    "no-empty-blocks": "off",
+    "func-visibility": ["warn", { "ignoreConstructors": true }],
+    "quotes": ["off", "double"],
+    "not-rely-on-time": "off"
+  }
+}

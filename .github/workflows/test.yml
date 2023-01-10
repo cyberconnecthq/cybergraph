@@ -1,0 +1,41 @@
+name: test
+
+on: [push]
+
+env:
+  FOUNDRY_PROFILE: default
+
+jobs:
+  check:
+    strategy:
+      fail-fast: true
+
+    name: Foundry project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      # - name: Check gas snapshots
+      #   run: forge snapshot --check
+
+      - name: Run Forge tests
+        run: |
+          forge test -vvv --gas-report
+        id: test
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Install modules
+        run: yarn
+
+      - name: Run lint
+        run: yarn run lint:gh-check
