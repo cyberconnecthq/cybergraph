@@ -8,7 +8,11 @@ contract CyberWallet is BaseWallet {
     address public entryPoint;
     uint256 public nonce;
 
-    constructor(address _entryPoint) {
+    constructor(
+        address _entryPoint,
+        address _owner,
+        address _guardianModule
+    ) BaseWallet(_owner, _guardianModule) {
         require(_entryPoint != address(0));
         entryPoint = _entryPoint;
     }
@@ -30,9 +34,11 @@ contract CyberWallet is BaseWallet {
     ) external returns (uint256) {
         if (nonce != 0) {
             require(msg.sender == entryPoint, "account: not from entrypoint");
+            require(
+                _checkSignature(userOpHash, userOp.signature),
+                "WRONG_SIGNATURE"
+            );
 
-            bytes32 hash = toEthSignedMessageHash(userOpHash);
-            checkSignature(hash, bytes(abi.encode(userOp)), userOp.signature);
             if (userOp.initCode.length == 0) {
                 require(nonce == userOp.nonce, "account: invalid nonce");
             }
@@ -51,17 +57,5 @@ contract CyberWallet is BaseWallet {
     // TODO: auth
     function replaceEntrypoint(address newEntrypoint) public {
         entryPoint = newEntrypoint;
-    }
-
-    // TODO: remove
-    function toEthSignedMessageHash(
-        bytes32 hash
-    ) internal pure returns (bytes32) {
-        // 32 is the length in bytes of hash,
-        // enforced by the type signature above
-        return
-            keccak256(
-                abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
-            );
     }
 }
