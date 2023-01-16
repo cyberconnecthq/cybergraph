@@ -1,20 +1,36 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 pragma solidity 0.8.14;
 
+import { ERC1967Proxy } from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
+import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Initializable.sol";
+import { IEntryPoint } from "account-abstraction/contracts/interfaces/IEntryPoint.sol";
+
 import { BaseWallet } from "../base/BaseWallet.sol";
 import { DataTypes } from "../libraries/DataTypes.sol";
 
-contract CyberWallet is BaseWallet {
-    address public entryPoint;
+contract CyberWallet is UUPSUpgradeable, Initializable, BaseWallet {
+    IEntryPoint private immutable _entryPoint;
+
+    function entryPoint() public view virtual returns (IEntryPoint) {
+        return _entryPoint;
+    }
+
     uint256 public nonce;
 
-    constructor(
-        address _entryPoint,
+    /*//////////////////////////////////////////////////////////////
+                                 CONSTRUCTOR
+    //////////////////////////////////////////////////////////////*/
+
+    constructor(IEntryPoint anEntryPoint) {
+        _entryPoint = anEntryPoint;
+    }
+
+    function initialize(
         address _owner,
         address _guardianModule
-    ) BaseWallet(_owner, _guardianModule) {
-        require(_entryPoint != address(0));
-        entryPoint = _entryPoint;
+    ) external virtual initializer {
+        BaseWallet.__BaseWallet_Init(_owner, _guardianModule);
     }
 
     function execTransaction(
@@ -22,7 +38,7 @@ contract CyberWallet is BaseWallet {
         uint256 value,
         bytes memory data
     ) public virtual {
-        require(msg.sender == entryPoint);
+        require(msg.sender == address(entryPoint()), "CW_NOT_FROM_ENTRYPOINT");
         execute(to, value, data, gasleft());
     }
 
@@ -33,7 +49,10 @@ contract CyberWallet is BaseWallet {
         uint256 missingAccountFunds
     ) external returns (uint256) {
         if (nonce != 0) {
-            require(msg.sender == entryPoint, "account: not from entrypoint");
+            require(
+                msg.sender == address(entryPoint()),
+                "CW_NOT_FROM_ENTRYPOINT"
+            );
             require(
                 _checkSignature(userOpHash, userOp.signature),
                 "WRONG_SIGNATURE"
@@ -55,7 +74,14 @@ contract CyberWallet is BaseWallet {
     }
 
     // TODO: auth
-    function replaceEntrypoint(address newEntrypoint) public {
-        entryPoint = newEntrypoint;
+    // function replaceEntrypoint(address newEntrypoint) public {
+    //     entryPoint = newEntrypoint;
+    // }
+
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal view override {
+        (newImplementation);
+        require(msg.sender == owner, "ONLY_OWNER");
     }
 }

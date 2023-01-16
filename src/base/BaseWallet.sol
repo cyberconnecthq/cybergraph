@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 pragma solidity 0.8.14;
 
+import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Initializable.sol";
+
 import { IWallet } from "../interfaces/IWallet.sol";
 import { IERC1271 } from "../interfaces/IERC1271.sol";
 
@@ -8,22 +10,38 @@ import { SignatureValidator } from "../libraries/SignatureValidator.sol";
 
 import { Executor } from "./Executor.sol";
 
-contract BaseWallet is Executor, IWallet, IERC1271 {
+contract BaseWallet is Initializable, Executor, IWallet, IERC1271 {
     bytes4 private constant SELECTOR_ERC1271_BYTES32_BYTES = 0x1626ba7e;
 
     address public owner;
     address public guardianModule;
 
-    constructor(address _owner, address _guardianModule) {
+    /*//////////////////////////////////////////////////////////////
+                                 CONSTRUCTOR
+    //////////////////////////////////////////////////////////////*/
+
+    constructor() {
+        _disableInitializers();
+    }
+
+    function __BaseWallet_Init(
+        address _owner,
+        address _guardianModule
+    ) internal onlyInitializing {
         require(_owner != address(0), "BW_ZERO_ADDRESS");
 
         owner = _owner;
         guardianModule = _guardianModule;
     }
 
+    /*//////////////////////////////////////////////////////////////
+                                 EXTERNAL
+    //////////////////////////////////////////////////////////////*/
+
     modifier onlyOwnerOrGuardian() {
         require(
-            msg.sender == owner || msg.sender == guardianModule,
+            msg.sender == owner ||
+                (guardianModule != address(0) && msg.sender == guardianModule),
             "BW_NOT_AUTHORIZED"
         );
         _;
