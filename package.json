@@ -10,7 +10,9 @@
     "lint:check": "prettier --check **.{sol,js,md,html} && solhint --config ./config/.solhint.json --ignore-path ./config/.solhintignore -f table 'src/**/*.sol'",
     "lint:fix": "prettier --write **.{sol,js,md}",
     "prepare": "husky install",
-    "build": "forge build --force"
+    "build": "forge build --force",
+    "deploy_factory:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployFactory.s.sol:DeployFactory --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
+    "deploy_deployer:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv"
   },
   "devDependencies": {
     "husky": "^8.0.1",
