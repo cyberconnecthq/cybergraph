@@ -24,14 +24,9 @@ contract BaseWallet is Initializable, Executor, IWallet, IERC1271 {
         _disableInitializers();
     }
 
-    function __BaseWallet_Init(
-        address _owner,
-        address _guardianModule
-    ) internal onlyInitializing {
+    function __BaseWallet_Init(address _owner) internal onlyInitializing {
         require(_owner != address(0), "BW_ZERO_ADDRESS");
-
         owner = _owner;
-        guardianModule = _guardianModule;
     }
 
     /*//////////////////////////////////////////////////////////////

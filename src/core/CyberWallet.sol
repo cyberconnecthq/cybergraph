@@ -26,11 +26,8 @@ contract CyberWallet is UUPSUpgradeable, Initializable, BaseWallet {
         _entryPoint = anEntryPoint;
     }
 
-    function initialize(
-        address _owner,
-        address _guardianModule
-    ) external virtual initializer {
-        BaseWallet.__BaseWallet_Init(_owner, _guardianModule);
+    function initialize(address _owner) external virtual initializer {
+        BaseWallet.__BaseWallet_Init(_owner);
     }
 
     function execTransaction(

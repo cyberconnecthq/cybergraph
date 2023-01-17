@@ -22,10 +22,9 @@ contract CyberWalletFactory {
      */
     function createAccount(
         address owner,
-        address guardianModule,
         uint salt
     ) public returns (CyberWallet ret) {
-        address addr = getAddress(owner, guardianModule, salt);
+        address addr = getAddress(owner, salt);
         uint codeSize = addr.code.length;
         if (codeSize > 0) {
             return CyberWallet(payable(addr));
@@ -34,10 +33,7 @@ contract CyberWalletFactory {
             payable(
                 new ERC1967Proxy{ salt: bytes32(salt) }(
                     address(implementation),
-                    abi.encodeCall(
-                        CyberWallet.initialize,
-                        (owner, guardianModule)
-                    )
+                    abi.encodeCall(CyberWallet.initialize, (owner))
                 )
             )
         );
@@ -48,7 +44,6 @@ contract CyberWalletFactory {
      */
     function getAddress(
         address owner,
-        address guardianModule,
         uint salt
     ) public view returns (address) {
         return
@@ -59,10 +54,7 @@ contract CyberWalletFactory {
                         type(ERC1967Proxy).creationCode,
                         abi.encode(
                             address(implementation),
-                            abi.encodeCall(
-                                CyberWallet.initialize,
-                                (owner, guardianModule)
-                            )
+                            abi.encodeCall(CyberWallet.initialize, (owner))
                         )
                     )
                 )
