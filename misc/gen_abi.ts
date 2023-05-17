@@ -3,8 +3,8 @@ import * as path from "path";
 
 const writeAbi = async () => {
   const folders = [
-    "CyberWallet.sol/CyberWallet.json",
-    "CyberWalletFactory.sol/CyberWalletFactory.json",
+    "CyberAccount.sol/CyberAccount.json",
+    "CyberAccountFactory.sol/CyberAccountFactory.json",
   ];
   const ps = folders.map(async (file) => {
     const f = await fs.readFile(path.join("./out", file), "utf8");

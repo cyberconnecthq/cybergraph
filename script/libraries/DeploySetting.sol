@@ -9,13 +9,6 @@ contract DeploySetting {
 
     DeployParameters internal deployParams;
 
-    uint256 internal constant ANVIL = 31337;
-    uint256 internal constant GOERLI = 5;
-    uint256 internal constant BNBT = 97;
-    uint256 internal constant BNB = 56;
-    uint256 internal constant RINKEBY = 4;
-    uint256 internal constant MAINNET = 1;
-    uint256 internal constant NOVA = 42170;
     uint256 internal constant POLYGON = 137;
     uint256 internal constant MUMBAI = 80001;
 
