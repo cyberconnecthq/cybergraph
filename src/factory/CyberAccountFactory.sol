@@ -3,15 +3,16 @@ pragma solidity ^0.8.12;
 
 import { Create2 } from "openzeppelin-contracts/contracts/utils/Create2.sol";
 import { ERC1967Proxy } from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+
 import { IEntryPoint } from "account-abstraction/contracts/interfaces/IEntryPoint.sol";
 
-import "./CyberWallet.sol";
+import { CyberAccount } from "../core/CyberAccount.sol";
 
-contract CyberWalletFactory {
-    CyberWallet public immutable implementation;
+contract CyberAccountFactory {
+    CyberAccount public immutable implementation;
 
     constructor(IEntryPoint _entryPoint) {
-        implementation = new CyberWallet(_entryPoint);
+        implementation = new CyberAccount(_entryPoint);
     }
 
     /**
@@ -23,17 +24,17 @@ contract CyberWalletFactory {
     function createAccount(
         address owner,
         uint salt
-    ) public returns (CyberWallet ret) {
+    ) public returns (CyberAccount ret) {
         address addr = getAddress(owner, salt);
         uint codeSize = addr.code.length;
         if (codeSize > 0) {
-            return CyberWallet(payable(addr));
+            return CyberAccount(payable(addr));
         }
-        ret = CyberWallet(
+        ret = CyberAccount(
             payable(
                 new ERC1967Proxy{ salt: bytes32(salt) }(
                     address(implementation),
-                    abi.encodeCall(CyberWallet.initialize, (owner))
+                    abi.encodeCall(CyberAccount.initialize, (owner))
                 )
             )
         );
@@ -54,7 +55,7 @@ contract CyberWalletFactory {
                         type(ERC1967Proxy).creationCode,
                         abi.encode(
                             address(implementation),
-                            abi.encodeCall(CyberWallet.initialize, (owner))
+                            abi.encodeCall(CyberAccount.initialize, (owner))
                         )
                     )
                 )

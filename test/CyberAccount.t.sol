@@ -4,13 +4,13 @@ pragma solidity 0.8.14;
 
 import "forge-std/Test.sol";
 
-import { CyberWallet } from "../src/core/CyberWallet.sol";
+import { CyberAccount } from "../src/core/CyberAccount.sol";
 
-contract CyberWalletTest is Test {
-    CyberWallet cw;
+contract CyberAccountTest is Test {
+    CyberAccount ca;
 
     function setUp() public {
-        cw = CyberWallet(address(0x11));
+        ca = CyberAccount(payable(address(0x11)));
     }
 
     function testBasic() public {

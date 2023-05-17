@@ -14,7 +14,6 @@ contract DeployFactory is Script, DeploySetting {
         if (block.chainid == DeploySetting.MUMBAI) {
             LibDeploy.deployFactory(
                 vm,
-                deployParams,
                 address(0x1306b01bC3e4AD202612D3843387e94737673F53)
             );
         }
