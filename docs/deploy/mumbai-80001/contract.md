@@ -1,4 +1,3 @@
-| Contract            | Address                                    |
-| ------------------- | ------------------------------------------ |
-| CyberWallet Factory | 0x8136429786084f504b21e0030ffe103e4a189ddd |
-| CyberWallet Factory | 0x39641948d881f3236eb2740f56d65f1cceb18826 |
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| CyberAccount Factory | 0x0b1bbac2a57f530c0454232082ab061af9ca724f |
