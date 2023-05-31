@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.14;
 
-import { CyberNFTBase } from "../base/CyberNFTBase.sol";
+import { CyberNFT721 } from "../base/CyberNFT721.sol";
 
-contract Soul is CyberNFTBase {
+contract Soul is CyberNFT721 {
     /*//////////////////////////////////////////////////////////////
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
@@ -12,7 +12,7 @@ contract Soul is CyberNFTBase {
     constructor(
         string memory name,
         string memory symbol
-    ) CyberNFTBase(name, symbol) {}
+    ) CyberNFT721(name, symbol) {}
 
     /*//////////////////////////////////////////////////////////////
                                  PUBLIC

@@ -4,25 +4,19 @@ pragma solidity 0.8.14;
 
 import { ERC721 } from "solmate/src/tokens/ERC721.sol";
 
-import { ICyberNFTBase } from "../interfaces/ICyberNFTBase.sol";
-
-import { Constants } from "../libraries/Constants.sol";
-import { DataTypes } from "../libraries/DataTypes.sol";
-
-import { EIP712 } from "./EIP712.sol";
+import { ICyberNFT721 } from "../interfaces/ICyberNFT721.sol";
 
 /**
  * @title Cyber NFT Base
  * @author CyberConnect
  * @notice This contract is the base for all NFT contracts.
  */
-abstract contract CyberNFTBase is EIP712, ERC721, ICyberNFTBase {
+abstract contract CyberNFT721 is ERC721, ICyberNFT721 {
     /*//////////////////////////////////////////////////////////////
                                 STATES
     //////////////////////////////////////////////////////////////*/
     uint256 internal _currentIndex;
-    uint256 internal _burnCount;
-    mapping(address => uint256) public nonces;
+    uint256 internal _totalSupply;
 
     /*//////////////////////////////////////////////////////////////
                                  CONSTRUCTOR
@@ -34,61 +28,19 @@ abstract contract CyberNFTBase is EIP712, ERC721, ICyberNFTBase {
     ) ERC721(name, symbol) {}
 
     /*//////////////////////////////////////////////////////////////
-                                 EXTERNAL
-    //////////////////////////////////////////////////////////////*/
-
-    /// @inheritdoc ICyberNFTBase
-    function permit(
-        address spender,
-        uint256 tokenId,
-        DataTypes.EIP712Signature calldata sig
-    ) external override {
-        address owner = ownerOf(tokenId);
-        require(owner != spender, "CANNOT_PERMIT_OWNER");
-        _requiresExpectedSigner(
-            _hashTypedDataV4(
-                keccak256(
-                    abi.encode(
-                        Constants._PERMIT_TYPEHASH,
-                        spender,
-                        tokenId,
-                        nonces[owner]++,
-                        sig.deadline
-                    )
-                )
-            ),
-            owner,
-            sig
-        );
-
-        getApproved[tokenId] = spender;
-        emit Approval(owner, spender, tokenId);
-    }
-
-    /*//////////////////////////////////////////////////////////////
                          EXTERNAL VIEW
     //////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc ICyberNFTBase
+    /// @inheritdoc ICyberNFT721
     function totalSupply() external view virtual override returns (uint256) {
-        return _currentIndex - _burnCount;
-    }
-
-    /// @inheritdoc ICyberNFTBase
-    function totalMinted() external view virtual override returns (uint256) {
-        return _currentIndex;
-    }
-
-    /// @inheritdoc ICyberNFTBase
-    function totalBurned() external view virtual override returns (uint256) {
-        return _burnCount;
+        return _totalSupply;
     }
 
     /*//////////////////////////////////////////////////////////////
                                  PUBLIC
     //////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc ICyberNFTBase
+    /// @inheritdoc ICyberNFT721
     function burn(uint256 tokenId) public virtual override {
         address owner = ownerOf(tokenId);
         require(
@@ -98,7 +50,7 @@ abstract contract CyberNFTBase is EIP712, ERC721, ICyberNFTBase {
             "NOT_OWNER_OR_APPROVED"
         );
         super._burn(tokenId);
-        _burnCount++;
+        _totalSupply--;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -107,6 +59,7 @@ abstract contract CyberNFTBase is EIP712, ERC721, ICyberNFTBase {
 
     function _mint(address _to) internal virtual returns (uint256) {
         super._safeMint(_to, ++_currentIndex);
+        _totalSupply++;
         return _currentIndex;
     }
 
@@ -116,15 +69,5 @@ abstract contract CyberNFTBase is EIP712, ERC721, ICyberNFTBase {
 
     function _requireMinted(uint256 tokenId) internal view virtual {
         require(_exists(tokenId), "NOT_MINTED");
-    }
-
-    function _domainSeparatorName()
-        internal
-        view
-        virtual
-        override
-        returns (string memory)
-    {
-        return name;
     }
 }
