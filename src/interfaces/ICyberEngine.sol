@@ -8,6 +8,18 @@ import { DataTypes } from "../libraries/DataTypes.sol";
 
 interface ICyberEngine is ICyberEngineEvents {
     /**
+     * @notice Register an essence.
+     *
+     * @param params The params for registration.
+     * @param initData The registration initial data.
+     * @return uint256 The new essence count.
+     */
+    function registerEssence(
+        DataTypes.RegisterEssenceParams calldata params,
+        bytes calldata initData
+    ) external returns (uint256);
+
+    /**
      * @notice Gets the Essence NFT token URI.
      *
      * @param account The account address.

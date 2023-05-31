@@ -9,4 +9,33 @@ library DataTypes {
         bytes32 s;
         uint256 deadline;
     }
+
+    struct RegisterEssenceParams {
+        string name;
+        string symbol;
+        string tokenURI;
+        address mw;
+        bool transferable;
+    }
+
+    struct EssenceStruct {
+        address essence;
+        address mw;
+        string name;
+        string symbol;
+        string tokenURI;
+        bool transferable;
+    }
+
+    struct AccountStruct {
+        uint256 essenceCount;
+        address W3ST;
+        address Content;
+    }
+
+    enum Category {
+        Essence,
+        Content,
+        W3ST
+    }
 }

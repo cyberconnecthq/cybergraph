@@ -12,7 +12,7 @@ import { CyberNFT721 } from "../base/CyberNFT721.sol";
  * @author CyberConnect
  * @notice This contract is used to create an Essence NFT.
  */
-contract EssenceNFT is CyberNFT721, IEssence {
+contract Essence is CyberNFT721, IEssence {
     /*//////////////////////////////////////////////////////////////
                                 STATES
     //////////////////////////////////////////////////////////////*/
@@ -35,10 +35,11 @@ contract EssenceNFT is CyberNFT721, IEssence {
         address engine,
         bool transferable
     ) CyberNFT721(name, symbol) {
+        require(engine != address(0), "ENGINE_NOT_SET");
+        ENGINE = engine;
         _account = account;
         _essenceId = essenceId;
         _transferable = transferable;
-        ENGINE = engine;
     }
 
     /*//////////////////////////////////////////////////////////////
