@@ -2,10 +2,13 @@
 
 pragma solidity 0.8.14;
 
+import { ReentrancyGuard } from "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
+
 import { IERC721 } from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import { ICyberEngine } from "../interfaces/ICyberEngine.sol";
 import { IMiddlewareManager } from "../interfaces/IMiddlewareManager.sol";
 import { IMiddleware } from "../interfaces/IMiddleware.sol";
+import { IEssence } from "../interfaces/IEssence.sol";
 
 import { DataTypes } from "../libraries/DataTypes.sol";
 import { Essence } from "./Essence.sol";
@@ -15,7 +18,7 @@ import { Essence } from "./Essence.sol";
  * @author CyberConnect
  * @notice This contract is used to create a profile NFT.
  */
-contract CyberEngine is ICyberEngine {
+contract CyberEngine is ReentrancyGuard, ICyberEngine {
     /*//////////////////////////////////////////////////////////////
                                 STATES
     //////////////////////////////////////////////////////////////*/
@@ -55,6 +58,50 @@ contract CyberEngine is ICyberEngine {
     /*//////////////////////////////////////////////////////////////
                                  EXTERNAL
     //////////////////////////////////////////////////////////////*/
+
+    /// @inheritdoc ICyberEngine
+    function collect(
+        DataTypes.CollectParams calldata params,
+        bytes calldata data
+    ) external override nonReentrant returns (uint256 tokenId) {
+        address account = params.account;
+        uint256 essenceId = params.essenceId;
+
+        // todo check account exist
+        // todo msg.send & collector?
+        require(
+            bytes(_essenceByIdByAccount[account][essenceId].tokenURI).length !=
+                0,
+            "ESSENCE_NOT_REGISTERED"
+        );
+        address essence = _essenceByIdByAccount[account][essenceId].essence;
+        address mw = _essenceByIdByAccount[account][essenceId].mw;
+
+        // run middleware before collecting essence
+        if (mw != address(0)) {
+            require(
+                IMiddlewareManager(MANAGER).isMwAllowed(mw),
+                "MW_NOT_ALLOWED"
+            );
+            IMiddleware(mw).preProcess(
+                account,
+                DataTypes.Category.Essence,
+                essenceId,
+                params.collector,
+                msg.sender,
+                data
+            );
+        }
+        tokenId = IEssence(essence).mint(params.collector);
+
+        emit CollectEssence(
+            params.collector,
+            account,
+            essenceId,
+            tokenId,
+            data
+        );
+    }
 
     /// @inheritdoc ICyberEngine
     function registerEssence(
@@ -111,6 +158,37 @@ contract CyberEngine is ICyberEngine {
             essence
         );
         return id;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function setEssenceData(
+        uint256 essenceId,
+        string calldata uri,
+        address mw,
+        bytes calldata data
+    ) external override {
+        // todo operator model?
+        address account = msg.sender;
+        require(
+            mw == address(0) || IMiddlewareManager(MANAGER).isMwAllowed(mw),
+            "MW_NOT_ALLOWED"
+        );
+        require(
+            bytes(_essenceByIdByAccount[account][essenceId].name).length != 0,
+            "ESSENCE_DOES_NOT_EXIST"
+        );
+
+        _essenceByIdByAccount[account][essenceId].mw = mw;
+        if (mw != address(0)) {
+            IMiddleware(mw).setMwData(
+                account,
+                DataTypes.Category.Essence,
+                essenceId,
+                data
+            );
+        }
+        _essenceByIdByAccount[account][essenceId].tokenURI = uri;
+        emit SetEssenceData(account, essenceId, uri, mw);
     }
 
     /*//////////////////////////////////////////////////////////////

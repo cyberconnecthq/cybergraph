@@ -33,6 +33,12 @@ library DataTypes {
         address Content;
     }
 
+    struct CollectParams {
+        address collector;
+        address account;
+        uint256 essenceId;
+    }
+
     enum Category {
         Essence,
         Content,

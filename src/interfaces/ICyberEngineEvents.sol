@@ -23,4 +23,36 @@ interface ICyberEngineEvents {
         address mw,
         address essence
     );
+
+    /**
+     * @notice Emitted when an essence has been collected.
+     *
+     * @param collector The collector address.
+     * @param account The account addresss.
+     * @param essenceId The essence id.
+     * @param tokenId The token id of the newly minted essent NFT.
+     * @param data The collect data for preprocess.
+     */
+    event CollectEssence(
+        address indexed collector,
+        address indexed account,
+        uint256 indexed essenceId,
+        uint256 tokenId,
+        bytes data
+    );
+
+    /**
+     * @notice Emitted when a essence middleware has been set to an account.
+     *
+     * @param account The account address.
+     * @param essenceId The essence id.
+     * @param tokenURI The new token URI.
+     * @param mw The new middleware.
+     */
+    event SetEssenceData(
+        address indexed account,
+        uint256 indexed essenceId,
+        string tokenURI,
+        address mw
+    );
 }
