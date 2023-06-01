@@ -44,6 +44,18 @@ interface ICyberEngine is ICyberEngineEvents {
     ) external returns (uint256);
 
     /**
+     * @notice Issue a w3st.
+     *
+     * @param params The params for issuing w3st.
+     * @param initData The registration initial data.
+     * @return uint256 The new token id.
+     */
+    function issueW3st(
+        DataTypes.IssueW3stParams calldata params,
+        bytes calldata initData
+    ) external returns (uint256);
+
+    /**
      * @notice Gets the Essence NFT token URI.
      *
      * @param account The account address.
@@ -70,12 +82,52 @@ interface ICyberEngine is ICyberEngineEvents {
         bytes calldata data
     ) external;
 
+    /**
+     * @notice Sets content data.
+     *
+     * @param tokenId The content tokenId.
+     * @param tokenURI The new token URI.
+     * @param mw The new middleware to be set.
+     * @param data The data for middleware.
+     */
+    function setContentData(
+        uint256 tokenId,
+        string calldata tokenURI,
+        address mw,
+        bytes calldata data
+    ) external;
+
+    /**
+     * @notice Sets w3st data.
+     *
+     * @param tokenId The w3st tokenId.
+     * @param tokenURI The new token URI.
+     * @param mw The new middleware to be set.
+     * @param data The data for middleware.
+     */
+    function setW3stData(
+        uint256 tokenId,
+        string calldata tokenURI,
+        address mw,
+        bytes calldata data
+    ) external;
+
     function getContentTokenURI(
         address account,
         uint256 tokenID
     ) external view returns (string memory);
 
     function getContentTransferability(
+        address account,
+        uint256 tokenID
+    ) external view returns (bool);
+
+    function getW3stTokenURI(
+        address account,
+        uint256 tokenID
+    ) external view returns (string memory);
+
+    function getW3stTransferability(
         address account,
         uint256 tokenID
     ) external view returns (bool);

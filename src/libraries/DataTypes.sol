@@ -24,6 +24,12 @@ library DataTypes {
         bool transferable;
     }
 
+    struct IssueW3stParams {
+        string tokenURI;
+        address mw;
+        bool transferable;
+    }
+
     struct EssenceStruct {
         address essence;
         address mw;
@@ -42,6 +48,12 @@ library DataTypes {
     }
 
     struct ContentStruct {
+        address mw;
+        string tokenURI;
+        bool transferable;
+    }
+
+    struct W3stStruct {
         address mw;
         string tokenURI;
         bool transferable;

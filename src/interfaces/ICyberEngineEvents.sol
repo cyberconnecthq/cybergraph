@@ -25,7 +25,7 @@ interface ICyberEngineEvents {
     );
 
     /**
-     * @notice Emitted when a new essence been created.
+     * @notice Emitted when a new content been created.
      *
      * @param account The account address.
      * @param tokenId The token id.
@@ -39,6 +39,23 @@ interface ICyberEngineEvents {
         string tokenURI,
         address mw,
         address content
+    );
+
+    /**
+     * @notice Emitted when a new w3st been created.
+     *
+     * @param account The account address.
+     * @param tokenId The token id.
+     * @param tokenURI the content tokenURI.
+     * @param w3st the deployed W3ST address.
+     * @param mw The middleware.
+     */
+    event IssueW3st(
+        address indexed account,
+        uint256 indexed tokenId,
+        string tokenURI,
+        address mw,
+        address w3st
     );
 
     /**
@@ -59,7 +76,7 @@ interface ICyberEngineEvents {
     );
 
     /**
-     * @notice Emitted when a essence middleware has been set to an account.
+     * @notice Emitted when essence data has been set to an account.
      *
      * @param account The account address.
      * @param essenceId The essence id.
@@ -69,6 +86,36 @@ interface ICyberEngineEvents {
     event SetEssenceData(
         address indexed account,
         uint256 indexed essenceId,
+        string tokenURI,
+        address mw
+    );
+
+    /**
+     * @notice Emitted when content data has been set to an account.
+     *
+     * @param account The account address.
+     * @param tokenId The token id.
+     * @param tokenURI The new token URI.
+     * @param mw The new middleware.
+     */
+    event SetContentData(
+        address indexed account,
+        uint256 indexed tokenId,
+        string tokenURI,
+        address mw
+    );
+
+    /**
+     * @notice Emitted when w3st data has been set to an account.
+     *
+     * @param account The account address.
+     * @param tokenId The token id.
+     * @param tokenURI The new token URI.
+     * @param mw The new middleware.
+     */
+    event SetW3stData(
+        address indexed account,
+        uint256 indexed tokenId,
         string tokenURI,
         address mw
     );

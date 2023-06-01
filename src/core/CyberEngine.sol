@@ -13,6 +13,7 @@ import { IEssence } from "../interfaces/IEssence.sol";
 import { DataTypes } from "../libraries/DataTypes.sol";
 import { Essence } from "./Essence.sol";
 import { Content } from "./Content.sol";
+import { W3st } from "./W3st.sol";
 
 /**
  * @title CyberEngine
@@ -31,6 +32,8 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         internal _essenceByIdByAccount;
     mapping(address => mapping(uint256 => DataTypes.ContentStruct))
         internal _contentByIdByAccount;
+    mapping(address => mapping(uint256 => DataTypes.ContentStruct))
+        internal _w3stByIdByAccount;
     mapping(address => DataTypes.AccountStruct) internal _accounts;
 
     /*//////////////////////////////////////////////////////////////
@@ -208,6 +211,50 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     }
 
     /// @inheritdoc ICyberEngine
+    function issueW3st(
+        DataTypes.IssueW3stParams calldata params,
+        bytes calldata initData
+    ) external override onlySoulOwner returns (uint256) {
+        // todo more ACL
+        require(
+            params.mw == address(0) ||
+                IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
+            "MW_NOT_ALLOWED"
+        );
+        require(bytes(params.tokenURI).length != 0, "EMPTY_URI");
+
+        address account = msg.sender;
+        uint256 tokenId = ++_accounts[account].w3stIdx;
+
+        // deploy the contract for the first time
+        if (tokenId == 1) {
+            // todo deploy proxy using clone
+            address w3st = address(new W3st(account, address(this)));
+            _accounts[account].w3st = w3st;
+        }
+        _w3stByIdByAccount[account][tokenId].tokenURI = params.tokenURI;
+        _w3stByIdByAccount[account][tokenId].transferable = params.transferable;
+
+        if (params.mw != address(0)) {
+            _w3stByIdByAccount[account][tokenId].mw = params.mw;
+            IMiddleware(params.mw).setMwData(
+                account,
+                DataTypes.Category.W3ST,
+                tokenId,
+                initData
+            );
+        }
+        emit IssueW3st(
+            account,
+            tokenId,
+            params.tokenURI,
+            params.mw,
+            _accounts[account].w3st
+        );
+        return tokenId;
+    }
+
+    /// @inheritdoc ICyberEngine
     function setEssenceData(
         uint256 essenceId,
         string calldata uri,
@@ -220,11 +267,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             mw == address(0) || IMiddlewareManager(MANAGER).isMwAllowed(mw),
             "MW_NOT_ALLOWED"
         );
-        require(
-            bytes(_essenceByIdByAccount[account][essenceId].name).length != 0,
-            "ESSENCE_DOES_NOT_EXIST"
-        );
-
+        _requireEssenceRegistered(account, essenceId);
         _essenceByIdByAccount[account][essenceId].mw = mw;
         if (mw != address(0)) {
             IMiddleware(mw).setMwData(
@@ -236,6 +279,60 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         }
         _essenceByIdByAccount[account][essenceId].tokenURI = uri;
         emit SetEssenceData(account, essenceId, uri, mw);
+    }
+
+    /// @inheritdoc ICyberEngine
+    function setContentData(
+        uint256 tokenId,
+        string calldata uri,
+        address mw,
+        bytes calldata data
+    ) external override {
+        // todo operator model?
+        address account = msg.sender;
+        require(
+            mw == address(0) || IMiddlewareManager(MANAGER).isMwAllowed(mw),
+            "MW_NOT_ALLOWED"
+        );
+        _requireContentRegistered(account, tokenId);
+        _contentByIdByAccount[account][tokenId].mw = mw;
+        if (mw != address(0)) {
+            IMiddleware(mw).setMwData(
+                account,
+                DataTypes.Category.Content,
+                tokenId,
+                data
+            );
+        }
+        _contentByIdByAccount[account][tokenId].tokenURI = uri;
+        emit SetContentData(account, tokenId, uri, mw);
+    }
+
+    /// @inheritdoc ICyberEngine
+    function setW3stData(
+        uint256 tokenId,
+        string calldata uri,
+        address mw,
+        bytes calldata data
+    ) external override {
+        // todo operator model?
+        address account = msg.sender;
+        require(
+            mw == address(0) || IMiddlewareManager(MANAGER).isMwAllowed(mw),
+            "MW_NOT_ALLOWED"
+        );
+        _requireW3stRegistered(account, tokenId);
+        _w3stByIdByAccount[account][tokenId].mw = mw;
+        if (mw != address(0)) {
+            IMiddleware(mw).setMwData(
+                account,
+                DataTypes.Category.W3ST,
+                tokenId,
+                data
+            );
+        }
+        _w3stByIdByAccount[account][tokenId].tokenURI = uri;
+        emit SetW3stData(account, tokenId, uri, mw);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -269,6 +366,24 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         return _contentByIdByAccount[account][tokenID].transferable;
     }
 
+    /// @inheritdoc ICyberEngine
+    function getW3stTokenURI(
+        address account,
+        uint256 tokenID
+    ) external view override returns (string memory) {
+        _requireW3stRegistered(account, tokenID);
+        return _w3stByIdByAccount[account][tokenID].tokenURI;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getW3stTransferability(
+        address account,
+        uint256 tokenID
+    ) external view override returns (bool) {
+        _requireW3stRegistered(account, tokenID);
+        return _w3stByIdByAccount[account][tokenID].transferable;
+    }
+
     /*//////////////////////////////////////////////////////////////
                               INTERNAL
     //////////////////////////////////////////////////////////////*/
@@ -293,7 +408,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         );
     }
 
-    function _requireW3STRegistered(
+    function _requireW3stRegistered(
         address account,
         uint256 tokenId
     ) internal view {
