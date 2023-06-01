@@ -32,6 +32,18 @@ interface ICyberEngine is ICyberEngineEvents {
     ) external returns (uint256);
 
     /**
+     * @notice Publish a content.
+     *
+     * @param params The params for publishing content.
+     * @param initData The registration initial data.
+     * @return uint256 The new token id.
+     */
+    function publishContent(
+        DataTypes.PublishContentParams calldata params,
+        bytes calldata initData
+    ) external returns (uint256);
+
+    /**
      * @notice Gets the Essence NFT token URI.
      *
      * @param account The account address.
@@ -57,4 +69,14 @@ interface ICyberEngine is ICyberEngineEvents {
         address mw,
         bytes calldata data
     ) external;
+
+    function getContentTokenURI(
+        address account,
+        uint256 tokenID
+    ) external view returns (string memory);
+
+    function getContentTransferability(
+        address account,
+        uint256 tokenID
+    ) external view returns (bool);
 }

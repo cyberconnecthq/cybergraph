@@ -18,6 +18,12 @@ library DataTypes {
         bool transferable;
     }
 
+    struct PublishContentParams {
+        string tokenURI;
+        address mw;
+        bool transferable;
+    }
+
     struct EssenceStruct {
         address essence;
         address mw;
@@ -29,8 +35,16 @@ library DataTypes {
 
     struct AccountStruct {
         uint256 essenceCount;
-        address W3ST;
-        address Content;
+        address w3st;
+        uint256 w3stIdx;
+        address content;
+        uint256 contentIdx;
+    }
+
+    struct ContentStruct {
+        address mw;
+        string tokenURI;
+        bool transferable;
     }
 
     struct CollectParams {

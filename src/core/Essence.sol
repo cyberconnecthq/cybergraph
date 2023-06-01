@@ -6,6 +6,7 @@ import { IEssence } from "../interfaces/IEssence.sol";
 import { ICyberEngine } from "../interfaces/ICyberEngine.sol";
 
 import { CyberNFT721 } from "../base/CyberNFT721.sol";
+import { LibString } from "../libraries/LibString.sol";
 
 /**
  * @title Essence NFT
@@ -86,7 +87,7 @@ contract Essence is CyberNFT721, IEssence {
     /**
      * @notice Generates the metadata json object.
      *
-     * @param tokenId The profile NFT token ID.
+     * @param tokenId The Essence NFT token ID.
      * @return string The metadata json object.
      * @dev It requires the tokenId to be already minted.
      */
@@ -94,6 +95,10 @@ contract Essence is CyberNFT721, IEssence {
         uint256 tokenId
     ) public view virtual override returns (string memory) {
         _requireMinted(tokenId);
-        return ICyberEngine(ENGINE).getEssenceTokenURI(_account, _essenceId);
+        string memory uri = ICyberEngine(ENGINE).getEssenceTokenURI(
+            _account,
+            _essenceId
+        );
+        return string(abi.encodePacked(uri, LibString.toString(tokenId)));
     }
 }

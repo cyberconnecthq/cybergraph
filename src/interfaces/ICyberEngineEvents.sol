@@ -12,7 +12,7 @@ interface ICyberEngineEvents {
      * @param symbol The essence symbol.
      * @param tokenURI the essence tokenURI.
      * @param essence the deployed EssenceNFT address.
-     * @param mw The essence middleware.
+     * @param mw The middleware.
      */
     event RegisterEssence(
         address indexed account,
@@ -22,6 +22,23 @@ interface ICyberEngineEvents {
         string tokenURI,
         address mw,
         address essence
+    );
+
+    /**
+     * @notice Emitted when a new essence been created.
+     *
+     * @param account The account address.
+     * @param tokenId The token id.
+     * @param tokenURI the content tokenURI.
+     * @param content the deployed ContentNFT address.
+     * @param mw The middleware.
+     */
+    event PublishContent(
+        address indexed account,
+        uint256 indexed tokenId,
+        string tokenURI,
+        address mw,
+        address content
     );
 
     /**
