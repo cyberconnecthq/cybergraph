@@ -44,6 +44,27 @@ interface ICyberEngineEvents {
     );
 
     /**
+     * @notice Emitted when a new comment been created.
+     *
+     * @param account The account address.
+     * @param tokenId The token id.
+     * @param tokenURI the content tokenURI.
+     * @param content the deployed ContentNFT address.
+     * @param mw The middleware.
+     * @param accountCommented The commented account address.
+     * @param idCommented The commented token id.
+     */
+    event Comment(
+        address indexed account,
+        uint256 indexed tokenId,
+        string tokenURI,
+        address mw,
+        address content,
+        address accountCommented,
+        uint256 idCommented
+    );
+
+    /**
      * @notice Emitted when a new share been created.
      *
      * @param account The account address.

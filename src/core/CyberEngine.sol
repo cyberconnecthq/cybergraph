@@ -266,6 +266,59 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     }
 
     /// @inheritdoc ICyberEngine
+    function comment(
+        DataTypes.CommentParams calldata params,
+        bytes calldata initData
+    ) external override onlySoulOwner returns (uint256) {
+        require(
+            params.mw == address(0) ||
+                IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
+            "MW_NOT_ALLOWED"
+        );
+
+        _requireContentRegistered(params.accountCommented, params.idCommented);
+
+        address account = msg.sender;
+        uint256 tokenId = ++_accounts[account].contentIdx;
+
+        // deploy the contract for the first time
+        if (tokenId == 1) {
+            address content = Clones.clone(CONTENT_IMPL);
+            IContent(content).initialize(account);
+            _accounts[account].content = content;
+        }
+        _contentByIdByAccount[account][tokenId].contentType = DataTypes
+            .ContentType
+            .Comment;
+        _contentByIdByAccount[account][tokenId].tokenURI = params.tokenURI;
+        _contentByIdByAccount[account][tokenId].transferable = params
+            .transferable;
+        _contentByIdByAccount[account][tokenId].srcAccount = params
+            .accountCommented;
+        _contentByIdByAccount[account][tokenId].srcId = params.idCommented;
+
+        if (params.mw != address(0)) {
+            _contentByIdByAccount[account][tokenId].mw = params.mw;
+            IMiddleware(params.mw).setMwData(
+                account,
+                DataTypes.Category.Content,
+                tokenId,
+                initData
+            );
+        }
+        emit Comment(
+            account,
+            tokenId,
+            params.tokenURI,
+            params.mw,
+            _accounts[account].content,
+            params.accountCommented,
+            params.idCommented
+        );
+        return tokenId;
+    }
+
+    /// @inheritdoc ICyberEngine
     function issueW3st(
         DataTypes.IssueW3stParams calldata params,
         bytes calldata initData

@@ -54,6 +54,18 @@ interface ICyberEngine is ICyberEngineEvents {
     ) external returns (uint256);
 
     /**
+     * @notice Comment a content or share.
+     *
+     * @param params The params for commenting content.
+     * @param initData The registration initial data.
+     * @return uint256 The new token id.
+     */
+    function comment(
+        DataTypes.CommentParams calldata params,
+        bytes calldata initData
+    ) external returns (uint256);
+
+    /**
      * @notice Issue a w3st.
      *
      * @param params The params for issuing w3st.

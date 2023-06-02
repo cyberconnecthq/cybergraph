@@ -41,6 +41,14 @@ library DataTypes {
         uint256 idShared;
     }
 
+    struct CommentParams {
+        string tokenURI;
+        address mw;
+        bool transferable;
+        address accountCommented;
+        uint256 idCommented;
+    }
+
     struct IssueW3stParams {
         string tokenURI;
         address mw;
