@@ -28,6 +28,7 @@ interface IMiddleware {
      * @param id The corresponding identifer for a specific category.
      * @param collector The collector address.
      * @param msgSender The message sender.
+     * @param referrerAccount The referrer account address.
      * @param data Extra data to process.
      */
     function preProcess(
@@ -36,6 +37,7 @@ interface IMiddleware {
         uint256 id,
         address collector,
         address msgSender,
+        address referrerAccount,
         bytes calldata data
     ) external;
 }
