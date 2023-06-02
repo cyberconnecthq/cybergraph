@@ -67,9 +67,9 @@ library DataTypes {
     struct AccountStruct {
         uint256 essenceCount;
         address w3st;
-        uint256 w3stIdx;
+        uint256 w3stCount;
         address content;
-        uint256 contentIdx;
+        uint256 contentCount;
     }
 
     struct ContentStruct {

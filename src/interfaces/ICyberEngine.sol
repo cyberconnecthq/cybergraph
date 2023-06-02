@@ -119,6 +119,8 @@ interface ICyberEngine is ICyberEngineEvents {
         uint256 essenceId
     ) external view returns (address);
 
+    function getEssenceCount(address account) external view returns (uint256);
+
     /**
      * @notice Sets content data.
      *
@@ -171,6 +173,8 @@ interface ICyberEngine is ICyberEngineEvents {
         uint256 tokenID
     ) external view returns (address);
 
+    function getContentCount(address account) external view returns (uint256);
+
     function getW3stTokenURI(
         address account,
         uint256 tokenID
@@ -187,4 +191,6 @@ interface ICyberEngine is ICyberEngineEvents {
         address account,
         uint256 tokenID
     ) external view returns (address);
+
+    function getW3stCount(address account) external view returns (uint256);
 }

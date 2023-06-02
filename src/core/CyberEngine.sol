@@ -22,7 +22,7 @@ import { DataTypes } from "../libraries/DataTypes.sol";
  */
 contract CyberEngine is ReentrancyGuard, ICyberEngine {
     /*//////////////////////////////////////////////////////////////
-                                STATESx
+                                STATES
     //////////////////////////////////////////////////////////////*/
 
     address public immutable SOUL;
@@ -202,7 +202,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         );
 
         address account = msg.sender;
-        uint256 tokenId = ++_accounts[account].contentIdx;
+        uint256 tokenId = ++_accounts[account].contentCount;
 
         // deploy the contract for the first time
         if (tokenId == 1) {
@@ -247,7 +247,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             params.idShared
         );
         address account = msg.sender;
-        uint256 tokenId = ++_accounts[account].contentIdx;
+        uint256 tokenId = ++_accounts[account].contentCount;
 
         // deploy the contract for the first time
         if (tokenId == 1) {
@@ -280,7 +280,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         _requireContentRegistered(params.accountCommented, params.idCommented);
 
         address account = msg.sender;
-        uint256 tokenId = ++_accounts[account].contentIdx;
+        uint256 tokenId = ++_accounts[account].contentCount;
 
         // deploy the contract for the first time
         if (tokenId == 1) {
@@ -332,7 +332,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         );
 
         address account = msg.sender;
-        uint256 tokenId = ++_accounts[account].w3stIdx;
+        uint256 tokenId = ++_accounts[account].w3stCount;
 
         // deploy the contract for the first time
         if (tokenId == 1) {
@@ -482,6 +482,13 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     }
 
     /// @inheritdoc ICyberEngine
+    function getEssenceCount(
+        address account
+    ) external view override returns (uint256) {
+        return _accounts[account].essenceCount;
+    }
+
+    /// @inheritdoc ICyberEngine
     function getEssenceTransferability(
         address account,
         uint256 essenceId
@@ -520,6 +527,13 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     }
 
     /// @inheritdoc ICyberEngine
+    function getContentCount(
+        address account
+    ) external view override returns (uint256) {
+        return _accounts[account].contentCount;
+    }
+
+    /// @inheritdoc ICyberEngine
     function getContentTransferability(
         address account,
         uint256 tokenID
@@ -542,6 +556,13 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         address account
     ) external view override returns (address) {
         return _accounts[account].w3st;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getW3stCount(
+        address account
+    ) external view override returns (uint256) {
+        return _accounts[account].w3stCount;
     }
 
     /// @inheritdoc ICyberEngine
@@ -590,7 +611,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         uint256 tokenId
     ) internal view {
         require(
-            _accounts[account].contentIdx > tokenId,
+            _accounts[account].contentCount > tokenId,
             "CONTENT_DOES_NOT_EXIST"
         );
     }
@@ -599,7 +620,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         address account,
         uint256 tokenId
     ) internal view {
-        require(_accounts[account].w3stIdx > tokenId, "W3ST_DOES_NOT_EXIST");
+        require(_accounts[account].w3stCount > tokenId, "W3ST_DOES_NOT_EXIST");
     }
 
     function _checkRegistered(
