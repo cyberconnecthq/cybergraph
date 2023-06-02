@@ -464,14 +464,59 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     }
 
     /// @inheritdoc ICyberEngine
+    function getEssenceAddr(
+        address account,
+        uint256 essenceId
+    ) external view override returns (address) {
+        _requireEssenceRegistered(account, essenceId);
+        return _essenceByIdByAccount[account][essenceId].essence;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getEssenceMw(
+        address account,
+        uint256 essenceId
+    ) external view override returns (address) {
+        _requireEssenceRegistered(account, essenceId);
+        return _essenceByIdByAccount[account][essenceId].mw;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getEssenceTransferability(
+        address account,
+        uint256 essenceId
+    ) external view override returns (bool) {
+        _requireEssenceRegistered(account, essenceId);
+        return _essenceByIdByAccount[account][essenceId].transferable;
+    }
+
+    /// @inheritdoc ICyberEngine
     function getContentTokenURI(
         address account,
         uint256 tokenID
     ) external view override returns (string memory) {
         _requireContentRegistered(account, tokenID);
+        (address srcAccount, uint256 srcId) = _getSrcIfShared(account, tokenID);
+        return _contentByIdByAccount[srcAccount][srcId].tokenURI;
+    }
 
-        //todo return shared content uri if shared
-        return _contentByIdByAccount[account][tokenID].tokenURI;
+    /// @inheritdoc ICyberEngine
+    function getContentSrcInfo(
+        address account,
+        uint256 tokenID
+    ) external view override returns (address, uint256) {
+        _requireContentRegistered(account, tokenID);
+        return (
+            _contentByIdByAccount[account][tokenID].srcAccount,
+            _contentByIdByAccount[account][tokenID].srcId
+        );
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getContentAddr(
+        address account
+    ) external view override returns (address) {
+        return _accounts[account].content;
     }
 
     /// @inheritdoc ICyberEngine
@@ -481,6 +526,22 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     ) external view override returns (bool) {
         _requireContentRegistered(account, tokenID);
         return _contentByIdByAccount[account][tokenID].transferable;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getContentMw(
+        address account,
+        uint256 tokenID
+    ) external view override returns (address) {
+        _requireContentRegistered(account, tokenID);
+        return _contentByIdByAccount[account][tokenID].mw;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getW3stAddr(
+        address account
+    ) external view override returns (address) {
+        return _accounts[account].w3st;
     }
 
     /// @inheritdoc ICyberEngine
@@ -499,6 +560,15 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     ) external view override returns (bool) {
         _requireW3stRegistered(account, tokenID);
         return _w3stByIdByAccount[account][tokenID].transferable;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getW3stMw(
+        address account,
+        uint256 tokenID
+    ) external view override returns (address) {
+        _requireW3stRegistered(account, tokenID);
+        return _w3stByIdByAccount[account][tokenID].mw;
     }
 
     /*//////////////////////////////////////////////////////////////

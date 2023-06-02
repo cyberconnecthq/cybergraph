@@ -89,6 +89,11 @@ interface ICyberEngine is ICyberEngineEvents {
         uint256 essenceId
     ) external view returns (string memory);
 
+    function getEssenceTransferability(
+        address account,
+        uint256 tokenID
+    ) external view returns (bool);
+
     /**
      * @notice Sets essence data.
      *
@@ -103,6 +108,16 @@ interface ICyberEngine is ICyberEngineEvents {
         address mw,
         bytes calldata data
     ) external;
+
+    function getEssenceAddr(
+        address account,
+        uint256 essenceId
+    ) external view returns (address);
+
+    function getEssenceMw(
+        address account,
+        uint256 essenceId
+    ) external view returns (address);
 
     /**
      * @notice Sets content data.
@@ -139,18 +154,37 @@ interface ICyberEngine is ICyberEngineEvents {
         uint256 tokenID
     ) external view returns (string memory);
 
+    function getContentAddr(address account) external view returns (address);
+
     function getContentTransferability(
         address account,
         uint256 tokenID
     ) external view returns (bool);
+
+    function getContentSrcInfo(
+        address account,
+        uint256 tokenID
+    ) external view returns (address, uint256);
+
+    function getContentMw(
+        address account,
+        uint256 tokenID
+    ) external view returns (address);
 
     function getW3stTokenURI(
         address account,
         uint256 tokenID
     ) external view returns (string memory);
 
+    function getW3stAddr(address account) external view returns (address);
+
     function getW3stTransferability(
         address account,
         uint256 tokenID
     ) external view returns (bool);
+
+    function getW3stMw(
+        address account,
+        uint256 tokenID
+    ) external view returns (address);
 }
