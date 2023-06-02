@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.14;
 
+import { DataTypes } from "../libraries/DataTypes.sol";
+
 interface ICyberEngineEvents {
     /**
      * @notice Emitted when a new essence been created.
@@ -63,15 +65,19 @@ interface ICyberEngineEvents {
      *
      * @param collector The collector address.
      * @param account The account addresss.
-     * @param essenceId The essence id.
-     * @param tokenId The token id of the newly minted essent NFT.
+     * @param id The id.
+     * @param amount The amount to collect.
+     * @param newTokenId The token id of the newly minted NFT (only for collecting Essence).
+     * @param category The category to collect.
      * @param data The collect data for preprocess.
      */
-    event CollectEssence(
+    event Collect(
         address indexed collector,
         address indexed account,
-        uint256 indexed essenceId,
-        uint256 tokenId,
+        uint256 indexed id,
+        uint256 amount,
+        uint256 newTokenId,
+        DataTypes.Category category,
         bytes data
     );
 

@@ -60,9 +60,10 @@ library DataTypes {
     }
 
     struct CollectParams {
-        address collector;
         address account;
-        uint256 essenceId;
+        uint256 id;
+        uint256 amount;
+        Category category;
     }
 
     enum Category {

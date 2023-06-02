@@ -9,6 +9,8 @@ import { ICyberEngine } from "../interfaces/ICyberEngine.sol";
 import { IMiddlewareManager } from "../interfaces/IMiddlewareManager.sol";
 import { IMiddleware } from "../interfaces/IMiddleware.sol";
 import { IEssence } from "../interfaces/IEssence.sol";
+import { IContent } from "../interfaces/IContent.sol";
+import { IW3st } from "../interfaces/IW3st.sol";
 
 import { DataTypes } from "../libraries/DataTypes.sol";
 import { Essence } from "./Essence.sol";
@@ -32,7 +34,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         internal _essenceByIdByAccount;
     mapping(address => mapping(uint256 => DataTypes.ContentStruct))
         internal _contentByIdByAccount;
-    mapping(address => mapping(uint256 => DataTypes.ContentStruct))
+    mapping(address => mapping(uint256 => DataTypes.W3stStruct))
         internal _w3stByIdByAccount;
     mapping(address => DataTypes.AccountStruct) internal _accounts;
 
@@ -69,18 +71,19 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         DataTypes.CollectParams calldata params,
         bytes calldata data
     ) external override nonReentrant returns (uint256 tokenId) {
-        address account = params.account;
-        uint256 essenceId = params.essenceId;
+        address collector = msg.sender;
+        uint256 amount = params.amount;
+
+        DataTypes.Category category = params.category;
 
         // todo check account exist
         // todo msg.send & collector?
-        require(
-            bytes(_essenceByIdByAccount[account][essenceId].tokenURI).length !=
-                0,
-            "ESSENCE_NOT_REGISTERED"
+        _checkRegistered(params.account, params.id, category);
+        (address deployAddr, address mw) = _getDeployInfo(
+            params.account,
+            params.id,
+            category
         );
-        address essence = _essenceByIdByAccount[account][essenceId].essence;
-        address mw = _essenceByIdByAccount[account][essenceId].mw;
 
         // run middleware before collecting essence
         if (mw != address(0)) {
@@ -89,21 +92,23 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                 "MW_NOT_ALLOWED"
             );
             IMiddleware(mw).preProcess(
-                account,
-                DataTypes.Category.Essence,
-                essenceId,
-                params.collector,
+                params.account,
+                category,
+                params.id,
+                collector,
                 msg.sender,
                 data
             );
         }
-        tokenId = IEssence(essence).mint(params.collector);
 
-        emit CollectEssence(
-            params.collector,
-            account,
-            essenceId,
+        tokenId = _mintNFT(deployAddr, collector, params.id, amount, category);
+        emit Collect(
+            collector,
+            params.account,
+            params.id,
+            amount,
             tokenId,
+            category,
             data
         );
     }
@@ -413,5 +418,59 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         uint256 tokenId
     ) internal view {
         require(_accounts[account].w3stIdx > tokenId, "W3ST_DOES_NOT_EXIST");
+    }
+
+    function _checkRegistered(
+        address account,
+        uint256 id,
+        DataTypes.Category category
+    ) internal view {
+        if (category == DataTypes.Category.W3ST) {
+            _requireW3stRegistered(account, id);
+        } else if (category == DataTypes.Category.Content) {
+            _requireContentRegistered(account, id);
+        } else if (category == DataTypes.Category.Essence) {
+            _requireEssenceRegistered(account, id);
+        } else {
+            revert("WRONG_CATEGORY");
+        }
+    }
+
+    function _getDeployInfo(
+        address account,
+        uint256 id,
+        DataTypes.Category category
+    ) internal view returns (address deployAddr, address mw) {
+        if (category == DataTypes.Category.W3ST) {
+            deployAddr = _accounts[account].w3st;
+            mw = _w3stByIdByAccount[account][id].mw;
+        } else if (category == DataTypes.Category.Content) {
+            deployAddr = _accounts[account].content;
+            mw = _contentByIdByAccount[account][id].mw;
+        } else if (category == DataTypes.Category.Essence) {
+            deployAddr = _essenceByIdByAccount[account][id].essence;
+            mw = _essenceByIdByAccount[account][id].mw;
+        } else {
+            revert("WRONG_CATEGORY");
+        }
+    }
+
+    function _mintNFT(
+        address deployAddr,
+        address collector,
+        uint256 id,
+        uint256 amount,
+        DataTypes.Category category
+    ) internal returns (uint256 tokenId) {
+        if (category == DataTypes.Category.W3ST) {
+            IW3st(deployAddr).mint(collector, id, amount, new bytes(0));
+        } else if (category == DataTypes.Category.Content) {
+            IContent(deployAddr).mint(collector, id, amount, new bytes(0));
+        } else if (category == DataTypes.Category.Essence) {
+            require(amount == 1, "INCORRECT_COLLECT_AMOUNT");
+            tokenId = IEssence(deployAddr).mint(collector);
+        } else {
+            revert("WRONG_CATEGORY");
+        }
     }
 }
