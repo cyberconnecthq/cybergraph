@@ -44,6 +44,21 @@ interface ICyberEngineEvents {
     );
 
     /**
+     * @notice Emitted when a new share been created.
+     *
+     * @param account The account address.
+     * @param tokenId The token id.
+     * @param srcAccount the src account to share.
+     * @param srcId the src id to share
+     */
+    event Share(
+        address indexed account,
+        uint256 indexed tokenId,
+        address srcAccount,
+        uint256 srcId
+    );
+
+    /**
      * @notice Emitted when a new w3st been created.
      *
      * @param account The account address.

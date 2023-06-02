@@ -44,6 +44,16 @@ interface ICyberEngine is ICyberEngineEvents {
     ) external returns (uint256);
 
     /**
+     * @notice Share a content, comment or another share.
+     *
+     * @param params The params for sharing.
+     * @return uint256 The new token id.
+     */
+    function share(
+        DataTypes.ShareParams calldata params
+    ) external returns (uint256);
+
+    /**
      * @notice Issue a w3st.
      *
      * @param params The params for issuing w3st.

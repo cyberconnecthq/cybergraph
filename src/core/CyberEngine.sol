@@ -86,16 +86,19 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         bytes calldata data
     ) external override nonReentrant returns (uint256 tokenId) {
         address collector = msg.sender;
-        uint256 amount = params.amount;
-        DataTypes.Category category = params.category;
 
         // todo check account exist
         // todo msg.send & collector?
-        _checkRegistered(params.account, params.id, category);
-        (address deployAddr, address mw) = _getDeployInfo(
+        _checkRegistered(params.account, params.id, params.category);
+
+        (address account, uint256 id) = _getSrcIfShared(
             params.account,
-            params.id,
-            category
+            params.id
+        );
+        (address deployAddr, address mw) = _getDeployInfo(
+            account,
+            id,
+            params.category
         );
 
         // run middleware before collecting essence
@@ -105,23 +108,29 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                 "MW_NOT_ALLOWED"
             );
             IMiddleware(mw).preProcess(
-                params.account,
-                category,
-                params.id,
+                account,
+                params.category,
+                id,
                 collector,
                 msg.sender,
                 data
             );
         }
 
-        tokenId = _mintNFT(deployAddr, collector, params.id, amount, category);
+        tokenId = _mintNFT(
+            deployAddr,
+            collector,
+            id,
+            params.amount,
+            params.category
+        );
         emit Collect(
             collector,
-            params.account,
-            params.id,
-            amount,
+            account,
+            id,
+            params.amount,
             tokenId,
-            category,
+            params.category,
             data
         );
     }
@@ -139,7 +148,6 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
         require(bytes(params.name).length != 0, "EMPTY_NAME");
         require(bytes(params.symbol).length != 0, "EMPTY_SYMBOL");
-        require(bytes(params.tokenURI).length != 0, "EMPTY_URI");
 
         address account = msg.sender;
         uint256 id = ++_accounts[account].essenceCount;
@@ -191,7 +199,6 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                 IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
             "MW_NOT_ALLOWED"
         );
-        require(bytes(params.tokenURI).length != 0, "EMPTY_URI");
 
         address account = msg.sender;
         uint256 tokenId = ++_accounts[account].contentIdx;
@@ -202,6 +209,9 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             IContent(content).initialize(account);
             _accounts[account].content = content;
         }
+        _contentByIdByAccount[account][tokenId].contentType = DataTypes
+            .ContentType
+            .Content;
         _contentByIdByAccount[account][tokenId].tokenURI = params.tokenURI;
         _contentByIdByAccount[account][tokenId].transferable = params
             .transferable;
@@ -226,6 +236,36 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     }
 
     /// @inheritdoc ICyberEngine
+    function share(
+        DataTypes.ShareParams calldata params
+    ) external override onlySoulOwner returns (uint256) {
+        _requireContentRegistered(params.accountShared, params.idShared);
+
+        (address srcAccount, uint256 srcId) = _getSrcIfShared(
+            params.accountShared,
+            params.idShared
+        );
+        address account = msg.sender;
+        uint256 tokenId = ++_accounts[account].contentIdx;
+
+        // deploy the contract for the first time
+        if (tokenId == 1) {
+            address content = Clones.clone(CONTENT_IMPL);
+            IContent(content).initialize(account);
+            _accounts[account].content = content;
+        }
+
+        _contentByIdByAccount[account][tokenId].contentType = DataTypes
+            .ContentType
+            .Share;
+        _contentByIdByAccount[account][tokenId].srcAccount = srcAccount;
+        _contentByIdByAccount[account][tokenId].srcId = srcId;
+
+        emit Share(account, tokenId, srcAccount, srcId);
+        return tokenId;
+    }
+
+    /// @inheritdoc ICyberEngine
     function issueW3st(
         DataTypes.IssueW3stParams calldata params,
         bytes calldata initData
@@ -236,7 +276,6 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                 IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
             "MW_NOT_ALLOWED"
         );
-        require(bytes(params.tokenURI).length != 0, "EMPTY_URI");
 
         address account = msg.sender;
         uint256 tokenId = ++_accounts[account].w3stIdx;
@@ -311,6 +350,12 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             "MW_NOT_ALLOWED"
         );
         _requireContentRegistered(account, tokenId);
+
+        require(
+            _contentByIdByAccount[account][tokenId].contentType !=
+                DataTypes.ContentType.Share,
+            "CANNOT_SET_DATA_FOR_SHARE"
+        );
         _contentByIdByAccount[account][tokenId].mw = mw;
         if (mw != address(0)) {
             IMiddleware(mw).setMwData(
@@ -370,6 +415,8 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         uint256 tokenID
     ) external view override returns (string memory) {
         _requireContentRegistered(account, tokenID);
+
+        //todo return shared content uri if shared
         return _contentByIdByAccount[account][tokenID].tokenURI;
     }
 
@@ -475,13 +522,31 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     ) internal returns (uint256 tokenId) {
         if (category == DataTypes.Category.W3ST) {
             IW3st(deployAddr).mint(collector, id, amount, new bytes(0));
+            tokenId = id;
         } else if (category == DataTypes.Category.Content) {
             IContent(deployAddr).mint(collector, id, amount, new bytes(0));
+            tokenId = id;
         } else if (category == DataTypes.Category.Essence) {
             require(amount == 1, "INCORRECT_COLLECT_AMOUNT");
             tokenId = IEssence(deployAddr).mint(collector);
         } else {
             revert("WRONG_CATEGORY");
+        }
+    }
+
+    function _getSrcIfShared(
+        address account,
+        uint256 id
+    ) internal view returns (address srcAccount, uint256 srcId) {
+        if (
+            _contentByIdByAccount[account][id].contentType ==
+            DataTypes.ContentType.Share
+        ) {
+            srcAccount = _contentByIdByAccount[account][id].srcAccount;
+            srcId = _contentByIdByAccount[account][id].srcId;
+        } else {
+            srcAccount = account;
+            srcId = id;
         }
     }
 }

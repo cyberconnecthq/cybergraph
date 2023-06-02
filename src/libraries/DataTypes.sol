@@ -3,6 +3,18 @@
 pragma solidity 0.8.14;
 
 library DataTypes {
+    enum Category {
+        Essence,
+        Content,
+        W3ST
+    }
+
+    enum ContentType {
+        Content,
+        Comment,
+        Share
+    }
+
     struct EIP712Signature {
         uint8 v;
         bytes32 r;
@@ -22,6 +34,11 @@ library DataTypes {
         string tokenURI;
         address mw;
         bool transferable;
+    }
+
+    struct ShareParams {
+        address accountShared;
+        uint256 idShared;
     }
 
     struct IssueW3stParams {
@@ -51,6 +68,9 @@ library DataTypes {
         address mw;
         string tokenURI;
         bool transferable;
+        address srcAccount;
+        uint256 srcId;
+        ContentType contentType;
     }
 
     struct W3stStruct {
@@ -64,11 +84,5 @@ library DataTypes {
         uint256 id;
         uint256 amount;
         Category category;
-    }
-
-    enum Category {
-        Essence,
-        Content,
-        W3ST
     }
 }
