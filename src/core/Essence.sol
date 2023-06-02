@@ -24,23 +24,16 @@ contract Essence is CyberNFT721, IEssence {
     uint256 internal _essenceId;
     bool internal _transferable;
 
+    bool private _initialized;
+
     /*//////////////////////////////////////////////////////////////
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(
-        address account,
-        uint256 essenceId,
-        string memory name,
-        string memory symbol,
-        address engine,
-        bool transferable
-    ) CyberNFT721(name, symbol) {
+    constructor(address engine) {
         require(engine != address(0), "ENGINE_NOT_SET");
         ENGINE = engine;
-        _account = account;
-        _essenceId = essenceId;
-        _transferable = transferable;
+        _initialized = true;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -51,6 +44,24 @@ contract Essence is CyberNFT721, IEssence {
     function mint(address to) external override returns (uint256) {
         require(msg.sender == ENGINE, "ONLY_ENGINE");
         return super._mint(to);
+    }
+
+    /// @inheritdoc IEssence
+    function initialize(
+        address account,
+        uint256 essenceId,
+        string calldata name,
+        string calldata symbol,
+        bool transferable
+    ) external override {
+        require(_initialized == false, "ALREADY_INITIALIZED");
+        _initialized = true;
+
+        _account = account;
+        _essenceId = essenceId;
+        _transferable = transferable;
+
+        super._initialize(name, symbol);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -87,7 +98,7 @@ contract Essence is CyberNFT721, IEssence {
     /**
      * @notice Generates the metadata json object.
      *
-     * @param tokenId The Essence NFT token ID.
+     * @param tokenId The EssenceNFT token ID.
      * @return string The metadata json object.
      * @dev It requires the tokenId to be already minted.
      */

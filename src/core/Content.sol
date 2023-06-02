@@ -19,21 +19,31 @@ contract Content is CyberNFT1155, IContent {
     //////////////////////////////////////////////////////////////*/
 
     address public immutable ENGINE;
+
     address internal _account;
+
+    bool private _initialized;
 
     /*//////////////////////////////////////////////////////////////
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(address account, address engine) {
+    constructor(address engine) {
         require(engine != address(0), "ENGINE_NOT_SET");
         ENGINE = engine;
-        _account = account;
+        _initialized = true;
     }
 
     /*//////////////////////////////////////////////////////////////
                                  EXTERNAL
     //////////////////////////////////////////////////////////////*/
+
+    /// @inheritdoc IContent
+    function initialize(address account) external override {
+        require(_initialized == false, "ALREADY_INITIALIZED");
+        _initialized = true;
+        _account = account;
+    }
 
     /// @inheritdoc IContent
     function mint(

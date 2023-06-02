@@ -17,4 +17,21 @@ interface IEssence {
      * @return bool Whether this Essence NFT is transferable.
      */
     function isTransferable() external returns (bool);
+
+    /**
+     * @notice Initializes the Essence NFT.
+     *
+     * @param account The account address for the Essence NFT.
+     * @param essenceId The essence ID for the Essence NFT.
+     * @param name The name for the Essence NFT.
+     * @param symbol The symbol for the Essence NFT.
+     * @param transferable Whether the Essence NFT is transferable.
+     */
+    function initialize(
+        address account,
+        uint256 essenceId,
+        string calldata name,
+        string calldata symbol,
+        bool transferable
+    ) external;
 }

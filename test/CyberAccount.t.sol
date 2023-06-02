@@ -17,6 +17,5 @@ contract CyberAccountTest is Test {
 
     function testBasic() public {
         assertEq(true, true);
-        ce = new CyberEngine(address(0x11), address(0x11));
     }
 }

@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.14;
 
-import { ERC721 } from "solmate/src/tokens/ERC721.sol";
+import { ERC721 } from "../dependencies/solmate/ERC721.sol";
 
 import { ICyberNFT721 } from "../interfaces/ICyberNFT721.sol";
 
@@ -17,15 +17,6 @@ abstract contract CyberNFT721 is ERC721, ICyberNFT721 {
     //////////////////////////////////////////////////////////////*/
     uint256 internal _currentIndex;
     uint256 internal _totalSupply;
-
-    /*//////////////////////////////////////////////////////////////
-                                 CONSTRUCTOR
-    //////////////////////////////////////////////////////////////*/
-
-    constructor(
-        string memory name,
-        string memory symbol
-    ) ERC721(name, symbol) {}
 
     /*//////////////////////////////////////////////////////////////
                          EXTERNAL VIEW
@@ -56,6 +47,13 @@ abstract contract CyberNFT721 is ERC721, ICyberNFT721 {
     /*//////////////////////////////////////////////////////////////
                               INTERNAL
     //////////////////////////////////////////////////////////////*/
+
+    function _initialize(
+        string calldata name,
+        string calldata symbol
+    ) internal {
+        ERC721.__ERC721_Init(name, symbol);
+    }
 
     function _mint(address _to) internal virtual returns (uint256) {
         super._safeMint(_to, ++_currentIndex);

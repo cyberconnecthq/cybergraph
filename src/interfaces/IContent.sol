@@ -9,4 +9,6 @@ interface IContent {
         uint256 amount,
         bytes memory data
     ) external;
+
+    function initialize(address account) external;
 }

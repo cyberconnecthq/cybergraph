@@ -3,6 +3,7 @@
 pragma solidity 0.8.14;
 
 import { ReentrancyGuard } from "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
+import { Clones } from "openzeppelin-contracts/contracts/proxy/Clones.sol";
 
 import { IERC721 } from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import { ICyberEngine } from "../interfaces/ICyberEngine.sol";
@@ -13,9 +14,6 @@ import { IContent } from "../interfaces/IContent.sol";
 import { IW3st } from "../interfaces/IW3st.sol";
 
 import { DataTypes } from "../libraries/DataTypes.sol";
-import { Essence } from "./Essence.sol";
-import { Content } from "./Content.sol";
-import { W3st } from "./W3st.sol";
 
 /**
  * @title CyberEngine
@@ -24,11 +22,15 @@ import { W3st } from "./W3st.sol";
  */
 contract CyberEngine is ReentrancyGuard, ICyberEngine {
     /*//////////////////////////////////////////////////////////////
-                                STATES
+                                STATESx
     //////////////////////////////////////////////////////////////*/
 
     address public immutable SOUL;
     address public immutable MANAGER;
+
+    address internal immutable ESSENCE_IMPL;
+    address internal immutable CONTENT_IMPL;
+    address internal immutable W3ST_IMPL;
 
     mapping(address => mapping(uint256 => DataTypes.EssenceStruct))
         internal _essenceByIdByAccount;
@@ -54,12 +56,24 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(address soul, address mwManager) {
+    constructor(
+        address soul,
+        address mwManager,
+        address essImpl,
+        address contentImpl,
+        address w3stImpl
+    ) {
         require(soul != address(0), "SOUL_NOT_SET");
         require(mwManager != address(0), "MW_MANAGER_NOT_SET");
+        require(essImpl != address(0), "ESS_IMPL_NOT_SET");
+        require(contentImpl != address(0), "CONTENT_IMPL_NOT_SET");
+        require(w3stImpl != address(0), "W3ST_IMPL_NOT_SET");
 
         SOUL = soul;
         MANAGER = mwManager;
+        ESSENCE_IMPL = essImpl;
+        CONTENT_IMPL = contentImpl;
+        W3ST_IMPL = w3stImpl;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -73,7 +87,6 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     ) external override nonReentrant returns (uint256 tokenId) {
         address collector = msg.sender;
         uint256 amount = params.amount;
-
         DataTypes.Category category = params.category;
 
         // todo check account exist
@@ -146,16 +159,13 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             );
         }
 
-        // todo deploy proxy using clone
-        address essence = address(
-            new Essence(
-                account,
-                id,
-                params.name,
-                params.symbol,
-                address(this),
-                params.transferable
-            )
+        address essence = Clones.clone(ESSENCE_IMPL);
+        IEssence(essence).initialize(
+            account,
+            id,
+            params.name,
+            params.symbol,
+            params.transferable
         );
         _essenceByIdByAccount[account][id].essence = essence;
 
@@ -188,8 +198,8 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
         // deploy the contract for the first time
         if (tokenId == 1) {
-            // todo deploy proxy using clone
-            address content = address(new Content(account, address(this)));
+            address content = Clones.clone(CONTENT_IMPL);
+            IContent(content).initialize(account);
             _accounts[account].content = content;
         }
         _contentByIdByAccount[account][tokenId].tokenURI = params.tokenURI;
@@ -233,10 +243,11 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
         // deploy the contract for the first time
         if (tokenId == 1) {
-            // todo deploy proxy using clone
-            address w3st = address(new W3st(account, address(this)));
+            address w3st = Clones.clone(W3ST_IMPL);
+            IW3st(w3st).initialize(account);
             _accounts[account].w3st = w3st;
         }
+
         _w3stByIdByAccount[account][tokenId].tokenURI = params.tokenURI;
         _w3stByIdByAccount[account][tokenId].transferable = params.transferable;
 

@@ -6,13 +6,21 @@ import { CyberNFT721 } from "../base/CyberNFT721.sol";
 
 contract Soul is CyberNFT721 {
     /*//////////////////////////////////////////////////////////////
-                                 CONSTRUCTOR
+                                STATES
     //////////////////////////////////////////////////////////////*/
 
-    constructor(
-        string memory name,
-        string memory symbol
-    ) CyberNFT721(name, symbol) {}
+    bool private _initialized;
+
+    /*//////////////////////////////////////////////////////////////
+                                 EXTERNAL
+    //////////////////////////////////////////////////////////////*/
+
+    function initialize(string calldata name, string calldata symbol) external {
+        require(_initialized == false, "ALREADY_INITIALIZED");
+        _initialized = true;
+
+        super._initialize(name, symbol);
+    }
 
     /*//////////////////////////////////////////////////////////////
                                  PUBLIC
