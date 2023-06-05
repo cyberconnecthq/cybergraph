@@ -8,4 +8,5 @@ library Constants {
         keccak256(
             "permit(address spender,uint256 tokenId,uint256 nonce,uint256 deadline)"
         );
+    uint16 internal constant _MAX_BPS = 10000;
 }
