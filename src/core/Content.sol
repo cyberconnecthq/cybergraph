@@ -4,6 +4,7 @@ pragma solidity 0.8.14;
 
 import { IContent } from "../interfaces/IContent.sol";
 import { ICyberEngine } from "../interfaces/ICyberEngine.sol";
+import { IDeployer } from "../interfaces/IDeployer.sol";
 
 import { CyberNFT1155 } from "../base/CyberNFT1155.sol";
 import { LibString } from "../libraries/LibString.sol";
@@ -28,8 +29,10 @@ contract Content is CyberNFT1155, IContent {
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(address engine) {
-        require(engine != address(0), "ENGINE_NOT_SET");
+    constructor() {
+        address engine = IDeployer(msg.sender).params();
+        require(engine != address(0), "ZERO_ADDRESS");
+
         ENGINE = engine;
         _initialized = true;
     }

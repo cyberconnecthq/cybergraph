@@ -4,6 +4,7 @@ pragma solidity 0.8.14;
 
 import { IW3st } from "../interfaces/IW3st.sol";
 import { ICyberEngine } from "../interfaces/ICyberEngine.sol";
+import { IDeployer } from "../interfaces/IDeployer.sol";
 
 import { CyberNFT1155 } from "../base/CyberNFT1155.sol";
 import { LibString } from "../libraries/LibString.sol";
@@ -26,8 +27,10 @@ contract W3st is CyberNFT1155, IW3st {
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(address engine) {
-        require(engine != address(0), "ENGINE_NOT_SET");
+    constructor() {
+        address engine = IDeployer(msg.sender).params();
+        require(engine != address(0), "ZERO_ADDRESS");
+
         ENGINE = engine;
         _initialized = true;
     }

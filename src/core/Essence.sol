@@ -4,6 +4,7 @@ pragma solidity 0.8.14;
 
 import { IEssence } from "../interfaces/IEssence.sol";
 import { ICyberEngine } from "../interfaces/ICyberEngine.sol";
+import { IDeployer } from "../interfaces/IDeployer.sol";
 
 import { CyberNFT721 } from "../base/CyberNFT721.sol";
 import { LibString } from "../libraries/LibString.sol";
@@ -30,8 +31,10 @@ contract Essence is CyberNFT721, IEssence {
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(address engine) {
-        require(engine != address(0), "ENGINE_NOT_SET");
+    constructor() {
+        address engine = IDeployer(msg.sender).params();
+        require(engine != address(0), "ZERO_ADDRESS");
+
         ENGINE = engine;
         _initialized = true;
     }

@@ -93,4 +93,8 @@ library DataTypes {
         uint256 amount;
         Category category;
     }
+
+    struct DeployParameters {
+        address engine;
+    }
 }
