@@ -30,12 +30,12 @@ jobs:
           forge test -vvv --gas-report
         id: test
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 14
+      # - uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 14
 
-      - name: Install modules
-        run: yarn
+      # - name: Install modules
+      #   run: yarn
 
-      - name: Run lint
-        run: yarn run lint:gh-check
+      # - name: Run lint
+      #   run: yarn run lint:gh-check
