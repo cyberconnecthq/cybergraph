@@ -56,9 +56,13 @@ abstract contract CyberNFT721 is ERC721, ICyberNFT721 {
     }
 
     function _mint(address _to) internal virtual returns (uint256) {
-        super._safeMint(_to, ++_currentIndex);
+        uint256 mintedId = _currentIndex;
+        super._safeMint(_to, mintedId);
+
+        _currentIndex++;
         _totalSupply++;
-        return _currentIndex;
+
+        return mintedId;
     }
 
     function _exists(uint256 tokenId) internal view returns (bool) {

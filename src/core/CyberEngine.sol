@@ -101,7 +101,6 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             params.category
         );
 
-        // run middleware before collecting essence
         if (mw != address(0)) {
             require(
                 IMiddlewareManager(MANAGER).isMwAllowed(mw),
@@ -151,7 +150,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         require(bytes(params.symbol).length != 0, "EMPTY_SYMBOL");
 
         address account = msg.sender;
-        uint256 id = ++_accounts[account].essenceCount;
+        uint256 id = _accounts[account].essenceCount;
 
         _essenceByIdByAccount[account][id].name = params.name;
         _essenceByIdByAccount[account][id].symbol = params.symbol;
@@ -177,6 +176,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             params.transferable
         );
         _essenceByIdByAccount[account][id].essence = essence;
+        ++_accounts[account].essenceCount;
 
         emit RegisterEssence(
             account,
@@ -202,10 +202,10 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         );
 
         address account = msg.sender;
-        uint256 tokenId = ++_accounts[account].contentCount;
+        uint256 tokenId = _accounts[account].contentCount;
 
         // deploy the contract for the first time
-        if (tokenId == 1) {
+        if (tokenId == 0) {
             address content = Clones.clone(CONTENT_IMPL);
             IContent(content).initialize(account);
             _accounts[account].content = content;
@@ -226,6 +226,9 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                 initData
             );
         }
+
+        ++_accounts[account].contentCount;
+
         emit PublishContent(
             account,
             tokenId,
@@ -247,10 +250,10 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             params.idShared
         );
         address account = msg.sender;
-        uint256 tokenId = ++_accounts[account].contentCount;
+        uint256 tokenId = _accounts[account].contentCount;
 
         // deploy the contract for the first time
-        if (tokenId == 1) {
+        if (tokenId == 0) {
             address content = Clones.clone(CONTENT_IMPL);
             IContent(content).initialize(account);
             _accounts[account].content = content;
@@ -262,6 +265,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         _contentByIdByAccount[account][tokenId].srcAccount = srcAccount;
         _contentByIdByAccount[account][tokenId].srcId = srcId;
 
+        ++_accounts[account].contentCount;
         emit Share(account, tokenId, srcAccount, srcId);
         return tokenId;
     }
@@ -280,10 +284,10 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         _requireContentRegistered(params.accountCommented, params.idCommented);
 
         address account = msg.sender;
-        uint256 tokenId = ++_accounts[account].contentCount;
+        uint256 tokenId = _accounts[account].contentCount;
 
         // deploy the contract for the first time
-        if (tokenId == 1) {
+        if (tokenId == 0) {
             address content = Clones.clone(CONTENT_IMPL);
             IContent(content).initialize(account);
             _accounts[account].content = content;
@@ -307,6 +311,8 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                 initData
             );
         }
+
+        ++_accounts[account].contentCount;
         emit Comment(
             account,
             tokenId,
@@ -332,10 +338,10 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         );
 
         address account = msg.sender;
-        uint256 tokenId = ++_accounts[account].w3stCount;
+        uint256 tokenId = _accounts[account].w3stCount;
 
         // deploy the contract for the first time
-        if (tokenId == 1) {
+        if (tokenId == 0) {
             address w3st = Clones.clone(W3ST_IMPL);
             IW3st(w3st).initialize(account);
             _accounts[account].w3st = w3st;
@@ -353,6 +359,8 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                 initData
             );
         }
+
+        ++_accounts[account].w3stCount;
         emit IssueW3st(
             account,
             tokenId,

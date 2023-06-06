@@ -129,16 +129,14 @@ library LibDeploy {
         Vm vm,
         address _dc,
         address protocolOwner,
-        address treasuryReceiver
+        address treasuryReceiver,
+        bool writeFile
     ) internal returns (ContractAddresses memory addrs) {
         Create2Deployer dc = Create2Deployer(_dc);
 
         // 1. deploy soul
         addrs.soul = dc.deploy(abi.encodePacked(type(Soul).creationCode), SALT);
-
         Soul(addrs.soul).initialize("CyberSoul", "SOUL");
-
-        _write(vm, "Soul", addrs.soul);
 
         // 2. deploy mw manager
         addrs.manager = dc.deploy(
@@ -149,14 +147,11 @@ library LibDeploy {
             SALT
         );
 
-        _write(vm, "MiddlewareManager", addrs.manager);
-
         // 3. pre-compute ess,content,w3st addresses
         addrs.deployer = dc.deploy(
             abi.encodePacked(type(Deployer).creationCode),
             SALT
         );
-        _write(vm, "Deployer", addrs.deployer);
 
         address calculatedEssImpl = _computeAddress(
             abi.encodePacked(type(Essence).creationCode),
@@ -190,7 +185,6 @@ library LibDeploy {
             ),
             SALT
         );
-        _write(vm, "CyberEngine", addrs.manager);
 
         // 5. deploy ess,content and w3st
         addrs.deployedEssImpl = IDeployer(addrs.deployer).deployEssence(
@@ -198,7 +192,6 @@ library LibDeploy {
             addrs.engine
         );
         require(addrs.deployedEssImpl == calculatedEssImpl, "WRONG_ESS_ADDR");
-        _write(vm, "Essence", addrs.deployedEssImpl);
 
         addrs.deployedContentImpl = IDeployer(addrs.deployer).deployContent(
             SALT,
@@ -208,7 +201,6 @@ library LibDeploy {
             addrs.deployedContentImpl == calculatedContentImpl,
             "WRONG_CONTENT_ADDR"
         );
-        _write(vm, "Content", addrs.deployedContentImpl);
 
         addrs.deployedW3stImpl = IDeployer(addrs.deployer).deployW3st(
             SALT,
@@ -218,7 +210,6 @@ library LibDeploy {
             addrs.deployedW3stImpl == calculatedW3stImpl,
             "WRONG_W3ST_ADDR"
         );
-        _write(vm, "W3ST", addrs.deployedW3stImpl);
 
         // 6. deploy treasury
         addrs.cyberTreasury = dc.deploy(
@@ -228,6 +219,32 @@ library LibDeploy {
             ),
             SALT
         );
-        _write(vm, "Treasury", addrs.cyberTreasury);
+
+        if (writeFile) {
+            _write(vm, "Soul", addrs.soul);
+            _write(vm, "MiddlewareManager", addrs.manager);
+            _write(vm, "Deployer", addrs.deployer);
+            _write(vm, "CyberEngine", addrs.manager);
+            _write(vm, "Essence", addrs.deployedEssImpl);
+            _write(vm, "Content", addrs.deployedContentImpl);
+            _write(vm, "W3ST", addrs.deployedW3stImpl);
+            _write(vm, "Treasury", addrs.cyberTreasury);
+        }
+    }
+
+    function deployInTest(
+        Vm vm,
+        address protocolOwner,
+        address treasuryReceiver
+    ) internal returns (ContractAddresses memory addrs) {
+        Create2Deployer dc = new Create2Deployer();
+        return
+            deployGraph(
+                vm,
+                address(dc),
+                protocolOwner,
+                treasuryReceiver,
+                false
+            );
     }
 }

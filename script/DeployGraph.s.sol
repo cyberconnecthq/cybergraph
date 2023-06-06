@@ -16,7 +16,8 @@ contract DeployGraph is Script, DeploySetting {
                 vm,
                 deployParams.deployerContract,
                 deployParams.protocolOwner,
-                deployParams.treasuryReceiver
+                deployParams.treasuryReceiver,
+                true
             );
         }
         vm.stopBroadcast();

@@ -37,6 +37,11 @@ contract Soul is CyberNFT721 {
         revert("TRANSFER_NOT_ALLOWED");
     }
 
+    // todo allow anyone to mint for now, change ACL
+    function mint(address to) public returns (uint256) {
+        return super._mint(to);
+    }
+
     /*//////////////////////////////////////////////////////////////
                             PUBLIC VIEW
     //////////////////////////////////////////////////////////////*/
@@ -55,13 +60,5 @@ contract Soul is CyberNFT721 {
 
         // TODO: tokenURI
         return "";
-    }
-
-    /*//////////////////////////////////////////////////////////////
-                              INTERNAL
-    //////////////////////////////////////////////////////////////*/
-
-    function _mint(address to) internal override returns (uint256) {
-        return super._mint(to);
     }
 }
