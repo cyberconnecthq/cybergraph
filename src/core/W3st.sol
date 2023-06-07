@@ -72,8 +72,6 @@ contract W3st is CyberNFT1155, IW3st {
             revert("TRANSFER_NOT_ALLOWED");
         }
 
-        // todo do we need to check here?
-        require(balanceOf[from][id] >= amount, "INSUFFICIENT_BALANCE");
         super.safeTransferFrom(from, to, id, amount, data);
     }
 

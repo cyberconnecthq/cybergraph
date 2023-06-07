@@ -12,7 +12,7 @@ import { LibString } from "../libraries/LibString.sol";
 /**
  * @title Content NFT
  * @author CyberConnect
- * @notice This contract is used to create an Essence NFT.
+ * @notice This contract is used to create an Content NFT.
  */
 contract Content is CyberNFT1155, IContent {
     /*//////////////////////////////////////////////////////////////
@@ -74,8 +74,6 @@ contract Content is CyberNFT1155, IContent {
             revert("TRANSFER_NOT_ALLOWED");
         }
 
-        // todo do we need to check here?
-        require(balanceOf[from][id] >= amount, "INSUFFICIENT_BALANCE");
         super.safeTransferFrom(from, to, id, amount, data);
     }
 
