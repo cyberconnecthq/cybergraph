@@ -154,7 +154,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         vm.prank(alice);
         vm.expectRevert("INCORRECT_COLLECT_AMOUNT");
-        uint256 mintedId = CyberEngine(addrs.engine).collect(
+        CyberEngine(addrs.engine).collect(
             DataTypes.CollectParams(bob, essId, 2, DataTypes.Category.Essence),
             new bytes(0)
         );
@@ -206,7 +206,6 @@ contract IntegrationCollectTest is TestIntegrationBase {
     }
 
     function testComment() public {
-        uint256 tokenId = 0;
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).publishContent(
@@ -252,7 +251,6 @@ contract IntegrationCollectTest is TestIntegrationBase {
     }
 
     function testCollectComment() public {
-        uint256 tokenId = 0;
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).publishContent(
@@ -294,7 +292,6 @@ contract IntegrationCollectTest is TestIntegrationBase {
     }
 
     function testShare() public {
-        uint256 tokenId = 0;
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).publishContent(
@@ -328,7 +325,6 @@ contract IntegrationCollectTest is TestIntegrationBase {
     }
 
     function testCollectShareShare() public {
-        uint256 tokenId = 0;
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).publishContent(

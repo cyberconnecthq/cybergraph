@@ -27,13 +27,9 @@ contract Soul is CyberNFT721 {
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @notice Disallows the transfer of the essence nft.
+     * @notice Disallows the transfer of the nft.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 id
-    ) public override {
+    function transferFrom(address, address, uint256) public pure override {
         revert("TRANSFER_NOT_ALLOWED");
     }
 
