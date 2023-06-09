@@ -95,9 +95,6 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         bytes calldata data
     ) external override nonReentrant returns (uint256 tokenId) {
         address collector = msg.sender;
-
-        // todo check account exist
-        // todo msg.send & collector?
         _checkRegistered(params.account, params.id, params.category);
 
         (address account, uint256 id) = _getSrcIfShared(
@@ -120,7 +117,6 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                 params.category,
                 id,
                 collector,
-                msg.sender,
                 params.account,
                 data
             );
