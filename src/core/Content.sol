@@ -23,8 +23,6 @@ contract Content is CyberNFT1155, IContent {
 
     address internal _account;
 
-    bool private _initialized;
-
     /*//////////////////////////////////////////////////////////////
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
@@ -34,7 +32,7 @@ contract Content is CyberNFT1155, IContent {
         require(engine != address(0), "ZERO_ADDRESS");
 
         ENGINE = engine;
-        _initialized = true;
+        _disableInitializers();
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -42,9 +40,7 @@ contract Content is CyberNFT1155, IContent {
     //////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc IContent
-    function initialize(address account) external override {
-        require(_initialized == false, "ALREADY_INITIALIZED");
-        _initialized = true;
+    function initialize(address account) external override initializer {
         _account = account;
     }
 

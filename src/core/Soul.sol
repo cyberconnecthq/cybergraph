@@ -2,24 +2,68 @@
 
 pragma solidity 0.8.14;
 
+import { Owned } from "../dependencies/solmate/Owned.sol";
+
+import { ISoul } from "../interfaces/ISoul.sol";
+
 import { CyberNFT721 } from "../base/CyberNFT721.sol";
 
-contract Soul is CyberNFT721 {
+contract Soul is Owned, CyberNFT721, ISoul {
     /*//////////////////////////////////////////////////////////////
                                 STATES
     //////////////////////////////////////////////////////////////*/
 
-    bool private _initialized;
+    mapping(address => bool) internal _orgs;
+
+    /*//////////////////////////////////////////////////////////////
+                                 CONSTRUCTOR
+    //////////////////////////////////////////////////////////////*/
+
+    constructor() {
+        _disableInitializers();
+    }
 
     /*//////////////////////////////////////////////////////////////
                                  EXTERNAL
     //////////////////////////////////////////////////////////////*/
 
-    function initialize(string calldata name, string calldata symbol) external {
-        require(_initialized == false, "ALREADY_INITIALIZED");
-        _initialized = true;
-
+    function initialize(
+        address owner,
+        string calldata name,
+        string calldata symbol
+    ) external initializer {
+        Owned.__Owned_Init(owner);
         super._initialize(name, symbol);
+    }
+
+    /// @inheritdoc ISoul
+    function createSoul(
+        address to,
+        bool isOrg
+    ) external override onlyOwner returns (uint256) {
+        if (isOrg) {
+            _orgs[to] = true;
+        }
+        uint256 tokenId = super._mint(to);
+        emit CreateSoul(to, isOrg, tokenId);
+
+        return tokenId;
+    }
+
+    /// @inheritdoc ISoul
+    function setOrg(address account, bool isOrg) external override onlyOwner {
+        require(balanceOf(account) > 0, "NOT_SOUL_OWNER");
+        _orgs[account] = isOrg;
+
+        emit SetOrg(account, isOrg);
+    }
+
+    /// @inheritdoc ISoul
+    function isOrgAccount(
+        address account
+    ) external view override returns (bool) {
+        require(balanceOf(account) > 0, "NOT_SOUL_OWNER");
+        return _orgs[account];
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -27,7 +71,7 @@ contract Soul is CyberNFT721 {
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @notice Disallows the transfer of the essence nft.
+     * @notice Disallows the transfer of the soul.
      */
     function transferFrom(
         address from,
@@ -35,11 +79,6 @@ contract Soul is CyberNFT721 {
         uint256 id
     ) public override {
         revert("TRANSFER_NOT_ALLOWED");
-    }
-
-    // todo allow anyone to mint for now, change ACL
-    function mint(address to) public returns (uint256) {
-        return super._mint(to);
     }
 
     /*//////////////////////////////////////////////////////////////

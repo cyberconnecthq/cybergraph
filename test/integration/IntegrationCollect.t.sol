@@ -26,9 +26,9 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
     function setUp() public {
         _setUp();
-        Soul(addrs.soul).mint(bob);
-        Soul(addrs.soul).mint(alice);
-        Soul(addrs.soul).mint(charles);
+        Soul(addrs.soul).createSoul(bob, true);
+        Soul(addrs.soul).createSoul(alice, false);
+        Soul(addrs.soul).createSoul(charles, false);
     }
 
     function testRegisterEssence() public {
@@ -105,6 +105,16 @@ contract IntegrationCollectTest is TestIntegrationBase {
         assertEq(
             CyberEngine(addrs.engine).getW3stTransferability(bob, tokenId),
             true
+        );
+    }
+
+    function testCannotIssueW3stNonOrg() public {
+        vm.startPrank(alice);
+
+        vm.expectRevert("ONLY_ORG_ACCOUNT");
+        CyberEngine(addrs.engine).issueW3st(
+            DataTypes.IssueW3stParams(BOB_ISSUED_1_URL, address(0), true),
+            new bytes(0)
         );
     }
 

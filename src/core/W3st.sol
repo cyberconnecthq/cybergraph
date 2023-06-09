@@ -21,7 +21,6 @@ contract W3st is CyberNFT1155, IW3st {
 
     address public immutable ENGINE;
     address internal _account;
-    bool private _initialized;
 
     /*//////////////////////////////////////////////////////////////
                                  CONSTRUCTOR
@@ -32,7 +31,7 @@ contract W3st is CyberNFT1155, IW3st {
         require(engine != address(0), "ZERO_ADDRESS");
 
         ENGINE = engine;
-        _initialized = true;
+        _disableInitializers();
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -40,9 +39,7 @@ contract W3st is CyberNFT1155, IW3st {
     //////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc IW3st
-    function initialize(address account) external override {
-        require(_initialized == false, "ALREADY_INITIALIZED");
-        _initialized = true;
+    function initialize(address account) external override initializer {
         _account = account;
     }
 

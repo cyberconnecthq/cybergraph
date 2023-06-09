@@ -5,6 +5,7 @@ pragma solidity 0.8.14;
 import "forge-std/Vm.sol";
 import { IEntryPoint } from "account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import { IDeployer } from "../../src/interfaces/IDeployer.sol";
+import { Clones } from "openzeppelin-contracts/contracts/proxy/Clones.sol";
 
 import { CyberAccountFactory } from "../../src/factory/CyberAccountFactory.sol";
 import { Soul } from "../../src/core/Soul.sol";
@@ -130,13 +131,18 @@ library LibDeploy {
         address _dc,
         address protocolOwner,
         address treasuryReceiver,
+        address soulManager,
         bool writeFile
     ) internal returns (ContractAddresses memory addrs) {
         Create2Deployer dc = Create2Deployer(_dc);
 
         // 1. deploy soul
-        addrs.soul = dc.deploy(abi.encodePacked(type(Soul).creationCode), SALT);
-        Soul(addrs.soul).initialize("CyberSoul", "SOUL");
+        address soulImpl = dc.deploy(
+            abi.encodePacked(type(Soul).creationCode),
+            SALT
+        );
+        addrs.soul = Clones.clone(soulImpl);
+        Soul(addrs.soul).initialize(soulManager, "CyberSoul", "SOUL");
 
         // 2. deploy mw manager
         addrs.manager = dc.deploy(
@@ -244,6 +250,7 @@ library LibDeploy {
                 address(dc),
                 protocolOwner,
                 treasuryReceiver,
+                address(this),
                 false
             );
     }

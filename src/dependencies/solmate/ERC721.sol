@@ -2,11 +2,13 @@
 
 pragma solidity >=0.8.0;
 
+import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Initializable.sol";
+
 /// @notice Adapted from Solmate's ERC721.sol with initializer replacing the constructor.
 
 /// @notice Modern, minimalist, and gas efficient ERC-721 implementation.
 /// @author Solmate (https://github.com/Rari-Capital/solmate/blob/main/src/tokens/ERC721.sol)
-abstract contract ERC721 {
+abstract contract ERC721 is Initializable {
     /*//////////////////////////////////////////////////////////////
                                  EVENTS
     //////////////////////////////////////////////////////////////*/

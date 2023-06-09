@@ -3,6 +3,7 @@
 pragma solidity 0.8.14;
 
 import { ERC721 } from "../dependencies/solmate/ERC721.sol";
+import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Initializable.sol";
 
 import { ICyberNFT721 } from "../interfaces/ICyberNFT721.sol";
 
@@ -17,6 +18,14 @@ abstract contract CyberNFT721 is ERC721, ICyberNFT721 {
     //////////////////////////////////////////////////////////////*/
     uint256 internal _currentIndex;
     uint256 internal _totalSupply;
+
+    /*//////////////////////////////////////////////////////////////
+                                 CONSTRUCTOR
+    //////////////////////////////////////////////////////////////*/
+
+    constructor() {
+        _disableInitializers();
+    }
 
     /*//////////////////////////////////////////////////////////////
                          EXTERNAL VIEW
@@ -51,7 +60,7 @@ abstract contract CyberNFT721 is ERC721, ICyberNFT721 {
     function _initialize(
         string calldata name,
         string calldata symbol
-    ) internal {
+    ) internal onlyInitializing {
         ERC721.__ERC721_Init(name, symbol);
     }
 

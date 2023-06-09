@@ -12,6 +12,7 @@ import { IMiddleware } from "../interfaces/IMiddleware.sol";
 import { IEssence } from "../interfaces/IEssence.sol";
 import { IContent } from "../interfaces/IContent.sol";
 import { IW3st } from "../interfaces/IW3st.sol";
+import { ISoul } from "../interfaces/ISoul.sol";
 
 import { DataTypes } from "../libraries/DataTypes.sol";
 
@@ -49,6 +50,14 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
      */
     modifier onlySoulOwner() {
         require(IERC721(SOUL).balanceOf(msg.sender) > 0, "ONLY_SOUL_OWNER");
+        _;
+    }
+
+    /**
+     * @notice Checks the sender is an org account.
+     */
+    modifier onlyOrgAccount() {
+        require(ISoul(SOUL).isOrgAccount(msg.sender), "ONLY_ORG_ACCOUNT");
         _;
     }
 
@@ -329,8 +338,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     function issueW3st(
         DataTypes.IssueW3stParams calldata params,
         bytes calldata initData
-    ) external override onlySoulOwner returns (uint256) {
-        // todo more ACL
+    ) external override onlyOrgAccount returns (uint256) {
         require(
             params.mw == address(0) ||
                 IMiddlewareManager(MANAGER).isMwAllowed(params.mw),

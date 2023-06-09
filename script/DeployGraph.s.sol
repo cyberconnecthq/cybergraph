@@ -17,6 +17,7 @@ contract DeployGraph is Script, DeploySetting {
                 deployParams.deployerContract,
                 deployParams.protocolOwner,
                 deployParams.treasuryReceiver,
+                deployParams.protocolOwner,
                 true
             );
         }
