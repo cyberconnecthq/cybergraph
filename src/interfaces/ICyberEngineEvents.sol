@@ -161,4 +161,11 @@ interface ICyberEngineEvents {
         string tokenURI,
         address mw
     );
+
+    event SetOperatorApproval(
+        address indexed account,
+        address indexed operator,
+        bool prevApproved,
+        bool approved
+    );
 }
