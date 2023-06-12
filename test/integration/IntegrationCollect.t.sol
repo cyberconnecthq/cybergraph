@@ -165,6 +165,19 @@ contract IntegrationCollectTest is TestIntegrationBase {
         );
         assertEq(mintedId, 0);
         assertEq(ERC721(BOB_ESS_0_NFT).ownerOf(mintedId), alice);
+        vm.prank(alice);
+        ERC721(BOB_ESS_0_NFT).transferFrom(alice, bob, mintedId);
+        assertEq(ERC721(BOB_ESS_0_NFT).ownerOf(mintedId), bob);
+        vm.prank(bob);
+        ERC721(BOB_ESS_0_NFT).safeTransferFrom(bob, alice, mintedId);
+        assertEq(ERC721(BOB_ESS_0_NFT).ownerOf(mintedId), alice);
+        vm.prank(alice);
+        ERC721(BOB_ESS_0_NFT).safeTransferFrom(alice, bob, mintedId, "");
+        assertEq(ERC721(BOB_ESS_0_NFT).ownerOf(mintedId), bob);
+        assertEq(
+            ERC721(BOB_ESS_0_NFT).tokenURI(mintedId),
+            string(abi.encodePacked(BOB_ISSUED_1_URL, "0"))
+        );
     }
 
     function testCannotCollectMoreThanOneEssence() public {
@@ -219,6 +232,31 @@ contract IntegrationCollectTest is TestIntegrationBase {
         );
         assertEq(mintedId, 0);
         assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(alice, mintedId), 3);
+        uint256[] memory ids = new uint256[](1);
+        ids[0] = mintedId;
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+        vm.prank(alice);
+        ERC1155(BOB_CONTENT_NFT).safeBatchTransferFrom(
+            alice,
+            bob,
+            ids,
+            amounts,
+            new bytes(0)
+        );
+        assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(alice, mintedId), 2);
+        assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(bob, mintedId), 1);
+        vm.prank(alice);
+        ERC1155(BOB_CONTENT_NFT).safeTransferFrom(
+            alice,
+            bob,
+            mintedId,
+            2,
+            new bytes(0)
+        );
+        assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(alice, mintedId), 0);
+        assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(bob, mintedId), 3);
+        assertEq(ERC1155(BOB_CONTENT_NFT).uri(mintedId), BOB_ISSUED_1_URL);
     }
 
     function testCollectW3st() public {
@@ -445,7 +483,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
                 BOB_ISSUED_1_SYMBOL,
                 BOB_ISSUED_1_URL,
                 mockMiddleware,
-                true
+                false
             ),
             mockData
         );
@@ -470,6 +508,16 @@ contract IntegrationCollectTest is TestIntegrationBase {
             ),
             mockData
         );
+
+        vm.prank(alice);
+        vm.expectRevert("TRANSFER_NOT_ALLOWED");
+        ERC721(BOB_ESS_0_NFT).transferFrom(alice, bob, mintedId);
+        vm.prank(alice);
+        vm.expectRevert("TRANSFER_NOT_ALLOWED");
+        ERC721(BOB_ESS_0_NFT).safeTransferFrom(alice, bob, mintedId);
+        vm.prank(alice);
+        vm.expectRevert("TRANSFER_NOT_ALLOWED");
+        ERC721(BOB_ESS_0_NFT).safeTransferFrom(alice, bob, mintedId, "");
     }
 
     function testCollectContentWithMw() public {
@@ -481,7 +529,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
                 bob,
                 BOB_ISSUED_1_URL,
                 mockMiddleware,
-                true
+                false
             ),
             mockData
         );
@@ -507,6 +555,28 @@ contract IntegrationCollectTest is TestIntegrationBase {
                 tokenId
             ),
             mockData
+        );
+        uint256[] memory ids = new uint256[](1);
+        ids[0] = tokenId;
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+        vm.prank(alice);
+        vm.expectRevert("TRANSFER_NOT_ALLOWED");
+        ERC1155(BOB_CONTENT_NFT).safeBatchTransferFrom(
+            alice,
+            bob,
+            ids,
+            amounts,
+            new bytes(0)
+        );
+        vm.prank(alice);
+        vm.expectRevert("TRANSFER_NOT_ALLOWED");
+        ERC1155(BOB_CONTENT_NFT).safeTransferFrom(
+            alice,
+            bob,
+            tokenId,
+            1,
+            new bytes(0)
         );
     }
 
@@ -765,6 +835,14 @@ contract IntegrationCollectTest is TestIntegrationBase {
         assertEq(
             CyberEngine(addrs.engine).getOperatorApproval(bob, alice),
             true
+        );
+    }
+
+    function testMiddlewareManagerDisallowMw() public {
+        vm.prank(protocolOwner);
+        MiddlewareManager(addrs.manager).allowMw(mockMiddleware, false);
+        assertFalse(
+            MiddlewareManager(addrs.manager).isMwAllowed(mockMiddleware)
         );
     }
 }
