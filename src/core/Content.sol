@@ -55,6 +55,14 @@ contract Content is CyberNFT1155, IContent {
         return super._mint(to, id, amount, data);
     }
 
+    // @inheritdoc IContent
+    function isTransferable(
+        uint256 tokenId
+    ) external view override returns (bool) {
+        return
+            ICyberEngine(ENGINE).getContentTransferability(_account, tokenId);
+    }
+
     /*//////////////////////////////////////////////////////////////
                                  PUBLIC
     //////////////////////////////////////////////////////////////*/
@@ -69,9 +77,6 @@ contract Content is CyberNFT1155, IContent {
         if (!ICyberEngine(ENGINE).getContentTransferability(_account, id)) {
             revert("TRANSFER_NOT_ALLOWED");
         }
-
-        // todo do we need to check here?
-        require(balanceOf[from][id] >= amount, "INSUFFICIENT_BALANCE");
         super.safeTransferFrom(from, to, id, amount, data);
     }
 

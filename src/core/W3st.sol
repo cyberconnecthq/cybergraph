@@ -54,6 +54,13 @@ contract W3st is CyberNFT1155, IW3st {
         return super._mint(to, id, amount, data);
     }
 
+    // @inheritdoc IW3st
+    function isTransferable(
+        uint256 tokenId
+    ) external view override returns (bool) {
+        return ICyberEngine(ENGINE).getW3stTransferability(_account, tokenId);
+    }
+
     /*//////////////////////////////////////////////////////////////
                                  PUBLIC
     //////////////////////////////////////////////////////////////*/
@@ -65,12 +72,9 @@ contract W3st is CyberNFT1155, IW3st {
         uint256 amount,
         bytes calldata data
     ) public virtual override {
-        if (!ICyberEngine(ENGINE).getContentTransferability(_account, id)) {
+        if (!ICyberEngine(ENGINE).getW3stTransferability(_account, id)) {
             revert("TRANSFER_NOT_ALLOWED");
         }
-
-        // todo do we need to check here?
-        require(balanceOf[from][id] >= amount, "INSUFFICIENT_BALANCE");
         super.safeTransferFrom(from, to, id, amount, data);
     }
 
@@ -83,6 +87,6 @@ contract W3st is CyberNFT1155, IW3st {
     function uri(
         uint256 id
     ) public view virtual override returns (string memory) {
-        return ICyberEngine(ENGINE).getContentTokenURI(_account, id);
+        return ICyberEngine(ENGINE).getW3stTokenURI(_account, id);
     }
 }
