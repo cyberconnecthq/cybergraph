@@ -3,9 +3,12 @@ import { ERC721 } from "../../src/dependencies/solmate/ERC721.sol";
 import { ERC1155 } from "solmate/src/tokens/ERC1155.sol";
 
 import { TestIntegrationBase } from "../utils/TestIntegrationBase.sol";
+import { MockMiddleware } from "../utils/MockMiddleware.sol";
+
 import { Soul } from "../../src/core/Soul.sol";
 import { CyberEngine } from "../../src/core/CyberEngine.sol";
 import { DataTypes } from "../../src/libraries/DataTypes.sol";
+import { MiddlewareManager } from "../../src/core/MiddlewareManager.sol";
 
 import "forge-std/console.sol";
 
@@ -15,6 +18,8 @@ contract IntegrationCollectTest is TestIntegrationBase {
     address bob = address(0xB0B);
     address alice = address(0xA11CE);
     address charles = address(0xC);
+
+    address mockMiddleware;
 
     string constant BOB_ISSUED_1_NAME = "Malzeno Fellwing";
     string constant BOB_ISSUED_1_SYMBOL = "MF";
@@ -26,6 +31,9 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
     function setUp() public {
         _setUp();
+        mockMiddleware = address(new MockMiddleware());
+        vm.prank(protocolOwner);
+        MiddlewareManager(addrs.manager).allowMw(address(mockMiddleware), true);
         Soul(addrs.soul).mint(bob);
         Soul(addrs.soul).mint(alice);
         Soul(addrs.soul).mint(charles);
@@ -373,5 +381,198 @@ contract IntegrationCollectTest is TestIntegrationBase {
             new bytes(0)
         );
         assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(alice, mintedIdCharles), 5);
+    }
+
+    function testCollectEssenceWithMw() public {
+        bytes memory mockData = abi.encode("tmp");
+        uint256 essId = 0;
+        vm.prank(bob);
+
+        CyberEngine(addrs.engine).registerEssence(
+            DataTypes.RegisterEssenceParams(
+                BOB_ISSUED_1_NAME,
+                BOB_ISSUED_1_SYMBOL,
+                BOB_ISSUED_1_URL,
+                mockMiddleware,
+                true
+            ),
+            mockData
+        );
+
+        address BOB_ESS_0_NFT = CyberEngine(addrs.engine).getEssenceAddr(
+            bob,
+            essId
+        );
+
+        vm.prank(alice);
+        uint256 mintedId = CyberEngine(addrs.engine).collect(
+            DataTypes.CollectParams(bob, essId, 1, DataTypes.Category.Essence),
+            new bytes(0)
+        );
+        assertEq(mintedId, 0);
+        assertEq(ERC721(BOB_ESS_0_NFT).ownerOf(mintedId), alice);
+        assertEq(
+            MockMiddleware(mockMiddleware).getMwData(
+                bob,
+                DataTypes.Category.Essence,
+                essId
+            ),
+            mockData
+        );
+    }
+
+    function testCollectContentWithMw() public {
+        bytes memory mockData = abi.encode("tmp");
+        vm.prank(bob);
+
+        uint256 tokenId = CyberEngine(addrs.engine).publishContent(
+            DataTypes.PublishContentParams(
+                BOB_ISSUED_1_URL,
+                mockMiddleware,
+                true
+            ),
+            mockData
+        );
+
+        address BOB_CONTENT_NFT = CyberEngine(addrs.engine).getContentAddr(bob);
+
+        vm.prank(alice);
+        uint256 mintedId = CyberEngine(addrs.engine).collect(
+            DataTypes.CollectParams(
+                bob,
+                tokenId,
+                1,
+                DataTypes.Category.Content
+            ),
+            new bytes(0)
+        );
+        assertEq(mintedId, 0);
+        assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(alice, tokenId), 1);
+        assertEq(
+            MockMiddleware(mockMiddleware).getMwData(
+                bob,
+                DataTypes.Category.Content,
+                tokenId
+            ),
+            mockData
+        );
+    }
+
+    function testCollectCommentWithMw() public {
+        bytes memory mockData = abi.encode("tmp");
+        vm.startPrank(bob);
+
+        CyberEngine(addrs.engine).publishContent(
+            DataTypes.PublishContentParams(
+                BOB_ISSUED_1_URL,
+                mockMiddleware,
+                true
+            ),
+            mockData
+        );
+
+        uint256 idCommented = 0;
+
+        // alice comment on bob's content
+        vm.prank(alice);
+        uint256 tokenId = CyberEngine(addrs.engine).comment(
+            DataTypes.CommentParams(
+                ALICE_ISSUED_1_URL,
+                address(0),
+                true,
+                bob,
+                idCommented
+            ),
+            new bytes(0)
+        );
+
+        // collect on alice's comment will lead to collect on the comment itself (instead of origial content).
+        address ALICE_CONTENT_NFT = CyberEngine(addrs.engine).getContentAddr(
+            alice
+        );
+
+        vm.prank(charles);
+        CyberEngine(addrs.engine).collect(
+            DataTypes.CollectParams(
+                alice,
+                tokenId,
+                1000,
+                DataTypes.Category.Content
+            ),
+            new bytes(0)
+        );
+        assertEq(ERC1155(ALICE_CONTENT_NFT).balanceOf(charles, tokenId), 1000);
+        assertEq(
+            MockMiddleware(mockMiddleware).getMwData(
+                bob,
+                DataTypes.Category.Content,
+                tokenId
+            ),
+            mockData
+        );
+    }
+
+    function testCollectW3stWithMw() public {
+        bytes memory mockData = abi.encode("tmp");
+        vm.startPrank(bob);
+
+        uint256 tokenId = CyberEngine(addrs.engine).issueW3st(
+            DataTypes.IssueW3stParams(BOB_ISSUED_1_URL, mockMiddleware, true),
+            mockData
+        );
+
+        address BOB_W3ST_NFT = CyberEngine(addrs.engine).getW3stAddr(bob);
+
+        vm.prank(alice);
+        uint256 mintedId = CyberEngine(addrs.engine).collect(
+            DataTypes.CollectParams(bob, tokenId, 3, DataTypes.Category.W3ST),
+            new bytes(0)
+        );
+        assertEq(mintedId, 0);
+        assertEq(ERC1155(BOB_W3ST_NFT).balanceOf(alice, mintedId), 3);
+        assertEq(
+            MockMiddleware(mockMiddleware).getMwData(
+                bob,
+                DataTypes.Category.W3ST,
+                tokenId
+            ),
+            mockData
+        );
+    }
+
+    function testSetEssenceData() public {
+        bytes memory mockData = abi.encode("tmp");
+        string memory newTokenUri = "newUri";
+        vm.prank(bob);
+        uint256 essId = CyberEngine(addrs.engine).registerEssence(
+            DataTypes.RegisterEssenceParams(
+                BOB_ISSUED_1_NAME,
+                BOB_ISSUED_1_SYMBOL,
+                BOB_ISSUED_1_URL,
+                address(0),
+                true
+            ),
+            new bytes(0)
+        );
+
+        vm.prank(bob);
+        CyberEngine(addrs.engine).setEssenceData(
+            essId,
+            newTokenUri,
+            mockMiddleware,
+            mockData
+        );
+        assertEq(
+            MockMiddleware(mockMiddleware).getMwData(
+                bob,
+                DataTypes.Category.Essence,
+                essId
+            ),
+            mockData
+        );
+        assertEq(
+            CyberEngine(addrs.engine).getEssenceTokenURI(bob, essId),
+            newTokenUri
+        );
     }
 }
