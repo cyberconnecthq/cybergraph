@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.14;
 
-import { ERC1155 } from "solmate/src/tokens/ERC1155.sol";
+import { ERC1155 } from "../dependencies/solmate/ERC1155.sol";
 
 import { ICyberNFT1155 } from "../interfaces/ICyberNFT1155.sol";
 
@@ -17,6 +17,14 @@ abstract contract CyberNFT1155 is ERC1155, ICyberNFT1155 {
     //////////////////////////////////////////////////////////////*/
     mapping(uint256 => uint256) internal _totalSupply;
     uint256 internal _totalSupplyAll;
+
+    /*//////////////////////////////////////////////////////////////
+                                 CONSTRUCTOR
+    //////////////////////////////////////////////////////////////*/
+
+    constructor() {
+        _disableInitializers();
+    }
 
     /*//////////////////////////////////////////////////////////////
                          EXTERNAL VIEW

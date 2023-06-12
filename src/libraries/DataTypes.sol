@@ -23,6 +23,7 @@ library DataTypes {
     }
 
     struct RegisterEssenceParams {
+        address account;
         string name;
         string symbol;
         string tokenURI;
@@ -31,17 +32,20 @@ library DataTypes {
     }
 
     struct PublishContentParams {
+        address account;
         string tokenURI;
         address mw;
         bool transferable;
     }
 
     struct ShareParams {
+        address account;
         address accountShared;
         uint256 idShared;
     }
 
     struct CommentParams {
+        address account;
         string tokenURI;
         address mw;
         bool transferable;
@@ -50,6 +54,7 @@ library DataTypes {
     }
 
     struct IssueW3stParams {
+        address account;
         string tokenURI;
         address mw;
         bool transferable;

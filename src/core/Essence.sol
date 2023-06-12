@@ -25,8 +25,6 @@ contract Essence is CyberNFT721, IEssence {
     uint256 internal _essenceId;
     bool internal _transferable;
 
-    bool private _initialized;
-
     /*//////////////////////////////////////////////////////////////
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
@@ -36,7 +34,7 @@ contract Essence is CyberNFT721, IEssence {
         require(engine != address(0), "ZERO_ADDRESS");
 
         ENGINE = engine;
-        _initialized = true;
+        _disableInitializers();
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -56,10 +54,7 @@ contract Essence is CyberNFT721, IEssence {
         string calldata name,
         string calldata symbol,
         bool transferable
-    ) external override {
-        require(_initialized == false, "ALREADY_INITIALIZED");
-        _initialized = true;
-
+    ) external override initializer {
         _account = account;
         _essenceId = essenceId;
         _transferable = transferable;

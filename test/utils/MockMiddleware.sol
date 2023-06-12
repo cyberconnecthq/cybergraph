@@ -23,7 +23,6 @@ contract MockMiddleware is IMiddleware {
         DataTypes.Category category,
         uint256 id,
         address collector,
-        address msgSender,
         address referrerAccount,
         bytes calldata data
     ) external pure override {

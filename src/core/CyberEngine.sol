@@ -12,6 +12,7 @@ import { IMiddleware } from "../interfaces/IMiddleware.sol";
 import { IEssence } from "../interfaces/IEssence.sol";
 import { IContent } from "../interfaces/IContent.sol";
 import { IW3st } from "../interfaces/IW3st.sol";
+import { ISoul } from "../interfaces/ISoul.sol";
 
 import { DataTypes } from "../libraries/DataTypes.sol";
 
@@ -38,16 +39,41 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     mapping(address => mapping(uint256 => DataTypes.W3stStruct))
         internal _w3stByIdByAccount;
     mapping(address => DataTypes.AccountStruct) internal _accounts;
+    mapping(address => mapping(address => bool)) internal _operatorApproval;
 
     /*//////////////////////////////////////////////////////////////
                               MODIFIERS
     //////////////////////////////////////////////////////////////*/
 
     /**
-     * @notice Checks the sender hold a soul.
+     * @notice Checks the account is a soul owner.
      */
     modifier onlySoulOwner() {
         require(IERC721(SOUL).balanceOf(msg.sender) > 0, "ONLY_SOUL_OWNER");
+        _;
+    }
+
+    /**
+     * @notice Checks the account is a soul owner or operator.
+     */
+    modifier onlySoulOwnerOrOperator(address account) {
+        require(IERC721(SOUL).balanceOf(account) > 0, "ONLY_SOUL_OWNER");
+        require(
+            msg.sender == account || getOperatorApproval(account, msg.sender),
+            "ONLY_OWNER_OR_OPERATOR"
+        );
+        _;
+    }
+
+    /**
+     * @notice Checks the account is an org owner or operator.
+     */
+    modifier onlyOrgOwnerOrOperator(address account) {
+        require(ISoul(SOUL).isOrgAccount(account), "ONLY_ORG_ACCOUNT");
+        require(
+            msg.sender == account || getOperatorApproval(account, msg.sender),
+            "ONLY_OWNER_OR_OPERATOR"
+        );
         _;
     }
 
@@ -85,9 +111,6 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         bytes calldata data
     ) external override nonReentrant returns (uint256 tokenId) {
         address collector = msg.sender;
-
-        // todo check account exist
-        // todo msg.send & collector?
         _checkRegistered(params.account, params.id, params.category);
 
         (address account, uint256 id) = _getSrcIfShared(
@@ -110,7 +133,6 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                 params.category,
                 id,
                 collector,
-                msg.sender,
                 params.account,
                 data
             );
@@ -138,7 +160,12 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     function registerEssence(
         DataTypes.RegisterEssenceParams calldata params,
         bytes calldata initData
-    ) external override onlySoulOwner returns (uint256) {
+    )
+        external
+        override
+        onlySoulOwnerOrOperator(params.account)
+        returns (uint256)
+    {
         require(
             params.mw == address(0) ||
                 IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
@@ -148,18 +175,18 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         require(bytes(params.name).length != 0, "EMPTY_NAME");
         require(bytes(params.symbol).length != 0, "EMPTY_SYMBOL");
 
-        address account = msg.sender;
-        uint256 id = _accounts[account].essenceCount;
+        uint256 id = _accounts[params.account].essenceCount;
 
-        _essenceByIdByAccount[account][id].name = params.name;
-        _essenceByIdByAccount[account][id].symbol = params.symbol;
-        _essenceByIdByAccount[account][id].tokenURI = params.tokenURI;
-        _essenceByIdByAccount[account][id].transferable = params.transferable;
+        _essenceByIdByAccount[params.account][id].name = params.name;
+        _essenceByIdByAccount[params.account][id].symbol = params.symbol;
+        _essenceByIdByAccount[params.account][id].tokenURI = params.tokenURI;
+        _essenceByIdByAccount[params.account][id].transferable = params
+            .transferable;
 
         if (params.mw != address(0)) {
-            _essenceByIdByAccount[account][id].mw = params.mw;
+            _essenceByIdByAccount[params.account][id].mw = params.mw;
             IMiddleware(params.mw).setMwData(
-                account,
+                params.account,
                 DataTypes.Category.Essence,
                 id,
                 initData
@@ -168,17 +195,17 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
         address essence = Clones.clone(ESSENCE_IMPL);
         IEssence(essence).initialize(
-            account,
+            params.account,
             id,
             params.name,
             params.symbol,
             params.transferable
         );
-        _essenceByIdByAccount[account][id].essence = essence;
-        ++_accounts[account].essenceCount;
+        _essenceByIdByAccount[params.account][id].essence = essence;
+        ++_accounts[params.account].essenceCount;
 
         emit RegisterEssence(
-            account,
+            params.account,
             id,
             params.name,
             params.symbol,
@@ -193,14 +220,19 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     function publishContent(
         DataTypes.PublishContentParams calldata params,
         bytes calldata initData
-    ) external override onlySoulOwner returns (uint256) {
+    )
+        external
+        override
+        onlySoulOwnerOrOperator(params.account)
+        returns (uint256)
+    {
         require(
             params.mw == address(0) ||
                 IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
             "MW_NOT_ALLOWED"
         );
 
-        address account = msg.sender;
+        address account = params.account;
         uint256 tokenId = _accounts[account].contentCount;
 
         // deploy the contract for the first time
@@ -241,14 +273,19 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     /// @inheritdoc ICyberEngine
     function share(
         DataTypes.ShareParams calldata params
-    ) external override onlySoulOwner returns (uint256) {
+    )
+        external
+        override
+        onlySoulOwnerOrOperator(params.account)
+        returns (uint256)
+    {
         _requireContentRegistered(params.accountShared, params.idShared);
 
         (address srcAccount, uint256 srcId) = _getSrcIfShared(
             params.accountShared,
             params.idShared
         );
-        address account = msg.sender;
+        address account = params.account;
         uint256 tokenId = _accounts[account].contentCount;
 
         // deploy the contract for the first time
@@ -273,7 +310,12 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     function comment(
         DataTypes.CommentParams calldata params,
         bytes calldata initData
-    ) external override onlySoulOwner returns (uint256) {
+    )
+        external
+        override
+        onlySoulOwnerOrOperator(params.account)
+        returns (uint256)
+    {
         require(
             params.mw == address(0) ||
                 IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
@@ -282,7 +324,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
         _requireContentRegistered(params.accountCommented, params.idCommented);
 
-        address account = msg.sender;
+        address account = params.account;
         uint256 tokenId = _accounts[account].contentCount;
 
         // deploy the contract for the first time
@@ -328,15 +370,19 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     function issueW3st(
         DataTypes.IssueW3stParams calldata params,
         bytes calldata initData
-    ) external override onlySoulOwner returns (uint256) {
-        // todo more ACL
+    )
+        external
+        override
+        onlyOrgOwnerOrOperator(params.account)
+        returns (uint256)
+    {
         require(
             params.mw == address(0) ||
                 IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
             "MW_NOT_ALLOWED"
         );
 
-        address account = msg.sender;
+        address account = params.account;
         uint256 tokenId = _accounts[account].w3stCount;
 
         // deploy the contract for the first time
@@ -372,13 +418,12 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
     /// @inheritdoc ICyberEngine
     function setEssenceData(
+        address account,
         uint256 essenceId,
         string calldata uri,
         address mw,
         bytes calldata data
-    ) external override {
-        // todo operator model?
-        address account = msg.sender;
+    ) external override onlySoulOwnerOrOperator(account) {
         require(
             mw == address(0) || IMiddlewareManager(MANAGER).isMwAllowed(mw),
             "MW_NOT_ALLOWED"
@@ -399,13 +444,12 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
     /// @inheritdoc ICyberEngine
     function setContentData(
+        address account,
         uint256 tokenId,
         string calldata uri,
         address mw,
         bytes calldata data
-    ) external override {
-        // todo operator model?
-        address account = msg.sender;
+    ) external override onlySoulOwnerOrOperator(account) {
         require(
             mw == address(0) || IMiddlewareManager(MANAGER).isMwAllowed(mw),
             "MW_NOT_ALLOWED"
@@ -432,13 +476,12 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
     /// @inheritdoc ICyberEngine
     function setW3stData(
+        address account,
         uint256 tokenId,
         string calldata uri,
         address mw,
         bytes calldata data
-    ) external override {
-        // todo operator model?
-        address account = msg.sender;
+    ) external override onlySoulOwnerOrOperator(account) {
         require(
             mw == address(0) || IMiddlewareManager(MANAGER).isMwAllowed(mw),
             "MW_NOT_ALLOWED"
@@ -455,6 +498,19 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         }
         _w3stByIdByAccount[account][tokenId].tokenURI = uri;
         emit SetW3stData(account, tokenId, uri, mw);
+    }
+
+    /// @inheritdoc ICyberEngine
+    function setOperatorApproval(
+        address account,
+        address operator,
+        bool approved
+    ) external override onlySoulOwner {
+        require(operator != address(0), "ZERO_ADDRESS");
+        bool prev = _operatorApproval[account][operator];
+        _operatorApproval[account][operator] = approved;
+
+        emit SetOperatorApproval(account, operator, prev, approved);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -597,6 +653,18 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     ) external view override returns (address) {
         _requireW3stRegistered(account, tokenID);
         return _w3stByIdByAccount[account][tokenID].mw;
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                            PUBLIC VIEW
+    //////////////////////////////////////////////////////////////*/
+
+    /// @inheritdoc ICyberEngine
+    function getOperatorApproval(
+        address account,
+        address operator
+    ) public view returns (bool) {
+        return _operatorApproval[account][operator];
     }
 
     /*//////////////////////////////////////////////////////////////

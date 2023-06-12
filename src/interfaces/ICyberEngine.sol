@@ -97,12 +97,14 @@ interface ICyberEngine is ICyberEngineEvents {
     /**
      * @notice Sets essence data.
      *
+     * @param account The account address.
      * @param essenceId The essence ID.
      * @param tokenURI The new token URI.
      * @param mw The new middleware to be set.
      * @param data The data for middleware.
      */
     function setEssenceData(
+        address account,
         uint256 essenceId,
         string calldata tokenURI,
         address mw,
@@ -124,12 +126,14 @@ interface ICyberEngine is ICyberEngineEvents {
     /**
      * @notice Sets content data.
      *
+     * @param account The account address.
      * @param tokenId The content tokenId.
      * @param tokenURI The new token URI.
      * @param mw The new middleware to be set.
      * @param data The data for middleware.
      */
     function setContentData(
+        address account,
         uint256 tokenId,
         string calldata tokenURI,
         address mw,
@@ -139,12 +143,14 @@ interface ICyberEngine is ICyberEngineEvents {
     /**
      * @notice Sets w3st data.
      *
+     * @param account The account address.
      * @param tokenId The w3st tokenId.
      * @param tokenURI The new token URI.
      * @param mw The new middleware to be set.
      * @param data The data for middleware.
      */
     function setW3stData(
+        address account,
         uint256 tokenId,
         string calldata tokenURI,
         address mw,
@@ -193,4 +199,15 @@ interface ICyberEngine is ICyberEngineEvents {
     ) external view returns (address);
 
     function getW3stCount(address account) external view returns (uint256);
+
+    function getOperatorApproval(
+        address account,
+        address operator
+    ) external view returns (bool);
+
+    function setOperatorApproval(
+        address account,
+        address operator,
+        bool approved
+    ) external;
 }

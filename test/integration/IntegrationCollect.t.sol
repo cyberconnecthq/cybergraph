@@ -34,9 +34,9 @@ contract IntegrationCollectTest is TestIntegrationBase {
         mockMiddleware = address(new MockMiddleware());
         vm.prank(protocolOwner);
         MiddlewareManager(addrs.manager).allowMw(address(mockMiddleware), true);
-        Soul(addrs.soul).mint(bob);
-        Soul(addrs.soul).mint(alice);
-        Soul(addrs.soul).mint(charles);
+        Soul(addrs.soul).createSoul(bob, true);
+        Soul(addrs.soul).createSoul(alice, false);
+        Soul(addrs.soul).createSoul(charles, false);
     }
 
     function testRegisterEssence() public {
@@ -48,6 +48,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         CyberEngine(addrs.engine).registerEssence(
             DataTypes.RegisterEssenceParams(
+                bob,
                 BOB_ISSUED_1_NAME,
                 BOB_ISSUED_1_SYMBOL,
                 BOB_ISSUED_1_URL,
@@ -77,7 +78,12 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).publishContent(
-            DataTypes.PublishContentParams(BOB_ISSUED_1_URL, address(0), true),
+            DataTypes.PublishContentParams(
+                bob,
+                BOB_ISSUED_1_URL,
+                address(0),
+                true
+            ),
             new bytes(0)
         );
 
@@ -101,7 +107,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).issueW3st(
-            DataTypes.IssueW3stParams(BOB_ISSUED_1_URL, address(0), true),
+            DataTypes.IssueW3stParams(bob, BOB_ISSUED_1_URL, address(0), true),
             new bytes(0)
         );
 
@@ -116,12 +122,28 @@ contract IntegrationCollectTest is TestIntegrationBase {
         );
     }
 
+    function testCannotIssueW3stNonOrg() public {
+        vm.startPrank(alice);
+
+        vm.expectRevert("ONLY_ORG_ACCOUNT");
+        CyberEngine(addrs.engine).issueW3st(
+            DataTypes.IssueW3stParams(
+                alice,
+                BOB_ISSUED_1_URL,
+                address(0),
+                true
+            ),
+            new bytes(0)
+        );
+    }
+
     function testCollectEssence() public {
         uint256 essId = 0;
         vm.prank(bob);
 
         CyberEngine(addrs.engine).registerEssence(
             DataTypes.RegisterEssenceParams(
+                bob,
                 BOB_ISSUED_1_NAME,
                 BOB_ISSUED_1_SYMBOL,
                 BOB_ISSUED_1_URL,
@@ -151,6 +173,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         CyberEngine(addrs.engine).registerEssence(
             DataTypes.RegisterEssenceParams(
+                bob,
                 BOB_ISSUED_1_NAME,
                 BOB_ISSUED_1_SYMBOL,
                 BOB_ISSUED_1_URL,
@@ -173,7 +196,12 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).publishContent(
-            DataTypes.PublishContentParams(BOB_ISSUED_1_URL, address(0), true),
+            DataTypes.PublishContentParams(
+                bob,
+                BOB_ISSUED_1_URL,
+                address(0),
+                true
+            ),
             new bytes(0)
         );
 
@@ -198,7 +226,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).issueW3st(
-            DataTypes.IssueW3stParams(BOB_ISSUED_1_URL, address(0), true),
+            DataTypes.IssueW3stParams(bob, BOB_ISSUED_1_URL, address(0), true),
             new bytes(0)
         );
 
@@ -217,7 +245,12 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).publishContent(
-            DataTypes.PublishContentParams(BOB_ISSUED_1_URL, address(0), true),
+            DataTypes.PublishContentParams(
+                bob,
+                BOB_ISSUED_1_URL,
+                address(0),
+                true
+            ),
             new bytes(0)
         );
 
@@ -226,6 +259,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.prank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).comment(
             DataTypes.CommentParams(
+                alice,
                 ALICE_ISSUED_1_URL,
                 address(0),
                 true,
@@ -262,7 +296,12 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).publishContent(
-            DataTypes.PublishContentParams(BOB_ISSUED_1_URL, address(0), true),
+            DataTypes.PublishContentParams(
+                bob,
+                BOB_ISSUED_1_URL,
+                address(0),
+                true
+            ),
             new bytes(0)
         );
 
@@ -272,6 +311,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.prank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).comment(
             DataTypes.CommentParams(
+                alice,
                 ALICE_ISSUED_1_URL,
                 address(0),
                 true,
@@ -303,7 +343,12 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).publishContent(
-            DataTypes.PublishContentParams(BOB_ISSUED_1_URL, address(0), true),
+            DataTypes.PublishContentParams(
+                bob,
+                BOB_ISSUED_1_URL,
+                address(0),
+                true
+            ),
             new bytes(0)
         );
 
@@ -311,7 +356,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         vm.prank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).share(
-            DataTypes.ShareParams(bob, idShared)
+            DataTypes.ShareParams(alice, bob, idShared)
         );
 
         assertEq(
@@ -336,7 +381,12 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.startPrank(bob);
 
         CyberEngine(addrs.engine).publishContent(
-            DataTypes.PublishContentParams(BOB_ISSUED_1_URL, address(0), true),
+            DataTypes.PublishContentParams(
+                bob,
+                BOB_ISSUED_1_URL,
+                address(0),
+                true
+            ),
             new bytes(0)
         );
 
@@ -345,13 +395,13 @@ contract IntegrationCollectTest is TestIntegrationBase {
         // alice share bob's content
         vm.prank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).share(
-            DataTypes.ShareParams(bob, idShared)
+            DataTypes.ShareParams(alice, bob, idShared)
         );
 
         // charles share alice's share
         vm.prank(charles);
         uint256 mintedIdCharles = CyberEngine(addrs.engine).share(
-            DataTypes.ShareParams(alice, mintedId)
+            DataTypes.ShareParams(charles, alice, mintedId)
         );
 
         // src info will point to alice's original content
@@ -390,6 +440,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         CyberEngine(addrs.engine).registerEssence(
             DataTypes.RegisterEssenceParams(
+                bob,
                 BOB_ISSUED_1_NAME,
                 BOB_ISSUED_1_SYMBOL,
                 BOB_ISSUED_1_URL,
@@ -427,6 +478,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         uint256 tokenId = CyberEngine(addrs.engine).publishContent(
             DataTypes.PublishContentParams(
+                bob,
                 BOB_ISSUED_1_URL,
                 mockMiddleware,
                 true
@@ -464,6 +516,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         CyberEngine(addrs.engine).publishContent(
             DataTypes.PublishContentParams(
+                bob,
                 BOB_ISSUED_1_URL,
                 mockMiddleware,
                 true
@@ -477,6 +530,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.prank(alice);
         uint256 tokenId = CyberEngine(addrs.engine).comment(
             DataTypes.CommentParams(
+                alice,
                 ALICE_ISSUED_1_URL,
                 address(0),
                 true,
@@ -517,7 +571,12 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.startPrank(bob);
 
         uint256 tokenId = CyberEngine(addrs.engine).issueW3st(
-            DataTypes.IssueW3stParams(BOB_ISSUED_1_URL, mockMiddleware, true),
+            DataTypes.IssueW3stParams(
+                bob,
+                BOB_ISSUED_1_URL,
+                mockMiddleware,
+                true
+            ),
             mockData
         );
 
@@ -546,6 +605,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.prank(bob);
         uint256 essId = CyberEngine(addrs.engine).registerEssence(
             DataTypes.RegisterEssenceParams(
+                bob,
                 BOB_ISSUED_1_NAME,
                 BOB_ISSUED_1_SYMBOL,
                 BOB_ISSUED_1_URL,
@@ -557,6 +617,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         vm.prank(bob);
         CyberEngine(addrs.engine).setEssenceData(
+            bob,
             essId,
             newTokenUri,
             mockMiddleware,

@@ -159,7 +159,6 @@ contract LimitedTimePaidMw is IMiddleware, FeeMw {
         DataTypes.Category category,
         uint256 id,
         address collector,
-        address,
         address referrerAccount,
         bytes calldata
     ) external override onlyEngine {
