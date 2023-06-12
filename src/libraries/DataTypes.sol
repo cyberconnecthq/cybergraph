@@ -6,7 +6,8 @@ library DataTypes {
     enum Category {
         Essence,
         Content,
-        W3ST
+        W3ST,
+        Subscribe
     }
 
     enum ContentType {
@@ -29,6 +30,16 @@ library DataTypes {
         string tokenURI;
         address mw;
         bool transferable;
+    }
+
+    struct RegisterSubscriptionParams {
+        address account;
+        string name;
+        string symbol;
+        string tokenURI;
+        uint256 dayPerSub;
+        uint256 pricePerSub;
+        address recipient;
     }
 
     struct PublishContentParams {
@@ -67,6 +78,16 @@ library DataTypes {
         string symbol;
         string tokenURI;
         bool transferable;
+    }
+
+    struct SubscribeStruct {
+        address subscribe;
+        string name;
+        string symbol;
+        string tokenURI;
+        uint256 dayPerSub;
+        uint256 pricePerSub;
+        address recipient;
     }
 
     struct AccountStruct {

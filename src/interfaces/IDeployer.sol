@@ -48,4 +48,17 @@ interface IDeployer {
         bytes32 salt,
         address engine
     ) external returns (address addr);
+
+    /**
+     * @notice Deploy a new Subscribe
+     *
+     * @param salt The salt used to generate contract address in a deterministic way.
+     * @param engine The CyberEngine address.
+     *
+     * @return addr The deployed Subscribe address.
+     */
+    function deploySubscribe(
+        bytes32 salt,
+        address engine
+    ) external returns (address addr);
 }

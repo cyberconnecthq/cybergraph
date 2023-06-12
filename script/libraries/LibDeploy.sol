@@ -13,6 +13,7 @@ import { MiddlewareManager } from "../../src/core/MiddlewareManager.sol";
 import { Content } from "../../src/core/Content.sol";
 import { Essence } from "../../src/core/Essence.sol";
 import { W3st } from "../../src/core/W3st.sol";
+import { Subscribe } from "../../src/core/Subscribe.sol";
 import { CyberEngine } from "../../src/core/CyberEngine.sol";
 import { DeploySetting } from "./DeploySetting.sol";
 import { LibString } from "../../src/libraries/LibString.sol";
@@ -123,6 +124,7 @@ library LibDeploy {
         address deployedEssImpl;
         address deployedContentImpl;
         address deployedW3stImpl;
+        address deployedSubImpl;
         address cyberTreasury;
     }
 
@@ -177,6 +179,12 @@ library LibDeploy {
             addrs.deployer
         );
 
+        address calculatedSubImpl = _computeAddress(
+            abi.encodePacked(type(Subscribe).creationCode),
+            SALT,
+            addrs.deployer
+        );
+
         // 4. deploy engine
         addrs.engine = dc.deploy(
             abi.encodePacked(
@@ -186,7 +194,8 @@ library LibDeploy {
                     addrs.manager,
                     calculatedEssImpl,
                     calculatedContentImpl,
-                    calculatedW3stImpl
+                    calculatedW3stImpl,
+                    calculatedSubImpl
                 )
             ),
             SALT
@@ -217,6 +226,12 @@ library LibDeploy {
             "WRONG_W3ST_ADDR"
         );
 
+        addrs.deployedSubImpl = IDeployer(addrs.deployer).deploySubscribe(
+            SALT,
+            addrs.engine
+        );
+        require(addrs.deployedSubImpl == calculatedSubImpl, "WRONG_SUB_ADDR");
+
         // 6. deploy treasury
         addrs.cyberTreasury = dc.deploy(
             abi.encodePacked(
@@ -234,6 +249,7 @@ library LibDeploy {
             _write(vm, "Essence", addrs.deployedEssImpl);
             _write(vm, "Content", addrs.deployedContentImpl);
             _write(vm, "W3ST", addrs.deployedW3stImpl);
+            _write(vm, "Subscribe", addrs.deployedSubImpl);
             _write(vm, "Treasury", addrs.cyberTreasury);
         }
     }

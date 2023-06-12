@@ -26,6 +26,17 @@ interface ICyberEngineEvents {
         address essence
     );
 
+    event RegisterSubscription(
+        address indexed account,
+        string name,
+        string symbol,
+        string tokenURI,
+        uint256 pricePerSub,
+        uint256 dayPerSub,
+        address recipient,
+        address subscribe
+    );
+
     /**
      * @notice Emitted when a new content been created.
      *
@@ -160,6 +171,14 @@ interface ICyberEngineEvents {
         uint256 indexed tokenId,
         string tokenURI,
         address mw
+    );
+
+    event SetSubscriptionData(
+        address indexed account,
+        string tokenURI,
+        address recipient,
+        uint256 pricePerSub,
+        uint256 dayPerSub
     );
 
     event SetOperatorApproval(

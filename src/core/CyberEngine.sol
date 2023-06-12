@@ -11,6 +11,7 @@ import { IMiddlewareManager } from "../interfaces/IMiddlewareManager.sol";
 import { IMiddleware } from "../interfaces/IMiddleware.sol";
 import { IEssence } from "../interfaces/IEssence.sol";
 import { IContent } from "../interfaces/IContent.sol";
+import { ISubscribe } from "../interfaces/ISubscribe.sol";
 import { IW3st } from "../interfaces/IW3st.sol";
 import { ISoul } from "../interfaces/ISoul.sol";
 
@@ -30,6 +31,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     address public immutable MANAGER;
 
     address internal immutable ESSENCE_IMPL;
+    address internal immutable SUBSCRIBE_IMPL;
     address internal immutable CONTENT_IMPL;
     address internal immutable W3ST_IMPL;
 
@@ -39,6 +41,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         internal _contentByIdByAccount;
     mapping(address => mapping(uint256 => DataTypes.W3stStruct))
         internal _w3stByIdByAccount;
+    mapping(address => DataTypes.SubscribeStruct) internal _subscribeByAccount;
     mapping(address => DataTypes.AccountStruct) internal _accounts;
     mapping(address => mapping(address => bool)) internal _operatorApproval;
 
@@ -87,19 +90,22 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         address mwManager,
         address essImpl,
         address contentImpl,
-        address w3stImpl
+        address w3stImpl,
+        address subImpl
     ) {
         require(soul != address(0), "SOUL_NOT_SET");
         require(mwManager != address(0), "MW_MANAGER_NOT_SET");
         require(essImpl != address(0), "ESS_IMPL_NOT_SET");
         require(contentImpl != address(0), "CONTENT_IMPL_NOT_SET");
         require(w3stImpl != address(0), "W3ST_IMPL_NOT_SET");
+        require(subImpl != address(0), "SUB_IMPL_NOT_SET");
 
         SOUL = soul;
         MANAGER = mwManager;
         ESSENCE_IMPL = essImpl;
         CONTENT_IMPL = contentImpl;
         W3ST_IMPL = w3stImpl;
+        SUBSCRIBE_IMPL = subImpl;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -155,6 +161,38 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             params.category,
             data
         );
+    }
+
+    /// @inheritdoc ICyberEngine
+    function subscribe(
+        address account
+    ) external payable override returns (uint256 tokenId) {
+        address subscriber = msg.sender;
+
+        _requireSubscriptionRegistered(account);
+
+        address deployAddr = _subscribeByAccount[account].subscribe;
+        uint256 numOfSub = msg.value / _subscribeByAccount[account].pricePerSub;
+
+        require(numOfSub >= 1, "FEE_NOT_ENOUGH");
+
+        _chargeAndRefundOverPayment(
+            _subscribeByAccount[account].recipient,
+            numOfSub * _subscribeByAccount[account].pricePerSub,
+            msg.sender
+        );
+
+        if (IERC721(deployAddr).balanceOf(subscriber) == 0) {
+            tokenId = ISubscribe(deployAddr).mint(
+                subscriber,
+                numOfSub * _subscribeByAccount[account].dayPerSub
+            );
+        } else {
+            tokenId = ISubscribe(deployAddr).extend(
+                subscriber,
+                numOfSub * _subscribeByAccount[account].dayPerSub
+            );
+        }
     }
 
     /// @inheritdoc ICyberEngine
@@ -215,6 +253,48 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             essence
         );
         return id;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function registerSubscription(
+        DataTypes.RegisterSubscriptionParams calldata params
+    ) external override onlySoulOwnerOrOperator(params.account) {
+        require(
+            _subscribeByAccount[params.account].subscribe == address(0),
+            "ALREADY_REGISTERED"
+        );
+        require(bytes(params.name).length != 0, "EMPTY_NAME");
+        require(bytes(params.symbol).length != 0, "EMPTY_SYMBOL");
+        require(params.pricePerSub > 0, "INVALID_PRICE_PER_SUB");
+        require(params.dayPerSub > 0, "INVALID_DAY_PER_SUB");
+        require(params.recipient != address(0), "ZERO_RECIPIENT_ADDRESS");
+
+        _subscribeByAccount[params.account].name = params.name;
+        _subscribeByAccount[params.account].symbol = params.symbol;
+        _subscribeByAccount[params.account].tokenURI = params.tokenURI;
+        _subscribeByAccount[params.account].pricePerSub = params.pricePerSub;
+        _subscribeByAccount[params.account].dayPerSub = params.dayPerSub;
+        _subscribeByAccount[params.account].recipient = params.recipient;
+
+        address deployedSubscribe = Clones.clone(SUBSCRIBE_IMPL);
+        ISubscribe(deployedSubscribe).initialize(
+            params.account,
+            params.name,
+            params.symbol
+        );
+
+        _subscribeByAccount[params.account].subscribe = deployedSubscribe;
+
+        emit RegisterSubscription(
+            params.account,
+            params.name,
+            params.symbol,
+            params.tokenURI,
+            params.pricePerSub,
+            params.dayPerSub,
+            params.recipient,
+            deployedSubscribe
+        );
     }
 
     /// @inheritdoc ICyberEngine
@@ -444,6 +524,30 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     }
 
     /// @inheritdoc ICyberEngine
+    function setSubscriptionData(
+        address account,
+        string calldata uri,
+        address recipient,
+        uint256 pricePerSub,
+        uint256 dayPerSub
+    ) external override onlySoulOwnerOrOperator(account) {
+        _requireSubscriptionRegistered(account);
+
+        _subscribeByAccount[account].tokenURI = uri;
+        _subscribeByAccount[account].recipient = recipient;
+        _subscribeByAccount[account].pricePerSub = pricePerSub;
+        _subscribeByAccount[account].dayPerSub = dayPerSub;
+
+        emit SetSubscriptionData(
+            account,
+            uri,
+            recipient,
+            pricePerSub,
+            dayPerSub
+        );
+    }
+
+    /// @inheritdoc ICyberEngine
     function setContentData(
         address account,
         uint256 tokenId,
@@ -656,6 +760,38 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         return _w3stByIdByAccount[account][tokenID].mw;
     }
 
+    /// @inheritdoc ICyberEngine
+    function getSubscriptionTokenURI(
+        address account
+    ) external view override returns (string memory) {
+        _requireSubscriptionRegistered(account);
+        return _subscribeByAccount[account].tokenURI;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getSubscriptionRecipient(
+        address account
+    ) external view override returns (address) {
+        _requireSubscriptionRegistered(account);
+        return _subscribeByAccount[account].recipient;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getSubscriptionPricePerSub(
+        address account
+    ) external view override returns (uint256) {
+        _requireSubscriptionRegistered(account);
+        return _subscribeByAccount[account].pricePerSub;
+    }
+
+    /// @inheritdoc ICyberEngine
+    function getSubscriptionDayPerSub(
+        address account
+    ) external view override returns (uint256) {
+        _requireSubscriptionRegistered(account);
+        return _subscribeByAccount[account].dayPerSub;
+    }
+
     /*//////////////////////////////////////////////////////////////
                             PUBLIC VIEW
     //////////////////////////////////////////////////////////////*/
@@ -697,6 +833,13 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         uint256 tokenId
     ) internal view {
         require(_accounts[account].w3stCount > tokenId, "W3ST_DOES_NOT_EXIST");
+    }
+
+    function _requireSubscriptionRegistered(address account) internal view {
+        require(
+            _subscribeByAccount[account].subscribe != address(0),
+            "SUBSCRIBE_DOES_NOT_EXIST"
+        );
     }
 
     function _checkRegistered(
@@ -769,5 +912,23 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             srcAccount = account;
             srcId = id;
         }
+    }
+
+    function _chargeAndRefundOverPayment(
+        address recipient,
+        uint256 cost,
+        address refundTo
+    ) internal {
+        uint256 overpayment;
+        unchecked {
+            overpayment = msg.value - cost;
+        }
+
+        if (overpayment > 0) {
+            (bool refundSuccess, ) = refundTo.call{ value: overpayment }("");
+            require(refundSuccess, "REFUND_FAILED");
+        }
+        (bool chargeSuccess, ) = recipient.call{ value: cost }("");
+        require(chargeSuccess, "CHARGE_FAILED");
     }
 }
