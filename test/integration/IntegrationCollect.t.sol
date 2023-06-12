@@ -518,10 +518,10 @@ contract IntegrationCollectTest is TestIntegrationBase {
             DataTypes.PublishContentParams(
                 bob,
                 BOB_ISSUED_1_URL,
-                mockMiddleware,
+                address(0),
                 true
             ),
-            mockData
+            new bytes(0)
         );
 
         uint256 idCommented = 0;
@@ -532,12 +532,12 @@ contract IntegrationCollectTest is TestIntegrationBase {
             DataTypes.CommentParams(
                 alice,
                 ALICE_ISSUED_1_URL,
-                address(0),
+                mockMiddleware,
                 true,
                 bob,
                 idCommented
             ),
-            new bytes(0)
+            mockData
         );
 
         // collect on alice's comment will lead to collect on the comment itself (instead of origial content).
@@ -558,7 +558,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         assertEq(ERC1155(ALICE_CONTENT_NFT).balanceOf(charles, tokenId), 1000);
         assertEq(
             MockMiddleware(mockMiddleware).getMwData(
-                bob,
+                alice,
                 DataTypes.Category.Content,
                 tokenId
             ),
@@ -634,6 +634,137 @@ contract IntegrationCollectTest is TestIntegrationBase {
         assertEq(
             CyberEngine(addrs.engine).getEssenceTokenURI(bob, essId),
             newTokenUri
+        );
+        assertEq(
+            CyberEngine(addrs.engine).getEssenceMw(bob, essId),
+            mockMiddleware
+        );
+    }
+
+    function testSetContentData() public {
+        bytes memory mockData = abi.encode("tmp");
+        string memory newTokenUri = "newUri";
+        vm.prank(bob);
+
+        uint256 tokenId = CyberEngine(addrs.engine).publishContent(
+            DataTypes.PublishContentParams(
+                bob,
+                BOB_ISSUED_1_URL,
+                address(0),
+                true
+            ),
+            new bytes(0)
+        );
+
+        address BOB_CONTENT_NFT = CyberEngine(addrs.engine).getContentAddr(bob);
+
+        vm.prank(bob);
+        CyberEngine(addrs.engine).setContentData(
+            bob,
+            tokenId,
+            newTokenUri,
+            mockMiddleware,
+            mockData
+        );
+        assertEq(
+            MockMiddleware(mockMiddleware).getMwData(
+                bob,
+                DataTypes.Category.Content,
+                tokenId
+            ),
+            mockData
+        );
+        assertEq(
+            CyberEngine(addrs.engine).getContentTokenURI(bob, tokenId),
+            newTokenUri
+        );
+        assertEq(
+            CyberEngine(addrs.engine).getContentMw(bob, tokenId),
+            mockMiddleware
+        );
+    }
+
+    function testSetW3stData() public {
+        bytes memory mockData = abi.encode("tmp");
+        string memory newTokenUri = "newUri";
+        vm.startPrank(bob);
+
+        uint256 tokenId = CyberEngine(addrs.engine).issueW3st(
+            DataTypes.IssueW3stParams(bob, BOB_ISSUED_1_URL, address(0), true),
+            new bytes(0)
+        );
+
+        vm.startPrank(bob);
+        CyberEngine(addrs.engine).setW3stData(
+            bob,
+            tokenId,
+            newTokenUri,
+            mockMiddleware,
+            mockData
+        );
+
+        assertEq(
+            MockMiddleware(mockMiddleware).getMwData(
+                bob,
+                DataTypes.Category.W3ST,
+                tokenId
+            ),
+            mockData
+        );
+        assertEq(
+            CyberEngine(addrs.engine).getW3stTokenURI(bob, tokenId),
+            newTokenUri
+        );
+        assertEq(
+            CyberEngine(addrs.engine).getW3stMw(bob, tokenId),
+            mockMiddleware
+        );
+    }
+
+    function testOperatorPublishContent() public {
+        bytes memory mockData = abi.encode("tmp");
+        string memory newTokenUri = "newUri";
+        vm.startPrank(bob);
+        CyberEngine(addrs.engine).setOperatorApproval(bob, alice, true);
+
+        vm.startPrank(alice);
+        uint256 tokenId = CyberEngine(addrs.engine).publishContent(
+            DataTypes.PublishContentParams(
+                bob,
+                BOB_ISSUED_1_URL,
+                address(0),
+                true
+            ),
+            new bytes(0)
+        );
+
+        vm.startPrank(alice);
+        CyberEngine(addrs.engine).setContentData(
+            bob,
+            tokenId,
+            newTokenUri,
+            mockMiddleware,
+            mockData
+        );
+        assertEq(
+            MockMiddleware(mockMiddleware).getMwData(
+                bob,
+                DataTypes.Category.Content,
+                tokenId
+            ),
+            mockData
+        );
+        assertEq(
+            CyberEngine(addrs.engine).getContentTokenURI(bob, tokenId),
+            newTokenUri
+        );
+        assertEq(
+            CyberEngine(addrs.engine).getContentMw(bob, tokenId),
+            mockMiddleware
+        );
+        assertEq(
+            CyberEngine(addrs.engine).getOperatorApproval(bob, alice),
+            true
         );
     }
 }
