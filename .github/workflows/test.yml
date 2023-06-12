@@ -41,11 +41,11 @@ jobs:
       #   run: yarn run lint:gh-check
 
       - name: Run Coverage
-        run: "forge coverage --report lcov && sudo apt-get install lcov && lcov --remove ./lcov.info -o ./lcov.info.pruned 'test/*' 'script/*' 'src/libraries/*' 'src/deployer/*'"
+        run: "forge coverage --report lcov && sudo apt-get install lcov && lcov --remove ./lcov.info -o ./lcov.info.pruned 'test/*' 'script/*' 'src/libraries/*' 'src/deployer/*' 'src/dependencies/*'"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        env: 
+        env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           directory: .

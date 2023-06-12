@@ -65,14 +65,30 @@ contract W3st is CyberNFT1155, IW3st {
         uint256 amount,
         bytes calldata data
     ) public virtual override {
-        if (!ICyberEngine(ENGINE).getContentTransferability(_account, id)) {
+        if (!ICyberEngine(ENGINE).getW3stTransferability(_account, id)) {
             revert("TRANSFER_NOT_ALLOWED");
         }
 
         super.safeTransferFrom(from, to, id, amount, data);
     }
 
-    // todo support batch transfer?
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] calldata ids,
+        uint256[] calldata amounts,
+        bytes calldata data
+    ) public virtual override {
+        for (uint256 i = 0; i < ids.length; i++) {
+            if (
+                !ICyberEngine(ENGINE).getW3stTransferability(_account, ids[i])
+            ) {
+                revert("TRANSFER_NOT_ALLOWED");
+            }
+        }
+
+        super.safeBatchTransferFrom(from, to, ids, amounts, data);
+    }
 
     /*//////////////////////////////////////////////////////////////
                             PUBLIC VIEW
@@ -81,6 +97,6 @@ contract W3st is CyberNFT1155, IW3st {
     function uri(
         uint256 id
     ) public view virtual override returns (string memory) {
-        return ICyberEngine(ENGINE).getContentTokenURI(_account, id);
+        return ICyberEngine(ENGINE).getW3stTokenURI(_account, id);
     }
 }

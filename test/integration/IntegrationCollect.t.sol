@@ -6,6 +6,7 @@ import { TestIntegrationBase } from "../utils/TestIntegrationBase.sol";
 import { MockMiddleware } from "../utils/MockMiddleware.sol";
 
 import { Soul } from "../../src/core/Soul.sol";
+import { Essence } from "../../src/core/Essence.sol";
 import { CyberEngine } from "../../src/core/CyberEngine.sol";
 import { DataTypes } from "../../src/libraries/DataTypes.sol";
 import { MiddlewareManager } from "../../src/core/MiddlewareManager.sol";
@@ -178,6 +179,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
             ERC721(BOB_ESS_0_NFT).tokenURI(mintedId),
             string(abi.encodePacked(BOB_ISSUED_1_URL, "0"))
         );
+        assertTrue(Essence(BOB_ESS_0_NFT).isTransferable());
     }
 
     function testCannotCollectMoreThanOneEssence() public {
@@ -277,6 +279,32 @@ contract IntegrationCollectTest is TestIntegrationBase {
         );
         assertEq(mintedId, 0);
         assertEq(ERC1155(BOB_W3ST_NFT).balanceOf(alice, mintedId), 3);
+
+        uint256[] memory ids = new uint256[](1);
+        ids[0] = mintedId;
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+        vm.prank(alice);
+        ERC1155(BOB_W3ST_NFT).safeBatchTransferFrom(
+            alice,
+            bob,
+            ids,
+            amounts,
+            new bytes(0)
+        );
+        assertEq(ERC1155(BOB_W3ST_NFT).balanceOf(alice, mintedId), 2);
+        assertEq(ERC1155(BOB_W3ST_NFT).balanceOf(bob, mintedId), 1);
+        vm.prank(alice);
+        ERC1155(BOB_W3ST_NFT).safeTransferFrom(
+            alice,
+            bob,
+            mintedId,
+            2,
+            new bytes(0)
+        );
+        assertEq(ERC1155(BOB_W3ST_NFT).balanceOf(alice, mintedId), 0);
+        assertEq(ERC1155(BOB_W3ST_NFT).balanceOf(bob, mintedId), 3);
+        assertEq(ERC1155(BOB_W3ST_NFT).uri(mintedId), BOB_ISSUED_1_URL);
     }
 
     function testComment() public {
@@ -518,6 +546,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.prank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
         ERC721(BOB_ESS_0_NFT).safeTransferFrom(alice, bob, mintedId, "");
+        assertFalse(Essence(BOB_ESS_0_NFT).isTransferable());
     }
 
     function testCollectContentWithMw() public {
@@ -645,7 +674,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
                 bob,
                 BOB_ISSUED_1_URL,
                 mockMiddleware,
-                true
+                false
             ),
             mockData
         );
@@ -666,6 +695,29 @@ contract IntegrationCollectTest is TestIntegrationBase {
                 tokenId
             ),
             mockData
+        );
+
+        uint256[] memory ids = new uint256[](1);
+        ids[0] = tokenId;
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1;
+        vm.prank(alice);
+        vm.expectRevert("TRANSFER_NOT_ALLOWED");
+        ERC1155(BOB_W3ST_NFT).safeBatchTransferFrom(
+            alice,
+            bob,
+            ids,
+            amounts,
+            new bytes(0)
+        );
+        vm.prank(alice);
+        vm.expectRevert("TRANSFER_NOT_ALLOWED");
+        ERC1155(BOB_W3ST_NFT).safeTransferFrom(
+            alice,
+            bob,
+            tokenId,
+            1,
+            new bytes(0)
         );
     }
 
