@@ -297,5 +297,66 @@ contract IntegrationSubscribeTest is TestIntegrationBase {
         assertEq(Subscribe(subAddr).ownedToken(bob), tokenId);
     }
 
+    function test_Subscribed_SubscribeAgain_Success() public {
+        vm.prank(alice);
+        CyberEngine(addrs.engine).registerSubscription(
+            DataTypes.RegisterSubscriptionParams(
+                alice,
+                "alice's fan",
+                "AFAN",
+                "https://example.com/afan",
+                30,
+                1 ether,
+                alice
+            )
+        );
+
+        vm.startPrank(bob);
+        CyberEngine(addrs.engine).subscribe{ value: 1 ether }(alice);
+        uint256 tokenId = CyberEngine(addrs.engine).subscribe{ value: 1 ether }(
+            alice
+        );
+        assertEq(bob.balance, initBalance - 2 ether);
+        assertEq(alice.balance, initBalance + 2 ether);
+        address subAddr = CyberEngine(addrs.engine).getSubscriptionAddr(alice);
+        assertEq(Subscribe(subAddr).ownerOf(tokenId), bob);
+        assertEq(
+            Subscribe(subAddr).expiries(tokenId),
+            block.timestamp + 2 * 30 days
+        );
+        assertEq(Subscribe(subAddr).ownedToken(bob), tokenId);
+    }
+
+    function test_SubscribeExpired_SubscribeAgain_Success() public {
+        vm.prank(alice);
+        CyberEngine(addrs.engine).registerSubscription(
+            DataTypes.RegisterSubscriptionParams(
+                alice,
+                "alice's fan",
+                "AFAN",
+                "https://example.com/afan",
+                30,
+                1 ether,
+                alice
+            )
+        );
+
+        vm.startPrank(bob);
+        CyberEngine(addrs.engine).subscribe{ value: 1 ether }(alice);
+
+        uint256 currentTs = block.timestamp + 90 days;
+        vm.warp(currentTs);
+
+        uint256 tokenId = CyberEngine(addrs.engine).subscribe{ value: 1 ether }(
+            alice
+        );
+        assertEq(bob.balance, initBalance - 2 ether);
+        assertEq(alice.balance, initBalance + 2 ether);
+        address subAddr = CyberEngine(addrs.engine).getSubscriptionAddr(alice);
+        assertEq(Subscribe(subAddr).ownerOf(tokenId), bob);
+        assertEq(Subscribe(subAddr).expiries(tokenId), currentTs + 30 days);
+        assertEq(Subscribe(subAddr).ownedToken(bob), tokenId);
+    }
+
     /* solhint-disable func-name-mixedcase */
 }
