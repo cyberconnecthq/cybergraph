@@ -20,7 +20,6 @@ import { DataTypes } from "../libraries/DataTypes.sol";
 /**
  * @title CyberEngine
  * @author CyberConnect
- * @notice This contract is used to create a profile NFT.
  */
 contract CyberEngine is ReentrancyGuard, ICyberEngine {
     /*//////////////////////////////////////////////////////////////

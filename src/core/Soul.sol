@@ -73,11 +73,7 @@ contract Soul is Owned, CyberNFT721, ISoul {
     /**
      * @notice Disallows the transfer of the soul.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 id
-    ) public override {
+    function transferFrom(address, address, uint256) public pure override {
         revert("TRANSFER_NOT_ALLOWED");
     }
 

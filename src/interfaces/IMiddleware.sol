@@ -25,7 +25,7 @@ interface IMiddleware {
      *
      * @param account The account address.
      * @param category The category of target NFT.
-     * @param id The corresponding identifer for a specific category.
+     * @param id The corresponding identifier for a specific category.
      * @param collector The collector address.
      * @param referrerAccount The referrer account address.
      * @param data Extra data to process.

@@ -75,10 +75,27 @@ contract W3st is CyberNFT1155, IW3st {
         if (!ICyberEngine(ENGINE).getW3stTransferability(_account, id)) {
             revert("TRANSFER_NOT_ALLOWED");
         }
+
         super.safeTransferFrom(from, to, id, amount, data);
     }
 
-    // todo support batch transfer?
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] calldata ids,
+        uint256[] calldata amounts,
+        bytes calldata data
+    ) public virtual override {
+        for (uint256 i = 0; i < ids.length; i++) {
+            if (
+                !ICyberEngine(ENGINE).getW3stTransferability(_account, ids[i])
+            ) {
+                revert("TRANSFER_NOT_ALLOWED");
+            }
+        }
+
+        super.safeBatchTransferFrom(from, to, ids, amounts, data);
+    }
 
     /*//////////////////////////////////////////////////////////////
                             PUBLIC VIEW

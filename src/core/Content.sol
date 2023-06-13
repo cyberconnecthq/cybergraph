@@ -12,7 +12,7 @@ import { LibString } from "../libraries/LibString.sol";
 /**
  * @title Content NFT
  * @author CyberConnect
- * @notice This contract is used to create an Essence NFT.
+ * @notice This contract is used to create an Content NFT.
  */
 contract Content is CyberNFT1155, IContent {
     /*//////////////////////////////////////////////////////////////
@@ -77,10 +77,30 @@ contract Content is CyberNFT1155, IContent {
         if (!ICyberEngine(ENGINE).getContentTransferability(_account, id)) {
             revert("TRANSFER_NOT_ALLOWED");
         }
+
         super.safeTransferFrom(from, to, id, amount, data);
     }
 
-    // todo support batch transfer?
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] calldata ids,
+        uint256[] calldata amounts,
+        bytes calldata data
+    ) public virtual override {
+        for (uint256 i = 0; i < ids.length; i++) {
+            if (
+                !ICyberEngine(ENGINE).getContentTransferability(
+                    _account,
+                    ids[i]
+                )
+            ) {
+                revert("TRANSFER_NOT_ALLOWED");
+            }
+        }
+
+        super.safeBatchTransferFrom(from, to, ids, amounts, data);
+    }
 
     /*//////////////////////////////////////////////////////////////
                             PUBLIC VIEW
