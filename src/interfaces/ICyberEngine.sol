@@ -242,4 +242,8 @@ interface ICyberEngine is ICyberEngineEvents {
     function getSubscriptionDayPerSub(
         address account
     ) external view returns (uint256);
+
+    function getSubscriptionAddr(
+        address account
+    ) external view returns (address);
 }

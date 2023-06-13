@@ -252,7 +252,7 @@ library LibDeploy {
             _write(vm, "MiddlewareManager", addrs.manager);
             _write(vm, "Deployer", addrs.deployer);
             _write(vm, "SubscribeDeployer", addrs.subscribeDeployer);
-            _write(vm, "CyberEngine", addrs.manager);
+            _write(vm, "CyberEngine", addrs.engine);
             _write(vm, "Essence", addrs.deployedEssImpl);
             _write(vm, "Content", addrs.deployedContentImpl);
             _write(vm, "W3ST", addrs.deployedW3stImpl);

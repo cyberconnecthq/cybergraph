@@ -7,6 +7,8 @@ import { MockMiddleware } from "../utils/MockMiddleware.sol";
 
 import { Soul } from "../../src/core/Soul.sol";
 import { Essence } from "../../src/core/Essence.sol";
+import { Content } from "../../src/core/Content.sol";
+import { W3st } from "../../src/core/W3st.sol";
 import { CyberEngine } from "../../src/core/CyberEngine.sol";
 import { DataTypes } from "../../src/libraries/DataTypes.sol";
 import { MiddlewareManager } from "../../src/core/MiddlewareManager.sol";
@@ -259,6 +261,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(alice, mintedId), 0);
         assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(bob, mintedId), 3);
         assertEq(ERC1155(BOB_CONTENT_NFT).uri(mintedId), BOB_ISSUED_1_URL);
+        assertTrue(Content(BOB_CONTENT_NFT).isTransferable(mintedId));
     }
 
     function testCollectW3st() public {
@@ -607,6 +610,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
             1,
             new bytes(0)
         );
+        assertFalse(Content(BOB_CONTENT_NFT).isTransferable(mintedId));
     }
 
     function testCollectCommentWithMw() public {
@@ -778,7 +782,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
             new bytes(0)
         );
 
-        address BOB_CONTENT_NFT = CyberEngine(addrs.engine).getContentAddr(bob);
+        CyberEngine(addrs.engine).getContentAddr(bob);
 
         vm.prank(bob);
         CyberEngine(addrs.engine).setContentData(

@@ -791,6 +791,14 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         return _subscribeByAccount[account].dayPerSub;
     }
 
+    /// @inheritdoc ICyberEngine
+    function getSubscriptionAddr(
+        address account
+    ) external view returns (address) {
+        _requireSubscriptionRegistered(account);
+        return _subscribeByAccount[account].subscribe;
+    }
+
     /*//////////////////////////////////////////////////////////////
                             PUBLIC VIEW
     //////////////////////////////////////////////////////////////*/

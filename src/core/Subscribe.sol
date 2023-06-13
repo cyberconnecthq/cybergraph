@@ -12,7 +12,7 @@ import { LibString } from "../libraries/LibString.sol";
 /**
  * @title Subscribe NFT
  * @author CyberConnect
- * @notice This contract is used to create an Essence NFT.
+ * @notice This contract is a subscription NFT in CyberConnect Protocol.
  */
 contract Subscribe is CyberNFT721, ISubscribe {
     /*//////////////////////////////////////////////////////////////
@@ -93,11 +93,7 @@ contract Subscribe is CyberNFT721, ISubscribe {
     /**
      * @notice Disallows the transfer of the essence nft.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 id
-    ) public override {
+    function transferFrom(address, address, uint256) public pure override {
         revert("TRANSFER_NOT_ALLOWED");
     }
 
