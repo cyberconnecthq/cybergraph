@@ -70,6 +70,8 @@ abstract contract ERC1155 is Initializable {
             "NOT_AUTHORIZED"
         );
 
+        require(balanceOf[from][id] >= amount, "INSUFFICIENT_BALANCE");
+
         balanceOf[from][id] -= amount;
         balanceOf[to][id] += amount;
 
@@ -110,6 +112,8 @@ abstract contract ERC1155 is Initializable {
         for (uint256 i = 0; i < ids.length; ) {
             id = ids[i];
             amount = amounts[i];
+
+            require(balanceOf[from][id] >= amount, "INSUFFICIENT_BALANCE");
 
             balanceOf[from][id] -= amount;
             balanceOf[to][id] += amount;

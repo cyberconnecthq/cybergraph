@@ -54,6 +54,13 @@ contract W3st is CyberNFT1155, IW3st {
         return super._mint(to, id, amount, data);
     }
 
+    // @inheritdoc IW3st
+    function isTransferable(
+        uint256 tokenId
+    ) external view override returns (bool) {
+        return ICyberEngine(ENGINE).getW3stTransferability(_account, tokenId);
+    }
+
     /*//////////////////////////////////////////////////////////////
                                  PUBLIC
     //////////////////////////////////////////////////////////////*/

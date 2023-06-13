@@ -5,6 +5,7 @@ pragma solidity 0.8.14;
 import "forge-std/Vm.sol";
 import { IEntryPoint } from "account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import { IDeployer } from "../../src/interfaces/IDeployer.sol";
+import { ISubscribeDeployer } from "../../src/interfaces/ISubscribeDeployer.sol";
 import { Clones } from "openzeppelin-contracts/contracts/proxy/Clones.sol";
 
 import { CyberAccountFactory } from "../../src/factory/CyberAccountFactory.sol";
@@ -13,11 +14,13 @@ import { MiddlewareManager } from "../../src/core/MiddlewareManager.sol";
 import { Content } from "../../src/core/Content.sol";
 import { Essence } from "../../src/core/Essence.sol";
 import { W3st } from "../../src/core/W3st.sol";
+import { Subscribe } from "../../src/core/Subscribe.sol";
 import { CyberEngine } from "../../src/core/CyberEngine.sol";
 import { DeploySetting } from "./DeploySetting.sol";
 import { LibString } from "../../src/libraries/LibString.sol";
 import { Create2Deployer } from "../../src/deployer/Create2Deployer.sol";
 import { Deployer } from "../../src/deployer/Deployer.sol";
+import { SubscribeDeployer } from "../../src/deployer/SubscribeDeployer.sol";
 import { Treasury } from "../../src/middlewares/base/Treasury.sol";
 
 library LibDeploy {
@@ -120,9 +123,11 @@ library LibDeploy {
         address manager;
         address engine;
         address deployer;
+        address subscribeDeployer;
         address deployedEssImpl;
         address deployedContentImpl;
         address deployedW3stImpl;
+        address deployedSubImpl;
         address cyberTreasury;
     }
 
@@ -159,6 +164,11 @@ library LibDeploy {
             SALT
         );
 
+        addrs.subscribeDeployer = dc.deploy(
+            abi.encodePacked(type(SubscribeDeployer).creationCode),
+            SALT
+        );
+
         address calculatedEssImpl = _computeAddress(
             abi.encodePacked(type(Essence).creationCode),
             SALT,
@@ -177,6 +187,12 @@ library LibDeploy {
             addrs.deployer
         );
 
+        address calculatedSubImpl = _computeAddress(
+            abi.encodePacked(type(Subscribe).creationCode),
+            SALT,
+            addrs.subscribeDeployer
+        );
+
         // 4. deploy engine
         addrs.engine = dc.deploy(
             abi.encodePacked(
@@ -186,7 +202,8 @@ library LibDeploy {
                     addrs.manager,
                     calculatedEssImpl,
                     calculatedContentImpl,
-                    calculatedW3stImpl
+                    calculatedW3stImpl,
+                    calculatedSubImpl
                 )
             ),
             SALT
@@ -217,6 +234,10 @@ library LibDeploy {
             "WRONG_W3ST_ADDR"
         );
 
+        addrs.deployedSubImpl = ISubscribeDeployer(addrs.subscribeDeployer)
+            .deploySubscribe(SALT, addrs.engine);
+        require(addrs.deployedSubImpl == calculatedSubImpl, "WRONG_SUB_ADDR");
+
         // 6. deploy treasury
         addrs.cyberTreasury = dc.deploy(
             abi.encodePacked(
@@ -230,10 +251,12 @@ library LibDeploy {
             _write(vm, "Soul", addrs.soul);
             _write(vm, "MiddlewareManager", addrs.manager);
             _write(vm, "Deployer", addrs.deployer);
+            _write(vm, "SubscribeDeployer", addrs.subscribeDeployer);
             _write(vm, "CyberEngine", addrs.manager);
             _write(vm, "Essence", addrs.deployedEssImpl);
             _write(vm, "Content", addrs.deployedContentImpl);
             _write(vm, "W3ST", addrs.deployedW3stImpl);
+            _write(vm, "Subscribe", addrs.deployedSubImpl);
             _write(vm, "Treasury", addrs.cyberTreasury);
         }
     }

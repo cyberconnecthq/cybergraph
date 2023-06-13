@@ -11,4 +11,6 @@ interface IContent {
     ) external;
 
     function initialize(address account) external;
+
+    function isTransferable(uint256 tokenId) external view returns (bool);
 }

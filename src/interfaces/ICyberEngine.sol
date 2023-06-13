@@ -19,6 +19,10 @@ interface ICyberEngine is ICyberEngineEvents {
         bytes calldata data
     ) external returns (uint256);
 
+    function subscribe(
+        address account
+    ) external payable returns (uint256 tokenId);
+
     /**
      * @notice Register an essence.
      *
@@ -30,6 +34,18 @@ interface ICyberEngine is ICyberEngineEvents {
         DataTypes.RegisterEssenceParams calldata params,
         bytes calldata initData
     ) external returns (uint256);
+
+    function registerSubscription(
+        DataTypes.RegisterSubscriptionParams calldata params
+    ) external;
+
+    function setSubscriptionData(
+        address account,
+        string calldata uri,
+        address recipient,
+        uint256 pricePerSub,
+        uint256 dayPerSub
+    ) external;
 
     /**
      * @notice Publish a content.
@@ -210,4 +226,20 @@ interface ICyberEngine is ICyberEngineEvents {
         address operator,
         bool approved
     ) external;
+
+    function getSubscriptionTokenURI(
+        address account
+    ) external view returns (string memory);
+
+    function getSubscriptionRecipient(
+        address account
+    ) external view returns (address);
+
+    function getSubscriptionPricePerSub(
+        address account
+    ) external view returns (uint256);
+
+    function getSubscriptionDayPerSub(
+        address account
+    ) external view returns (uint256);
 }

@@ -55,6 +55,14 @@ contract Content is CyberNFT1155, IContent {
         return super._mint(to, id, amount, data);
     }
 
+    // @inheritdoc IContent
+    function isTransferable(
+        uint256 tokenId
+    ) external view override returns (bool) {
+        return
+            ICyberEngine(ENGINE).getContentTransferability(_account, tokenId);
+    }
+
     /*//////////////////////////////////////////////////////////////
                                  PUBLIC
     //////////////////////////////////////////////////////////////*/
