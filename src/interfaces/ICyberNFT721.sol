@@ -2,6 +2,10 @@
 
 pragma solidity 0.8.14;
 
+/**
+ * @title ICyberNFT721
+ * @author CyberConnect
+ */
 interface ICyberNFT721 {
     /**
      * @notice Gets total number of tokens in existence, burned tokens will reduce the count.

@@ -2,6 +2,10 @@
 
 pragma solidity 0.8.14;
 
+/**
+ * @title IMiddlewareManagerEvents
+ * @author CyberConnect
+ */
 interface IMiddlewareManagerEvents {
     /**
      * @notice Emitted when a profile middleware has been allowed.

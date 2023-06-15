@@ -4,6 +4,10 @@ pragma solidity 0.8.14;
 
 import { DataTypes } from "../libraries/DataTypes.sol";
 
+/**
+ * @title ICyberEngineEvents
+ * @author CyberConnect
+ */
 interface ICyberEngineEvents {
     /**
      * @notice Emitted when a new essence been created.
@@ -26,6 +30,18 @@ interface ICyberEngineEvents {
         address essence
     );
 
+    /**
+     * @notice Emitted when a new Subscription been registered.
+     *
+     * @param account The account address.
+     * @param name The subscription name.
+     * @param symbol The subscription symbol.
+     * @param tokenURI the subscription tokenURI.
+     * @param pricePerSub The price per subscription.
+     * @param dayPerSub The day per subscription.
+     * @param recipient The recipient address.
+     * @param subscribe The subscribe NFT contract address.
+     */
     event RegisterSubscription(
         address indexed account,
         string name,
@@ -173,6 +189,15 @@ interface ICyberEngineEvents {
         address mw
     );
 
+    /**
+     * @notice Emitted when subscription data has been set to an account.
+     *
+     * @param account The account address.
+     * @param tokenURI The new token URI.
+     * @param recipient The new recipient address.
+     * @param pricePerSub The new price per subscription.
+     * @param dayPerSub The new day per subscription.
+     */
     event SetSubscriptionData(
         address indexed account,
         string tokenURI,
@@ -181,6 +206,13 @@ interface ICyberEngineEvents {
         uint256 dayPerSub
     );
 
+    /**
+     * @notice Emitted when a new operator been approved.
+     *
+     * @param account The account address.
+     * @param operator The operator address.
+     * @param approved The approval status.
+     */
     event SetOperatorApproval(
         address indexed account,
         address indexed operator,

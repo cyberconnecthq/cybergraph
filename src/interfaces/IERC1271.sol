@@ -2,6 +2,10 @@
 
 pragma solidity 0.8.14;
 
+/**
+ * @title IERC1271
+ * @author CyberConnect
+ */
 interface IERC1271 {
     /**
      * @notice Verifies whether the provided signature is valid with respect to the provided hash

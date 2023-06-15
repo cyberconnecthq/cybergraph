@@ -2,6 +2,10 @@
 
 pragma solidity 0.8.14;
 
+/**
+ * @title IDeployer
+ * @author CyberConnect
+ */
 interface IDeployer {
     /**
      * @notice Parameters when constructing a Content, Essence or W3ST.

@@ -8,6 +8,11 @@ import { ISoul } from "../interfaces/ISoul.sol";
 
 import { CyberNFT721 } from "../base/CyberNFT721.sol";
 
+/**
+ * @title Soul
+ * @author CyberConnect
+ * @notice A 721 NFT contract that indicates if an address is a CyberAccount.
+ */
 contract Soul is Owned, CyberNFT721, ISoul {
     /*//////////////////////////////////////////////////////////////
                                 STATES
@@ -81,13 +86,7 @@ contract Soul is Owned, CyberNFT721, ISoul {
                             PUBLIC VIEW
     //////////////////////////////////////////////////////////////*/
 
-    /**
-     * @notice Generates the metadata json object.
-     *
-     * @param tokenId The profile NFT token ID.
-     * @return string The metadata json object.
-     * @dev It requires the tokenId to be already minted.
-     */
+    /// ERC721
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {

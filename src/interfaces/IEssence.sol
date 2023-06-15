@@ -2,6 +2,10 @@
 
 pragma solidity 0.8.14;
 
+/**
+ * @title IEssence
+ * @author CyberConnect
+ */
 interface IEssence {
     /**
      * @notice Mints the Essence.

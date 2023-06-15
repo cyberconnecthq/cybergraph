@@ -2,6 +2,10 @@
 
 pragma solidity 0.8.14;
 
+/**
+ * @title ITreasuryEvents
+ * @author CyberConnect
+ */
 interface ITreasuryEvents {
     /**
      * @notice Emitted when a currency has been allowed.

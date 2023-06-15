@@ -2,6 +2,10 @@
 
 pragma solidity 0.8.14;
 
+/**
+ * @title ISubscribe
+ * @author CyberConnect
+ */
 interface ISubscribe {
     /**
      * @notice Mints the Subscribe.
@@ -25,6 +29,13 @@ interface ISubscribe {
         string calldata symbol
     ) external;
 
+    /**
+     * @notice Extends the Subscribe NFT.
+     *
+     * @param account The account address for the Subscribe NFT.
+     * @param durationDay The duration with unit Day.
+     * @return uint256 The token id.
+     */
     function extend(
         address account,
         uint256 durationDay

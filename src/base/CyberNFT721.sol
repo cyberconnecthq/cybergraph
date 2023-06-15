@@ -8,9 +8,9 @@ import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Init
 import { ICyberNFT721 } from "../interfaces/ICyberNFT721.sol";
 
 /**
- * @title Cyber NFT Base
+ * @title Cyber 721 NFT Base
  * @author CyberConnect
- * @notice This contract is the base for all NFT contracts.
+ * @notice This contract is the base for all 721 NFT contracts.
  */
 abstract contract CyberNFT721 is ERC721, ICyberNFT721 {
     /*//////////////////////////////////////////////////////////////

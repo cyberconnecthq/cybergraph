@@ -12,7 +12,7 @@ import { LibString } from "../libraries/LibString.sol";
 /**
  * @title Essence NFT
  * @author CyberConnect
- * @notice This contract is used to create an Essence NFT.
+ * @notice This contract defines Essence NFT in CyberConnect Protocol.
  */
 contract Essence is CyberNFT721, IEssence {
     /*//////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ contract Essence is CyberNFT721, IEssence {
                          EXTERNAL VIEW
     //////////////////////////////////////////////////////////////*/
 
-    // @inheritdoc IEssence
+    /// @inheritdoc IEssence
     function isTransferable() external view override returns (bool) {
         return _transferable;
     }
@@ -75,9 +75,7 @@ contract Essence is CyberNFT721, IEssence {
                                  PUBLIC
     //////////////////////////////////////////////////////////////*/
 
-    /**
-     * @notice Disallows the transfer of the essence nft.
-     */
+    /// ERC721
     function transferFrom(
         address from,
         address to,
@@ -93,13 +91,7 @@ contract Essence is CyberNFT721, IEssence {
                             PUBLIC VIEW
     //////////////////////////////////////////////////////////////*/
 
-    /**
-     * @notice Generates the metadata json object.
-     *
-     * @param tokenId The EssenceNFT token ID.
-     * @return string The metadata json object.
-     * @dev It requires the tokenId to be already minted.
-     */
+    /// ERC721
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {

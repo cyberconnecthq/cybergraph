@@ -2,12 +2,29 @@
 
 pragma solidity 0.8.14;
 
+/**
+ * @title ISoulEvents
+ * @author CyberConnect
+ */
 interface ISoulEvents {
+    /**
+     * @notice Emitted when a soul is created.
+     *
+     * @param to The recipient address.
+     * @param isOrg Whether the soul is an organization.
+     * @param tokenId The soul token ID.
+     */
     event CreateSoul(
         address indexed to,
         bool indexed isOrg,
         uint256 indexed tokenId
     );
 
+    /**
+     * @notice Emitted when a soul is set/unset as an organization.
+     *
+     * @param account The soul owner address.
+     * @param isOrg Whether the soul is an organization.
+     */
     event SetOrg(address indexed account, bool indexed isOrg);
 }

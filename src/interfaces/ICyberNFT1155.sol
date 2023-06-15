@@ -2,6 +2,10 @@
 
 pragma solidity 0.8.14;
 
+/**
+ * @title ICyberNFT1155
+ * @author CyberConnect
+ */
 interface ICyberNFT1155 {
     /**
      * @notice Gets total supply for certain tokenID, burned tokens will reduce the count.

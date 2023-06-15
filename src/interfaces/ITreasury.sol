@@ -4,6 +4,10 @@ pragma solidity 0.8.14;
 
 import { ITreasuryEvents } from "../interfaces/ITreasuryEvents.sol";
 
+/**
+ * @title ITreasury
+ * @author CyberConnect
+ */
 interface ITreasury is ITreasuryEvents {
     /**
      * @notice Gets the treasury address.

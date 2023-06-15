@@ -4,6 +4,10 @@ pragma solidity 0.8.14;
 
 import { DataTypes } from "../libraries/DataTypes.sol";
 
+/**
+ * @title IMiddleware
+ * @author CyberConnect
+ */
 interface IMiddleware {
     /**
      * @notice Sets related data for middleware.

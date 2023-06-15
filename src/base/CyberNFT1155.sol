@@ -7,9 +7,9 @@ import { ERC1155 } from "../dependencies/solmate/ERC1155.sol";
 import { ICyberNFT1155 } from "../interfaces/ICyberNFT1155.sol";
 
 /**
- * @title Cyber NFT Base
+ * @title Cyber 1155 NFT Base
  * @author CyberConnect
- * @notice This contract is the base for all NFT contracts.
+ * @notice This contract is the base for all 1155 NFT contracts.
  */
 abstract contract CyberNFT1155 is ERC1155, ICyberNFT1155 {
     /*//////////////////////////////////////////////////////////////

@@ -4,6 +4,10 @@ pragma solidity 0.8.14;
 
 import { IMiddlewareManagerEvents } from "../interfaces/IMiddlewareManagerEvents.sol";
 
+/**
+ * @title IMiddlewareManager
+ * @author CyberConnect
+ */
 interface IMiddlewareManager is IMiddlewareManagerEvents {
     /**
      * @notice Allows the middleware.

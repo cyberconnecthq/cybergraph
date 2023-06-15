@@ -1,5 +1,6 @@
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.12;
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+pragma solidity 0.8.14;
 
 import { Create2 } from "openzeppelin-contracts/contracts/utils/Create2.sol";
 import { ERC1967Proxy } from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
@@ -8,6 +9,11 @@ import { IEntryPoint } from "account-abstraction/contracts/interfaces/IEntryPoin
 
 import { CyberAccount } from "../core/CyberAccount.sol";
 
+/**
+ * @title CyberAccountFactory
+ * @author CyberConnect
+ * @notice Factory contract to deploy CyberAccount which fits in ERC4337.
+ */
 contract CyberAccountFactory {
     CyberAccount public immutable implementation;
 

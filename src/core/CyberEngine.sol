@@ -20,6 +20,10 @@ import { DataTypes } from "../libraries/DataTypes.sol";
 /**
  * @title CyberEngine
  * @author CyberConnect
+ * @notice The core contract of the CyberConnect Protocol.
+ * Address with a Soul token can create Content, Comment, Share, Essence and register Subscribe.
+ * Address with a Org Soul token can issue W3st.
+ * Any address can collect Content, Comment, Share, Essence and W3st. And can subscribe to an address with Soul token.
  */
 contract CyberEngine is ReentrancyGuard, ICyberEngine {
     /*//////////////////////////////////////////////////////////////
@@ -667,22 +671,22 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     /// @inheritdoc ICyberEngine
     function getContentTokenURI(
         address account,
-        uint256 tokenID
+        uint256 tokenId
     ) external view override returns (string memory) {
-        _requireContentRegistered(account, tokenID);
-        (address srcAccount, uint256 srcId) = _getSrcIfShared(account, tokenID);
+        _requireContentRegistered(account, tokenId);
+        (address srcAccount, uint256 srcId) = _getSrcIfShared(account, tokenId);
         return _contentByIdByAccount[srcAccount][srcId].tokenURI;
     }
 
     /// @inheritdoc ICyberEngine
     function getContentSrcInfo(
         address account,
-        uint256 tokenID
+        uint256 tokenId
     ) external view override returns (address, uint256) {
-        _requireContentRegistered(account, tokenID);
+        _requireContentRegistered(account, tokenId);
         return (
-            _contentByIdByAccount[account][tokenID].srcAccount,
-            _contentByIdByAccount[account][tokenID].srcId
+            _contentByIdByAccount[account][tokenId].srcAccount,
+            _contentByIdByAccount[account][tokenId].srcId
         );
     }
 
@@ -703,19 +707,19 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     /// @inheritdoc ICyberEngine
     function getContentTransferability(
         address account,
-        uint256 tokenID
+        uint256 tokenId
     ) external view override returns (bool) {
-        _requireContentRegistered(account, tokenID);
-        return _contentByIdByAccount[account][tokenID].transferable;
+        _requireContentRegistered(account, tokenId);
+        return _contentByIdByAccount[account][tokenId].transferable;
     }
 
     /// @inheritdoc ICyberEngine
     function getContentMw(
         address account,
-        uint256 tokenID
+        uint256 tokenId
     ) external view override returns (address) {
-        _requireContentRegistered(account, tokenID);
-        return _contentByIdByAccount[account][tokenID].mw;
+        _requireContentRegistered(account, tokenId);
+        return _contentByIdByAccount[account][tokenId].mw;
     }
 
     /// @inheritdoc ICyberEngine
@@ -735,28 +739,28 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     /// @inheritdoc ICyberEngine
     function getW3stTokenURI(
         address account,
-        uint256 tokenID
+        uint256 tokenId
     ) external view override returns (string memory) {
-        _requireW3stRegistered(account, tokenID);
-        return _w3stByIdByAccount[account][tokenID].tokenURI;
+        _requireW3stRegistered(account, tokenId);
+        return _w3stByIdByAccount[account][tokenId].tokenURI;
     }
 
     /// @inheritdoc ICyberEngine
     function getW3stTransferability(
         address account,
-        uint256 tokenID
+        uint256 tokenId
     ) external view override returns (bool) {
-        _requireW3stRegistered(account, tokenID);
-        return _w3stByIdByAccount[account][tokenID].transferable;
+        _requireW3stRegistered(account, tokenId);
+        return _w3stByIdByAccount[account][tokenId].transferable;
     }
 
     /// @inheritdoc ICyberEngine
     function getW3stMw(
         address account,
-        uint256 tokenID
+        uint256 tokenId
     ) external view override returns (address) {
-        _requireW3stRegistered(account, tokenID);
-        return _w3stByIdByAccount[account][tokenID].mw;
+        _requireW3stRegistered(account, tokenId);
+        return _w3stByIdByAccount[account][tokenId].mw;
     }
 
     /// @inheritdoc ICyberEngine

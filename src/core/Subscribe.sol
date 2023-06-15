@@ -12,7 +12,7 @@ import { LibString } from "../libraries/LibString.sol";
 /**
  * @title Subscribe NFT
  * @author CyberConnect
- * @notice This contract is a subscription NFT in CyberConnect Protocol.
+ * @notice This contract defines Subscribe NFT in CyberConnect Protocol.
  */
 contract Subscribe is CyberNFT721, ISubscribe {
     /*//////////////////////////////////////////////////////////////
@@ -97,6 +97,7 @@ contract Subscribe is CyberNFT721, ISubscribe {
         revert("TRANSFER_NOT_ALLOWED");
     }
 
+    /// ERC721
     function ownerOf(uint256 tokenId) public view override returns (address) {
         uint256 expiryTs = expiries[tokenId];
         if (expiryTs != 0) {
@@ -110,13 +111,7 @@ contract Subscribe is CyberNFT721, ISubscribe {
                             PUBLIC VIEW
     //////////////////////////////////////////////////////////////*/
 
-    /**
-     * @notice Generates the metadata json object.
-     *
-     * @param tokenId The SubscribeNFT token ID.
-     * @return string The metadata json object.
-     * @dev It requires the tokenId to be already minted.
-     */
+    /// ERC721
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {

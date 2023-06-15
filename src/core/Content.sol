@@ -12,7 +12,7 @@ import { LibString } from "../libraries/LibString.sol";
 /**
  * @title Content NFT
  * @author CyberConnect
- * @notice This contract is used to create an Content NFT.
+ * @notice This contract defines Content NFT in CyberConnect Protocol.
  */
 contract Content is CyberNFT1155, IContent {
     /*//////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ contract Content is CyberNFT1155, IContent {
         return super._mint(to, id, amount, data);
     }
 
-    // @inheritdoc IContent
+    /// @inheritdoc IContent
     function isTransferable(
         uint256 tokenId
     ) external view override returns (bool) {
@@ -67,6 +67,7 @@ contract Content is CyberNFT1155, IContent {
                                  PUBLIC
     //////////////////////////////////////////////////////////////*/
 
+    /// ERC1155
     function safeTransferFrom(
         address from,
         address to,
@@ -81,6 +82,7 @@ contract Content is CyberNFT1155, IContent {
         super.safeTransferFrom(from, to, id, amount, data);
     }
 
+    /// ERC1155
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -106,6 +108,7 @@ contract Content is CyberNFT1155, IContent {
                             PUBLIC VIEW
     //////////////////////////////////////////////////////////////*/
 
+    /// ERC1155
     function uri(
         uint256 id
     ) public view virtual override returns (string memory) {

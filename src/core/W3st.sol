@@ -12,7 +12,7 @@ import { LibString } from "../libraries/LibString.sol";
 /**
  * @title W3st NFT
  * @author CyberConnect
- * @notice This contract is used to create an Essence NFT.
+ * @notice This contract defines W3st NFT in CyberConnect Protocol.
  */
 contract W3st is CyberNFT1155, IW3st {
     /*//////////////////////////////////////////////////////////////
@@ -65,6 +65,7 @@ contract W3st is CyberNFT1155, IW3st {
                                  PUBLIC
     //////////////////////////////////////////////////////////////*/
 
+    /// ERC1155
     function safeTransferFrom(
         address from,
         address to,
@@ -79,6 +80,7 @@ contract W3st is CyberNFT1155, IW3st {
         super.safeTransferFrom(from, to, id, amount, data);
     }
 
+    /// ERC1155
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -101,6 +103,7 @@ contract W3st is CyberNFT1155, IW3st {
                             PUBLIC VIEW
     //////////////////////////////////////////////////////////////*/
 
+    /// ERC1155
     function uri(
         uint256 id
     ) public view virtual override returns (string memory) {

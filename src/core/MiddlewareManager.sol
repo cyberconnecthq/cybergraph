@@ -9,6 +9,8 @@ import { IMiddlewareManager } from "../interfaces/IMiddlewareManager.sol";
 /**
  * @title MiddlewareManager
  * @author CyberConnect
+ * @notice This contract manages middleware whitelist.
+ * Only allowed middleware can be used in CyberConnect Protocol.
  */
 contract MiddlewareManager is Owned, IMiddlewareManager {
     /*//////////////////////////////////////////////////////////////
