@@ -5,6 +5,13 @@ const writeAbi = async () => {
   const folders = [
     "CyberAccount.sol/CyberAccount.json",
     "CyberAccountFactory.sol/CyberAccountFactory.json",
+    "CyberEngine.sol/CyberEngine.json",
+    "Content.sol/Content.json",
+    "Essence.sol/Essence.json",
+    "MiddlewareManager.sol/MiddlewareManager.json",
+    "Soul.sol/Soul.json",
+    "Subscribe.sol/Subscribe.json",
+    "W3st.sol/W3st.json",
   ];
   const ps = folders.map(async (file) => {
     const f = await fs.readFile(path.join("./out", file), "utf8");
