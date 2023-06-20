@@ -12,6 +12,7 @@
     "prepare": "husky install",
     "build": "forge build --force",
     "gen_abi": "ts-node misc/gen_abi.ts",
+    "temp_script:mumbai": "source .env.mumbai && forge script script/Tmp.s.sol:TempScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy -vvv",
     "deploy_factory:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployFactory.s.sol:DeployFactory --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_graph:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployGraph.s.sol:DeployGraph --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_deployer:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv"

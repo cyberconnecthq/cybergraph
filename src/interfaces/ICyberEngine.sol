@@ -348,15 +348,10 @@ interface ICyberEngine is ICyberEngineEvents {
 
     /**
      * @notice Sets if the account approves the operator to publish/set Content, Comment, Share, W3st, Subscription in the protocol.
-     * @param account The account address.
      * @param operator The operator address.
      * @param approved The approval status.
      */
-    function setOperatorApproval(
-        address account,
-        address operator,
-        bool approved
-    ) external;
+    function setOperatorApproval(address operator, bool approved) external;
 
     /**
      * @notice Gets the Subscribe NFT token URI.

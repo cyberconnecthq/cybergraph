@@ -21,6 +21,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
     address bob = address(0xB0B);
     address alice = address(0xA11CE);
     address charles = address(0xC);
+    address dan = address(0xD);
 
     address mockMiddleware;
 
@@ -847,11 +848,17 @@ contract IntegrationCollectTest is TestIntegrationBase {
         );
     }
 
+    function testNonSoulOwnerSetOperatorApproval() public {
+        vm.prank(dan);
+        vm.expectRevert("ONLY_SOUL_OWNER");
+        CyberEngine(addrs.engine).setOperatorApproval(alice, true);
+    }
+
     function testOperatorPublishContent() public {
         bytes memory mockData = abi.encode("tmp");
         string memory newTokenUri = "newUri";
         vm.startPrank(bob);
-        CyberEngine(addrs.engine).setOperatorApproval(bob, alice, true);
+        CyberEngine(addrs.engine).setOperatorApproval(alice, true);
 
         vm.startPrank(alice);
         uint256 tokenId = CyberEngine(addrs.engine).publishContent(

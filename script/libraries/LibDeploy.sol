@@ -25,7 +25,7 @@ import { Treasury } from "../../src/middlewares/base/Treasury.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-    bytes32 constant SALT = keccak256(bytes("Test6"));
+    bytes32 constant SALT = keccak256(bytes("Test7"));
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 

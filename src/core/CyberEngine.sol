@@ -612,15 +612,14 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
     /// @inheritdoc ICyberEngine
     function setOperatorApproval(
-        address account,
         address operator,
         bool approved
     ) external override onlySoulOwner {
         require(operator != address(0), "ZERO_ADDRESS");
-        bool prev = _operatorApproval[account][operator];
-        _operatorApproval[account][operator] = approved;
+        bool prev = _operatorApproval[msg.sender][operator];
+        _operatorApproval[msg.sender][operator] = approved;
 
-        emit SetOperatorApproval(account, operator, prev, approved);
+        emit SetOperatorApproval(msg.sender, operator, prev, approved);
     }
 
     /*//////////////////////////////////////////////////////////////
