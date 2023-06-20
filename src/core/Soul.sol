@@ -7,6 +7,7 @@ import { Owned } from "../dependencies/solmate/Owned.sol";
 import { ISoul } from "../interfaces/ISoul.sol";
 
 import { CyberNFT721 } from "../base/CyberNFT721.sol";
+import { LibString } from "../libraries/LibString.sol";
 
 /**
  * @title Soul
@@ -19,6 +20,7 @@ contract Soul is Owned, CyberNFT721, ISoul {
     //////////////////////////////////////////////////////////////*/
 
     mapping(address => bool) internal _orgs;
+    string internal _tokenURI;
 
     /*//////////////////////////////////////////////////////////////
                                  CONSTRUCTOR
@@ -71,6 +73,11 @@ contract Soul is Owned, CyberNFT721, ISoul {
         return _orgs[account];
     }
 
+    /// @inheritdoc ISoul
+    function setTokenURI(string calldata tokenURI) external override onlyOwner {
+        _tokenURI = tokenURI;
+    }
+
     /*//////////////////////////////////////////////////////////////
                                  PUBLIC
     //////////////////////////////////////////////////////////////*/
@@ -91,8 +98,6 @@ contract Soul is Owned, CyberNFT721, ISoul {
         uint256 tokenId
     ) public view virtual override returns (string memory) {
         _requireMinted(tokenId);
-
-        // TODO: tokenURI
-        return "";
+        return string(abi.encodePacked(_tokenURI, LibString.toString(tokenId)));
     }
 }

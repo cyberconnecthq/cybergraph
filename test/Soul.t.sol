@@ -104,7 +104,7 @@ contract SoulTest is Test {
         vm.prank(soulOwner);
         Soul(soulProxy).createSoul(alice, false);
 
-        assertEq(Soul(soulProxy).tokenURI(0), "");
+        assertEq(Soul(soulProxy).tokenURI(0), "0");
 
         vm.expectRevert("NOT_MINTED");
         assertEq(Soul(soulProxy).tokenURI(1), "");

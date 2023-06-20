@@ -33,4 +33,11 @@ interface ISoul is ISoulEvents {
      * @return bool Whether the soul is an organization.
      */
     function isOrgAccount(address account) external view returns (bool);
+
+    /**
+     * @notice Set the Soul token URI
+     *
+     * @param tokenURI The new tokenURI
+     */
+    function setTokenURI(string calldata tokenURI) external;
 }
