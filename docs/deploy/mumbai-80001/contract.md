@@ -1,13 +1,13 @@
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| CyberAccount Factory | 0x0b1bbac2a57f530c0454232082ab061af9ca724f |
-| Soul                 | 0x9e2e340f6a44b8646dfc812b85dbd11189fe9729 |
-| MiddlewareManager    | 0x8e741b12de60959eb762b1729a39b550d4b1721a |
-| Deployer             | 0x74fe943c0ab0919dd0024e7c9e997d54e756d72c |
-| SubscribeDeployer    | 0x2b3a73cd6ac30e7c7e61a62f3ab399b28027fc89 |
-| CyberEngine          | 0xa660f6e4a8291f19a4558399346efd45d5e1c1d4 |
-| Essence              | 0x3ff58449340eb8efea659defc42b9c88db9c2c57 |
-| Content              | 0x81d03c2e3a81190dc059270aea0ada63b251f5b1 |
-| W3ST                 | 0xa841787de59452421ab61e9bfd78b8af3f29d9ae |
-| Subscribe            | 0x38a8cf3f7e6f44e1f6eeffd7f9457461a948c7b3 |
-| Treasury             | 0xa0b79aa37fca8297e382526edbd69121c00a39c2 |
+| CyberAccount Factory | 0xec73a6e5629aaad9d5fe6170d250a618fe0b6e05 |
+| Soul                 | 0xaa9e478faddd1bf8c869c333050b4bec05839c2f |
+| MiddlewareManager    | 0xa30c6e270afecc7a530d8ad66ae6ceb8be03f0cd |
+| Deployer             | 0x11dd1bb900133493eb9306e09908dc6747aaeebb |
+| SubscribeDeployer    | 0x310b9854f69762a21202b1865ebc629d971d35c6 |
+| CyberEngine          | 0x985ef68c15ab2d7ffdb867f652ff64a54ea0ead5 |
+| Essence              | 0x065eca89ae712593c5c5b4d5ef33b38f2f75759d |
+| Content              | 0x690074bc54800fa5e1815aa3e71bedc8f727673e |
+| W3ST                 | 0x8e833a5229f98fb63a6227c5ef2cdb3e37e1a37f |
+| Subscribe            | 0x41363f99b573d4e2699db46b079fe88d58b59a06 |
+| Treasury             | 0x24b393561a6bd121556c081a729ece6949f4fce0 |

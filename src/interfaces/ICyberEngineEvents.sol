@@ -17,6 +17,7 @@ interface ICyberEngineEvents {
      * @param name The essence name.
      * @param symbol The essence symbol.
      * @param tokenURI the essence tokenURI.
+     * @param transferable The transferable flag.
      * @param essence the deployed EssenceNFT address.
      * @param mw The middleware.
      */
@@ -26,6 +27,7 @@ interface ICyberEngineEvents {
         string name,
         string symbol,
         string tokenURI,
+        bool transferable,
         address mw,
         address essence
     );
@@ -59,13 +61,15 @@ interface ICyberEngineEvents {
      * @param account The account address.
      * @param tokenId The token id.
      * @param tokenURI the content tokenURI.
-     * @param content the deployed ContentNFT address.
+     * @param transferable The transferable flag.
      * @param mw The middleware.
+     * @param content the deployed ContentNFT address.
      */
     event PublishContent(
         address indexed account,
         uint256 indexed tokenId,
         string tokenURI,
+        bool transferable,
         address mw,
         address content
     );
@@ -76,6 +80,7 @@ interface ICyberEngineEvents {
      * @param account The account address.
      * @param tokenId The token id.
      * @param tokenURI the content tokenURI.
+     * @param transferable The transferable flag.
      * @param content the deployed ContentNFT address.
      * @param mw The middleware.
      * @param accountCommented The commented account address.
@@ -85,6 +90,7 @@ interface ICyberEngineEvents {
         address indexed account,
         uint256 indexed tokenId,
         string tokenURI,
+        bool transferable,
         address mw,
         address content,
         address accountCommented,
@@ -112,6 +118,7 @@ interface ICyberEngineEvents {
      * @param account The account address.
      * @param tokenId The token id.
      * @param tokenURI the content tokenURI.
+     * @param transferable The transferable flag.
      * @param w3st the deployed W3ST address.
      * @param mw The middleware.
      */
@@ -119,6 +126,7 @@ interface ICyberEngineEvents {
         address indexed account,
         uint256 indexed tokenId,
         string tokenURI,
+        bool transferable,
         address mw,
         address w3st
     );
@@ -132,7 +140,6 @@ interface ICyberEngineEvents {
      * @param amount The amount to collect.
      * @param newTokenId The token id of the newly minted NFT (only for collecting Essence).
      * @param category The category to collect.
-     * @param data The collect data for preprocess.
      */
     event Collect(
         address indexed collector,
@@ -140,8 +147,7 @@ interface ICyberEngineEvents {
         uint256 indexed id,
         uint256 amount,
         uint256 newTokenId,
-        DataTypes.Category category,
-        bytes data
+        DataTypes.Category category
     );
 
     /**

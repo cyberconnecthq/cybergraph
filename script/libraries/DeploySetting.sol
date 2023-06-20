@@ -20,10 +20,10 @@ contract DeploySetting {
                 0xF191131dAB798dD6c500816338d4B6EBC34825C7
             );
             deployParams.protocolOwner = address(
-                0x526010620cAB87A4afD0599914Bc57aac095Dd34
+                0x7B23B874cD857C5968434F95674165a36CfD5E4e
             );
             deployParams.treasuryReceiver = address(
-                0x526010620cAB87A4afD0599914Bc57aac095Dd34
+                0x7B23B874cD857C5968434F95674165a36CfD5E4e
             );
         } else {
             revert("PARAMS_NOT_SET");

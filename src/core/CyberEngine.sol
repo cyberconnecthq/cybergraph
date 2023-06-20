@@ -157,12 +157,11 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         );
         emit Collect(
             collector,
-            account,
-            id,
+            params.account,
+            params.id,
             params.amount,
             tokenId,
-            params.category,
-            data
+            params.category
         );
     }
 
@@ -206,7 +205,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         external
         override
         onlySoulOwnerOrOperator(params.account)
-        returns (uint256)
+        returns (uint256 id)
     {
         require(
             params.mw == address(0) ||
@@ -217,7 +216,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         require(bytes(params.name).length != 0, "EMPTY_NAME");
         require(bytes(params.symbol).length != 0, "EMPTY_SYMBOL");
 
-        uint256 id = _accounts[params.account].essenceCount;
+        id = _accounts[params.account].essenceCount;
 
         _essenceByIdByAccount[params.account][id].name = params.name;
         _essenceByIdByAccount[params.account][id].symbol = params.symbol;
@@ -252,10 +251,10 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             params.name,
             params.symbol,
             params.tokenURI,
+            params.transferable,
             params.mw,
             essence
         );
-        return id;
     }
 
     /// @inheritdoc ICyberEngine
@@ -348,6 +347,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             account,
             tokenId,
             params.tokenURI,
+            params.transferable,
             params.mw,
             _accounts[account].content
         );
@@ -442,6 +442,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             account,
             tokenId,
             params.tokenURI,
+            params.transferable,
             params.mw,
             _accounts[account].content,
             params.accountCommented,
@@ -494,6 +495,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             account,
             tokenId,
             params.tokenURI,
+            params.transferable,
             params.mw,
             _accounts[account].w3st
         );
