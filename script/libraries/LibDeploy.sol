@@ -3,9 +3,9 @@
 pragma solidity 0.8.14;
 
 import "forge-std/Vm.sol";
-import { IEntryPoint } from "account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import { IDeployer } from "../../src/interfaces/IDeployer.sol";
 import { ISubscribeDeployer } from "../../src/interfaces/ISubscribeDeployer.sol";
+import { IEntryPoint } from "account-abstraction/interfaces/IEntryPoint.sol";
 import { Clones } from "openzeppelin-contracts/contracts/proxy/Clones.sol";
 
 import { CyberAccountFactory } from "../../src/factory/CyberAccountFactory.sol";
@@ -102,17 +102,18 @@ library LibDeploy {
 
     function deployFactory(
         Vm vm,
+        address _dc,
         address entryPoint
     ) internal returns (address factory) {
-        //Create2Deployer dc = Create2Deployer(params.deployerContract);
+        Create2Deployer dc = Create2Deployer(_dc);
         IEntryPoint iep = IEntryPoint(entryPoint);
-        // factory = dc.deploy(
-        //     abi.encodePacked(
-        //         type(CyberWalletFactory).creationCode,
-        //         abi.encode(iep)
-        //     ),
-        //     SALT
-        // );
+        factory = dc.deploy(
+            abi.encodePacked(
+                type(CyberAccountFactory).creationCode,
+                abi.encode(iep)
+            ),
+            SALT
+        );
         factory = address(new CyberAccountFactory(iep));
 
         _write(vm, "CyberAccount Factory", factory);

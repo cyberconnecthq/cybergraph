@@ -1,67 +1,86 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-pragma solidity 0.8.14;
+import "kernel/src/Kernel.sol";
 
 import { Create2 } from "openzeppelin-contracts/contracts/utils/Create2.sol";
 import { ERC1967Proxy } from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { ECDSAValidator } from "kernel/src/validator/ECDSAValidator.sol";
+import { TempKernel } from "kernel/src/factory/TempKernel.sol";
+import { EIP1967Proxy } from "kernel/src/factory/EIP1967Proxy.sol";
 
-import { IEntryPoint } from "account-abstraction/contracts/interfaces/IEntryPoint.sol";
+import { IEntryPoint } from "account-abstraction/interfaces/IEntryPoint.sol";
 
-import { CyberAccount } from "../core/CyberAccount.sol";
-
-/**
- * @title CyberAccountFactory
- * @author CyberConnect
- * @notice Factory contract to deploy CyberAccount which fits in ERC4337.
- */
 contract CyberAccountFactory {
-    CyberAccount public immutable implementation;
+    TempKernel public immutable kernelTemplate;
+    Kernel public immutable nextTemplate;
+    IEntryPoint public immutable entryPoint;
+
+    event AccountCreated(
+        address indexed account,
+        address indexed validator,
+        bytes data,
+        uint256 index
+    );
 
     constructor(IEntryPoint _entryPoint) {
-        implementation = new CyberAccount(_entryPoint);
+        kernelTemplate = new TempKernel(_entryPoint);
+        nextTemplate = new Kernel(_entryPoint);
+        entryPoint = _entryPoint;
     }
 
-    /**
-     * create an account, and return its address.
-     * returns the address even if the account is already deployed.
-     * Note that during UserOperation execution, this method is called only if the account is not deployed.
-     * This method returns an existing account address so that entryPoint.getSenderAddress() would work even after account creation
-     */
     function createAccount(
-        address owner,
-        uint salt
-    ) public returns (CyberAccount ret) {
-        address addr = getAddress(owner, salt);
-        uint codeSize = addr.code.length;
-        if (codeSize > 0) {
-            return CyberAccount(payable(addr));
-        }
-        ret = CyberAccount(
-            payable(
-                new ERC1967Proxy{ salt: bytes32(salt) }(
-                    address(implementation),
-                    abi.encodeCall(CyberAccount.initialize, (owner))
+        IKernelValidator _validator,
+        bytes calldata _data,
+        uint256 _index
+    ) external returns (EIP1967Proxy proxy) {
+        bytes32 salt = keccak256(abi.encodePacked(_validator, _data, _index));
+        address addr = Create2.computeAddress(
+            salt,
+            keccak256(
+                abi.encodePacked(
+                    type(EIP1967Proxy).creationCode,
+                    abi.encode(
+                        address(kernelTemplate),
+                        abi.encodeCall(
+                            TempKernel.initialize,
+                            (_validator, address(nextTemplate), _data)
+                        )
+                    )
                 )
             )
         );
+        if (addr.code.length > 0) {
+            return EIP1967Proxy(payable(addr));
+        }
+        proxy = new EIP1967Proxy{ salt: salt }(
+            address(kernelTemplate),
+            abi.encodeCall(
+                TempKernel.initialize,
+                (_validator, address(nextTemplate), _data)
+            )
+        );
+        emit AccountCreated(address(proxy), address(_validator), _data, _index);
     }
 
-    /**
-     * calculate the counterfactual address of this account as it would be returned by createAccount()
-     */
-    function getAddress(
-        address owner,
-        uint salt
+    function getAccountAddress(
+        IKernelValidator _validator,
+        bytes calldata _data,
+        uint256 _index
     ) public view returns (address) {
+        bytes32 salt = keccak256(abi.encodePacked(_validator, _data, _index));
         return
             Create2.computeAddress(
-                bytes32(salt),
+                salt,
                 keccak256(
                     abi.encodePacked(
-                        type(ERC1967Proxy).creationCode,
+                        type(EIP1967Proxy).creationCode,
                         abi.encode(
-                            address(implementation),
-                            abi.encodeCall(CyberAccount.initialize, (owner))
+                            address(kernelTemplate),
+                            abi.encodeCall(
+                                TempKernel.initialize,
+                                (_validator, address(nextTemplate), _data)
+                            )
                         )
                     )
                 )

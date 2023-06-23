@@ -1,6 +1,5 @@
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| CyberAccount Factory | 0xec73a6e5629aaad9d5fe6170d250a618fe0b6e05 |
 | Soul                 | 0x77350f03693da1de12003b8a6a2afc004788542a |
 | MiddlewareManager    | 0x3ca33c6286327bc7099ef001457d838907ca56aa |
 | Deployer             | 0x9d5a9b0bf60ce826570230975cfe3a972210a2fa |
@@ -11,3 +10,4 @@
 | W3ST                 | 0xeb3dce06bdca3d42df409dcdb16f4f35d2775b70 |
 | Subscribe            | 0x9e1f844f5850c90f1a4e2b492bb8239dd132a55a |
 | Treasury             | 0xe327dd07d1dd2fb24f918b8421309dbebf2e5132 |
+| CyberAccount Factory | 0x5684d19825cf5900345e4dff2d8941c2092d2d99 |

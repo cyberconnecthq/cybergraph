@@ -37,7 +37,7 @@ interface ISoul is ISoulEvents {
     /**
      * @notice Set the Soul token URI
      *
-     * @param tokenURI The new tokenURI
+     * @param uri The new tokenURI
      */
-    function setTokenURI(string calldata tokenURI) external;
+    function setTokenURI(string calldata uri) external;
 }

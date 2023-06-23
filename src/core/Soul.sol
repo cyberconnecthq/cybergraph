@@ -74,8 +74,8 @@ contract Soul is Owned, CyberNFT721, ISoul {
     }
 
     /// @inheritdoc ISoul
-    function setTokenURI(string calldata tokenURI) external override onlyOwner {
-        _tokenURI = tokenURI;
+    function setTokenURI(string calldata uri) external override onlyOwner {
+        _tokenURI = uri;
     }
 
     /*//////////////////////////////////////////////////////////////
