@@ -2,7 +2,7 @@
   "name": "cyberaccount",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:cyberconnecthq/cyberwallet.git",
+  "repository": "git@github.com:cyberconnecthq/cybergraph.git",
   "author": "zhimao@cyberconnect.me",
   "license": "GPL-3.0-or-later",
   "scripts": {

@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/cyberconnecthq/cyberwallet/branch/main/graph/badge.svg?token=G8BTJTN6FY)](https://codecov.io/gh/cyberconnecthq/cyberwallet)
+[![codecov](https://codecov.io/gh/cyberconnecthq/cybergraph/branch/main/graph/badge.svg?token=G8BTJTN6FY)](https://codecov.io/gh/cyberconnecthq/cybergraph)
 
 # cybergraph
 
