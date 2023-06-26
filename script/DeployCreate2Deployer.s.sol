@@ -10,9 +10,14 @@ import { DeploySetting } from "./libraries/DeploySetting.sol";
 contract DeployerCreate2Deployer is Script, DeploySetting {
     function run() external {
         uint256 nonce = vm.getNonce(msg.sender);
+        require(nonce == 0, "nonce must be 0");
+
         if (block.chainid == DeploySetting.MUMBAI) {
-            require(nonce == 0, "nonce must be 0");
-            console.log("deployer", msg.sender);
+            require(
+                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
+                "address must be deployer"
+            );
+        } else if (block.chainid == DeploySetting.OP_GOERLI) {
             require(
                 msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
                 "address must be deployer"

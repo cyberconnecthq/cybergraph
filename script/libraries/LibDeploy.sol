@@ -36,6 +36,7 @@ library LibDeploy {
         if (chainId == 1) chainName = "mainnet";
         else if (chainId == 80001) chainName = "mumbai";
         else if (chainId == 137) chainName = "polygon";
+        else if (chainId == 420) chainName = "op_goerli";
         else chainName = "unknown";
         return
             string(

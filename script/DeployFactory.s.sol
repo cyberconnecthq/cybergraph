@@ -17,6 +17,12 @@ contract DeployFactory is Script, DeploySetting {
                 deployParams.deployerContract,
                 address(0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789)
             );
+        } else if (block.chainid == DeploySetting.OP_GOERLI) {
+            LibDeploy.deployFactory(
+                vm,
+                deployParams.deployerContract,
+                address(0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789)
+            );
         }
         vm.stopBroadcast();
     }
