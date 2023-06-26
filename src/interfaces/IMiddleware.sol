@@ -30,6 +30,7 @@ interface IMiddleware {
      * @param account The account address.
      * @param category The category of target NFT.
      * @param id The corresponding identifier for a specific category.
+     * @param amount The amount of NFT to mint.
      * @param collector The collector address.
      * @param referrerAccount The referrer account address.
      * @param data Extra data to process.
@@ -38,6 +39,7 @@ interface IMiddleware {
         address account,
         DataTypes.Category category,
         uint256 id,
+        uint256 amount,
         address collector,
         address referrerAccount,
         bytes calldata data

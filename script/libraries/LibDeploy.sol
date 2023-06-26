@@ -22,6 +22,7 @@ import { Create2Deployer } from "../../src/deployer/Create2Deployer.sol";
 import { Deployer } from "../../src/deployer/Deployer.sol";
 import { SubscribeDeployer } from "../../src/deployer/SubscribeDeployer.sol";
 import { Treasury } from "../../src/middlewares/base/Treasury.sol";
+import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -98,6 +99,18 @@ library LibDeploy {
             )
         );
         return address(uint160(uint256(hash_)));
+    }
+
+    function deployMw(Vm vm, address _dc, address engine) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address permissionMw = dc.deploy(
+            abi.encodePacked(
+                type(PermissionMw).creationCode,
+                abi.encode(engine)
+            ),
+            SALT
+        );
+        _write(vm, "PermissionMw", permissionMw);
     }
 
     function deployFactory(

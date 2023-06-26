@@ -22,6 +22,7 @@ contract MockMiddleware is IMiddleware {
         address account,
         DataTypes.Category category,
         uint256 id,
+        uint256 amount,
         address collector,
         address referrerAccount,
         bytes calldata data

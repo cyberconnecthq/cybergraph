@@ -282,6 +282,34 @@ contract LimitedTimePaidMwTest is TestIntegrationBase {
         );
     }
 
+    function test_MwSet_CollectMoreThanOne_Revert() public {
+        vm.startPrank(alice);
+        uint256 tokenId = CyberEngine(addrs.engine).publishContent(
+            DataTypes.PublishContentParams(alice, BOB_ISSUED_1_URL, mw, true),
+            abi.encode(
+                uint256(1),
+                uint256(1 ether),
+                alice,
+                mockToken,
+                uint256(60),
+                uint256(0),
+                // 10%
+                uint16(1000),
+                true
+            )
+        );
+        vm.expectRevert("INCORRECT_COLLECT_AMOUNT");
+        CyberEngine(addrs.engine).collect(
+            DataTypes.CollectParams(
+                alice,
+                tokenId,
+                2,
+                DataTypes.Category.Content
+            ),
+            new bytes(0)
+        );
+    }
+
     function test_MwSet_CollectContentNonSoulOwner_Revert() public {
         vm.prank(alice);
         uint256 tokenId = CyberEngine(addrs.engine).publishContent(

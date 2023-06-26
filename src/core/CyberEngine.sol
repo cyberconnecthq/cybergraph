@@ -142,6 +142,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
                 account,
                 params.category,
                 id,
+                params.amount,
                 collector,
                 params.account,
                 data

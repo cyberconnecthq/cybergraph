@@ -13,6 +13,7 @@ import { Constants } from "../libraries/Constants.sol";
 import { DataTypes } from "../libraries/DataTypes.sol";
 
 import { FeeMw } from "./base/FeeMw.sol";
+import { OnlyEngineMw } from "./base/OnlyEngineMw.sol";
 
 /**
  * @title  LimitedTimePaid Middleware
@@ -21,17 +22,8 @@ import { FeeMw } from "./base/FeeMw.sol";
  * the issuer can choose to set rules including whether collecting this require soul holder,
  * start/end time and has a total supply.
  */
-contract LimitedTimePaidMw is IMiddleware, FeeMw {
+contract LimitedTimePaidMw is IMiddleware, FeeMw, OnlyEngineMw {
     using SafeERC20 for IERC20;
-
-    /*//////////////////////////////////////////////////////////////
-                              MODIFIERS
-    //////////////////////////////////////////////////////////////*/
-
-    modifier onlyEngine() {
-        require(ENGINE == msg.sender, "ONLY_ENGINE");
-        _;
-    }
 
     /*//////////////////////////////////////////////////////////////
                                 EVENT
@@ -70,7 +62,6 @@ contract LimitedTimePaidMw is IMiddleware, FeeMw {
     mapping(address => mapping(DataTypes.Category => mapping(uint256 => LimitedTimePaidData)))
         internal _data;
     address public immutable SOUL;
-    address public immutable ENGINE;
 
     /*//////////////////////////////////////////////////////////////
                             CONSTRUCTOR
@@ -80,8 +71,7 @@ contract LimitedTimePaidMw is IMiddleware, FeeMw {
         address treasury,
         address engine,
         address soul
-    ) FeeMw(treasury) {
-        ENGINE = engine;
+    ) FeeMw(treasury) OnlyEngineMw(engine) {
         SOUL = soul;
     }
 
@@ -158,10 +148,12 @@ contract LimitedTimePaidMw is IMiddleware, FeeMw {
         address account,
         DataTypes.Category category,
         uint256 id,
+        uint256 amount,
         address collector,
         address referrerAccount,
         bytes calldata
     ) external override onlyEngine {
+        require(amount == 1, "INCORRECT_COLLECT_AMOUNT");
         require(
             _data[account][category][id].totalSupply >
                 _data[account][category][id].currentCollect,
