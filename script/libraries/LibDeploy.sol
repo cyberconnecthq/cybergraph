@@ -4,6 +4,7 @@ pragma solidity 0.8.14;
 
 import "forge-std/Vm.sol";
 import { IDeployer } from "../../src/interfaces/IDeployer.sol";
+import { ISoul } from "../../src/interfaces/ISoul.sol";
 import { ISubscribeDeployer } from "../../src/interfaces/ISubscribeDeployer.sol";
 import { IEntryPoint } from "account-abstraction/interfaces/IEntryPoint.sol";
 import { Clones } from "openzeppelin-contracts/contracts/proxy/Clones.sol";
@@ -26,7 +27,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-    bytes32 constant SALT = keccak256(bytes("Test7"));
+    bytes32 constant SALT = keccak256(bytes("Test8"));
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 
@@ -114,22 +115,31 @@ library LibDeploy {
         _write(vm, "PermissionMw", permissionMw);
     }
 
+    function setSoulMinter(
+        Vm vm,
+        address soul,
+        address target,
+        bool isMinter
+    ) internal {
+        ISoul(soul).setMinter(target, true);
+        require(ISoul(soul).isMinter(target), "NOT_MINTER");
+    }
+
     function deployFactory(
         Vm vm,
         address _dc,
-        address entryPoint
+        address entryPoint,
+        address soul
     ) internal returns (address factory) {
         Create2Deployer dc = Create2Deployer(_dc);
         IEntryPoint iep = IEntryPoint(entryPoint);
         factory = dc.deploy(
             abi.encodePacked(
                 type(CyberAccountFactory).creationCode,
-                abi.encode(iep)
+                abi.encode(iep, soul)
             ),
             SALT
         );
-        factory = address(new CyberAccountFactory(iep));
-
         _write(vm, "CyberAccount Factory", factory);
     }
 

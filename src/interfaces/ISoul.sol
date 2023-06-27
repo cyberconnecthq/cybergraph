@@ -27,6 +27,14 @@ interface ISoul is ISoulEvents {
     function setOrg(address account, bool isOrg) external;
 
     /**
+     * @notice Sets minter role.
+     *
+     * @param account The minter address.
+     * @param isMinter Whether the account is a minter.
+     */
+    function setMinter(address account, bool isMinter) external;
+
+    /**
      * @notice Checks if a soul is an organization.
      *
      * @param account The soul owner address.
@@ -35,9 +43,17 @@ interface ISoul is ISoulEvents {
     function isOrgAccount(address account) external view returns (bool);
 
     /**
+     * @notice Checks if an address is a minter.
+     *
+     * @param account The address to check.
+     * @return bool Whether the address is a minter.
+     */
+    function isMinter(address account) external view returns (bool);
+
+    /**
      * @notice Set the Soul token URI
      *
-     * @param uri The new tokenURI
+     * @param uri    The new tokenURI
      */
     function setTokenURI(string calldata uri) external;
 }

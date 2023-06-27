@@ -21,6 +21,19 @@ contract Soul is Owned, CyberNFT721, ISoul {
 
     mapping(address => bool) internal _orgs;
     string internal _tokenURI;
+    mapping(address => bool) internal _minters;
+
+    /*//////////////////////////////////////////////////////////////
+                              MODIFIERS
+    //////////////////////////////////////////////////////////////*/
+
+    /**
+     * @notice Checks the sender is a minter.
+     */
+    modifier onlyMinter() {
+        require(_minters[msg.sender], "ONLY_MINTER");
+        _;
+    }
 
     /*//////////////////////////////////////////////////////////////
                                  CONSTRUCTOR
@@ -39,6 +52,7 @@ contract Soul is Owned, CyberNFT721, ISoul {
         string calldata name,
         string calldata symbol
     ) external initializer {
+        _minters[owner] = true;
         Owned.__Owned_Init(owner);
         super._initialize(name, symbol);
     }
@@ -47,7 +61,7 @@ contract Soul is Owned, CyberNFT721, ISoul {
     function createSoul(
         address to,
         bool isOrg
-    ) external override onlyOwner returns (uint256) {
+    ) external override onlyMinter returns (uint256) {
         if (isOrg) {
             _orgs[to] = true;
         }
@@ -66,11 +80,26 @@ contract Soul is Owned, CyberNFT721, ISoul {
     }
 
     /// @inheritdoc ISoul
+    function setMinter(
+        address account,
+        bool _isMinter
+    ) external override onlyOwner {
+        _minters[account] = _isMinter;
+
+        emit SetMinter(account, _isMinter);
+    }
+
+    /// @inheritdoc ISoul
     function isOrgAccount(
         address account
     ) external view override returns (bool) {
         require(balanceOf(account) > 0, "NOT_SOUL_OWNER");
         return _orgs[account];
+    }
+
+    /// @inheritdoc ISoul
+    function isMinter(address account) external view override returns (bool) {
+        return _minters[account];
     }
 
     /// @inheritdoc ISoul

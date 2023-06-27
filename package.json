@@ -18,6 +18,7 @@
     "deploy_graph:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployGraph.s.sol:DeployGraph --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_deployer:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
     "deploy_mw:mumbai": "source .env.mumbai && forge script script/DeployMw.s.sol:DeployMw --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast  --legacy -vvv --etherscan-api-key $API_KEY -vvv",
+    "set_minter:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/SetSoulMinter.s.sol:SetSoulMinter --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_deployer:op_goerli": "source .env.op_goerli && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv"
   },
   "devDependencies": {

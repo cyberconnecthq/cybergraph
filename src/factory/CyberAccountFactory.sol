@@ -10,11 +10,13 @@ import { TempKernel } from "kernel/src/factory/TempKernel.sol";
 import { EIP1967Proxy } from "kernel/src/factory/EIP1967Proxy.sol";
 
 import { IEntryPoint } from "account-abstraction/interfaces/IEntryPoint.sol";
+import { ISoul } from "../interfaces/ISoul.sol";
 
 contract CyberAccountFactory {
     TempKernel public immutable kernelTemplate;
     Kernel public immutable nextTemplate;
     IEntryPoint public immutable entryPoint;
+    address public immutable soul;
 
     event AccountCreated(
         address indexed account,
@@ -23,10 +25,11 @@ contract CyberAccountFactory {
         uint256 index
     );
 
-    constructor(IEntryPoint _entryPoint) {
+    constructor(IEntryPoint _entryPoint, address _soul) {
         kernelTemplate = new TempKernel(_entryPoint);
         nextTemplate = new Kernel(_entryPoint);
         entryPoint = _entryPoint;
+        soul = _soul;
     }
 
     function createAccount(
@@ -60,6 +63,8 @@ contract CyberAccountFactory {
                 (_validator, address(nextTemplate), _data)
             )
         );
+
+        ISoul(soul).createSoul(address(proxy), false);
         emit AccountCreated(address(proxy), address(_validator), _data, _index);
     }
 

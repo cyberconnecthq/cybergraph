@@ -15,13 +15,15 @@ contract DeployFactory is Script, DeploySetting {
             LibDeploy.deployFactory(
                 vm,
                 deployParams.deployerContract,
-                address(0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789)
+                deployParams.entryPoint,
+                address(0x950453Fdc75510e250806769A342F3129E3C3Fad) // soul address
             );
         } else if (block.chainid == DeploySetting.OP_GOERLI) {
             LibDeploy.deployFactory(
                 vm,
                 deployParams.deployerContract,
-                address(0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789)
+                deployParams.entryPoint,
+                address(0x950453Fdc75510e250806769A342F3129E3C3Fad) // soul address
             );
         }
         vm.stopBroadcast();

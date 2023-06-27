@@ -27,4 +27,12 @@ interface ISoulEvents {
      * @param isOrg Whether the soul is an organization.
      */
     event SetOrg(address indexed account, bool indexed isOrg);
+
+    /**
+     * @notice Emitted when an address is set/unset as a minter.
+     *
+     * @param account The address.
+     * @param isMinter Whether the address is a minter.
+     */
+    event SetMinter(address indexed account, bool indexed isMinter);
 }
