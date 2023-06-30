@@ -15,7 +15,8 @@ contract DeployMw is Script, DeploySetting {
             LibDeploy.deployMw(
                 vm,
                 deployParams.deployerContract,
-                address(0x0FD51A4bf0f885496a41db946Bd9a5cCCd69b771)
+                address(0xEa2F6D76c6B9898Eaac94e9dde2f158cFc17d33B),
+                address(0x4D9d3D16AefeE892537F453731F6C1d237153E17)
             );
         }
         vm.stopBroadcast();

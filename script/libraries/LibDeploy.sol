@@ -103,7 +103,12 @@ library LibDeploy {
         return address(uint160(uint256(hash_)));
     }
 
-    function deployMw(Vm vm, address _dc, address engine) internal {
+    function deployMw(
+        Vm vm,
+        address _dc,
+        address engine,
+        address mwManager
+    ) internal {
         Create2Deployer dc = Create2Deployer(_dc);
         address permissionMw = dc.deploy(
             abi.encodePacked(
@@ -112,6 +117,7 @@ library LibDeploy {
             ),
             SALT
         );
+        MiddlewareManager(mwManager).allowMw(permissionMw, true);
         _write(vm, "PermissionMw", permissionMw);
     }
 

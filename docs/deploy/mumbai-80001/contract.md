@@ -10,4 +10,6 @@
 | W3ST                 | 0x65930a84795c9c167c042866869bd01afcb5524e |
 | Subscribe            | 0xc916020d54be364f5fc29b6c67ecba2a3cea5082 |
 | Treasury             | 0x3c91c7079dc79f3f5baacf1a178385eda6f598e3 |
-| CyberAccount Factory | 0xfd65e94bc2de0cec83d8f65b39e24dab11d7c558 |
+| CyberAccount Factory | 0x5684d19825cf5900345e4dff2d8941c2092d2d99 |
+| ECDSAValidator       | 0x180D6465F921C7E0DEA0040107D342c87455fFF5 |
+| PermissionMw         | 0x9e55c6bce4c0fe625b27ab26953216ac3e0b2642 |
