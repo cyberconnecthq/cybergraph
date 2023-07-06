@@ -8,6 +8,8 @@ import { ISoul } from "../../src/interfaces/ISoul.sol";
 import { ISubscribeDeployer } from "../../src/interfaces/ISubscribeDeployer.sol";
 import { IEntryPoint } from "account-abstraction/interfaces/IEntryPoint.sol";
 import { Clones } from "openzeppelin-contracts/contracts/proxy/Clones.sol";
+import { ERC1967Proxy } from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { ECDSAValidator } from "kernel/src/validator/ECDSAValidator.sol";
 
 import { CyberAccountFactory } from "../../src/factory/CyberAccountFactory.sol";
 import { Soul } from "../../src/core/Soul.sol";
@@ -27,7 +29,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-    bytes32 constant SALT = keccak256(bytes("Test8"));
+    bytes32 constant SALT = keccak256(bytes("Test10"));
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 
@@ -38,6 +40,7 @@ library LibDeploy {
         else if (chainId == 80001) chainName = "mumbai";
         else if (chainId == 137) chainName = "polygon";
         else if (chainId == 420) chainName = "op_goerli";
+        else if (chainId == 84531) chainName = "base_goerli";
         else chainName = "unknown";
         return
             string(
@@ -121,6 +124,15 @@ library LibDeploy {
         _write(vm, "PermissionMw", permissionMw);
     }
 
+    function deployValidator(Vm vm, address _dc) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address validator = dc.deploy(
+            abi.encodePacked(type(ECDSAValidator).creationCode),
+            SALT
+        );
+        _write(vm, "ECDSAValidator", validator);
+    }
+
     function setSoulMinter(
         Vm vm,
         address soul,
@@ -177,8 +189,20 @@ library LibDeploy {
             abi.encodePacked(type(Soul).creationCode),
             SALT
         );
-        addrs.soul = Clones.clone(soulImpl);
-        Soul(addrs.soul).initialize(soulManager, "CyberSoul", "SOUL");
+
+        addrs.soul = dc.deploy(
+            abi.encodePacked(
+                type(ERC1967Proxy).creationCode,
+                abi.encode(
+                    soulImpl,
+                    abi.encodeCall(
+                        Soul.initialize,
+                        (soulManager, "CyberSoul", "SOUL")
+                    )
+                )
+            ),
+            SALT
+        );
 
         // 2. deploy mw manager
         addrs.manager = dc.deploy(

@@ -64,7 +64,8 @@ contract CyberAccountFactory {
             )
         );
 
-        ISoul(soul).createSoul(address(proxy), false);
+        // recover this after Kernel bug is resolved.
+        // ISoul(soul).createSoul(address(proxy), false);
         emit AccountCreated(address(proxy), address(_validator), _data, _index);
     }
 

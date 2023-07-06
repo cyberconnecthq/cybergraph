@@ -21,6 +21,45 @@ import "forge-std/console.sol";
 contract TempScript is Script {
     function run() external {
         vm.startBroadcast();
+
+        console.log(
+            address(
+                CyberAccountFactory(0x5684d19825cf5900345e4dfF2d8941c2092d2d99)
+                    .kernelTemplate()
+            )
+        );
+
+        console.log(
+            address(
+                CyberAccountFactory(0x5684d19825cf5900345e4dfF2d8941c2092d2d99)
+                    .nextTemplate()
+            )
+        );
+        // console.log(
+        //     address(
+        //         CyberAccountFactory(0x5684d19825cf5900345e4dfF2d8941c2092d2d99)
+        //             .getAccountAddress(
+        //                 IKernelValidator(
+        //                     0x180D6465F921C7E0DEA0040107D342c87455fFF5
+        //                 ),
+        //                 hex"4603a49D74F15a02994d80F3B3913A17Bf5eFCaf",
+        //                 0
+        //             )
+        //     )
+        // );
+
+        // console.logBytes(type(EIP1967Proxy).creationCode);
+
+        // Soul(0x950453Fdc75510e250806769A342F3129E3C3Fad).createSoul(
+        //     0xcA160793501321eb33Fca67ec67aE59a27a9BE21,
+        //     true
+        // );
+
+        Soul(0x950453Fdc75510e250806769A342F3129E3C3Fad).setMinter(
+            0xaB24749c622AF8FC567CA2b4d3EC53019F83dB8F,
+            true
+        );
+
         vm.stopBroadcast();
     }
 }

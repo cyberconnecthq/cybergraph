@@ -6,7 +6,7 @@ import "forge-std/Script.sol";
 import { DeploySetting } from "./libraries/DeploySetting.sol";
 import { LibDeploy } from "./libraries/LibDeploy.sol";
 
-contract DeployMw is Script, DeploySetting {
+contract DeployValidator is Script, DeploySetting {
     function run() external {
         _setDeployParams();
         vm.startBroadcast();
@@ -15,12 +15,7 @@ contract DeployMw is Script, DeploySetting {
             block.chainid == DeploySetting.MUMBAI ||
             block.chainid == DeploySetting.BASE_GOERLI
         ) {
-            LibDeploy.deployMw(
-                vm,
-                deployParams.deployerContract,
-                address(0x9C7f8e6284Cf8999F04A51e5dd44ff5ED91fEE76),
-                address(0x3De80b44fC15fc0376F0Ba0Ae9CE53A261c03B56)
-            );
+            LibDeploy.deployValidator(vm, deployParams.deployerContract);
         }
         vm.stopBroadcast();
     }

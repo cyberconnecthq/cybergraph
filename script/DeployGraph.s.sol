@@ -11,7 +11,10 @@ contract DeployGraph is Script, DeploySetting {
         _setDeployParams();
         vm.startBroadcast();
 
-        if (block.chainid == DeploySetting.MUMBAI) {
+        if (
+            block.chainid == DeploySetting.MUMBAI ||
+            block.chainid == DeploySetting.BASE_GOERLI
+        ) {
             LibDeploy.deployGraph(
                 vm,
                 deployParams.deployerContract,

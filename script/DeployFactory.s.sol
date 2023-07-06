@@ -11,12 +11,15 @@ contract DeployFactory is Script, DeploySetting {
         _setDeployParams();
         vm.startBroadcast();
 
-        if (block.chainid == DeploySetting.MUMBAI) {
+        if (
+            block.chainid == DeploySetting.MUMBAI ||
+            block.chainid == DeploySetting.BASE_GOERLI
+        ) {
             LibDeploy.deployFactory(
                 vm,
                 deployParams.deployerContract,
                 deployParams.entryPoint,
-                address(0x950453Fdc75510e250806769A342F3129E3C3Fad) // soul address
+                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725) // soul address
             );
         } else if (block.chainid == DeploySetting.OP_GOERLI) {
             LibDeploy.deployFactory(

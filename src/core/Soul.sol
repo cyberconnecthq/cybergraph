@@ -72,8 +72,7 @@ contract Soul is Owned, CyberNFT721, ISoul {
     }
 
     /// @inheritdoc ISoul
-    function setOrg(address account, bool isOrg) external override onlyOwner {
-        require(balanceOf(account) > 0, "NOT_SOUL_OWNER");
+    function setOrg(address account, bool isOrg) external override onlyMinter {
         _orgs[account] = isOrg;
 
         emit SetOrg(account, isOrg);
