@@ -19,7 +19,8 @@ contract DeployFactory is Script, DeploySetting {
                 vm,
                 deployParams.deployerContract,
                 deployParams.entryPoint,
-                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725) // soul address
+                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
+                true
             );
         } else if (block.chainid == DeploySetting.OP_GOERLI) {
             LibDeploy.deployFactory(

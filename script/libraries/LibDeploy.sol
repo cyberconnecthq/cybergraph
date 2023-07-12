@@ -32,11 +32,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-<<<<<<< HEAD
     bytes32 constant SALT = keccak256(bytes("Test10"));
-=======
-    bytes32 constant SALT = keccak256(bytes("TestK"));
->>>>>>> 28f1ba7 (zk rollup and factory test)
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 
@@ -47,12 +43,9 @@ library LibDeploy {
         else if (chainId == 80001) chainName = "mumbai";
         else if (chainId == 137) chainName = "polygon";
         else if (chainId == 420) chainName = "op_goerli";
-<<<<<<< HEAD
         else if (chainId == 84531) chainName = "base_goerli";
-=======
         else if (chainId == 59140) chainName = "linea_goerli";
         else if (chainId == 534353) chainName = "scroll_alpha";
->>>>>>> 28f1ba7 (zk rollup and factory test)
         else chainName = "unknown";
         return
             string(

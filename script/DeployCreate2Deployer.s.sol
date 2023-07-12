@@ -39,7 +39,6 @@ contract DeployerCreate2Deployer is Script, DeploySetting {
             );
         } else {
             revert("PARAMS_NOT_SET");
-1ba7 (zk rollup and factory test)
         }
 
         vm.startBroadcast();
