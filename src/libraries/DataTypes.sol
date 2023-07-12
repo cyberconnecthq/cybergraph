@@ -123,4 +123,9 @@ library DataTypes {
     struct DeployParameters {
         address engine;
     }
+
+    struct MetadataPair {
+        string key;
+        string value;
+    }
 }

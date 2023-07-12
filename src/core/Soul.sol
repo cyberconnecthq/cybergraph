@@ -7,6 +7,7 @@ import { Owned } from "../dependencies/solmate/Owned.sol";
 import { ISoul } from "../interfaces/ISoul.sol";
 
 import { CyberNFT721 } from "../base/CyberNFT721.sol";
+import { MetadataResolver } from "../base/MetadataResolver.sol";
 import { LibString } from "../libraries/LibString.sol";
 
 /**
@@ -14,7 +15,7 @@ import { LibString } from "../libraries/LibString.sol";
  * @author CyberConnect
  * @notice A 721 NFT contract that indicates if an address is a CyberAccount.
  */
-contract Soul is Owned, CyberNFT721, ISoul {
+contract Soul is Owned, CyberNFT721, MetadataResolver, ISoul {
     /*//////////////////////////////////////////////////////////////
                                 STATES
     //////////////////////////////////////////////////////////////*/
@@ -127,5 +128,25 @@ contract Soul is Owned, CyberNFT721, ISoul {
     ) public view virtual override returns (string memory) {
         _requireMinted(tokenId);
         return string(abi.encodePacked(_tokenURI, LibString.toString(tokenId)));
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                                 INTERNAL
+    //////////////////////////////////////////////////////////////*/
+    function _isMetadataAuthorised(
+        uint256 tokenId
+    ) internal view override returns (bool) {
+        address from = _ownerOf[tokenId];
+
+        return
+            msg.sender == from ||
+            isApprovedForAll[from][msg.sender] ||
+            msg.sender == getApproved[tokenId];
+    }
+
+    function _isGatedMetadataAuthorised(
+        uint256
+    ) internal view override returns (bool) {
+        return _minters[msg.sender];
     }
 }
