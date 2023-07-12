@@ -144,27 +144,20 @@ library LibDeploy {
         address target,
         bool isMinter
     ) internal {
-        // ISoul(soul).setMinter(target, true);
-        // require(ISoul(soul).isMinter(target), "NOT_MINTER");
-        address oldFact = address(0x5D006d3880645ec6e254E18C1F879DAC9Dd71A39);
-        address val = address(0x180D6465F921C7E0DEA0040107D342c87455fFF5);
-        address owner = address(0x8ddD03b89116ba89E28Ef703fe037fF77451e38E);
+        ISoul(soul).setMinter(target, isMinter);
+        require(ISoul(soul).isMinter(target) == isMinter, "NOT_CORRECT_MINTER");
 
-        IKernelValidator iev = IKernelValidator(val);
-        address newAcc = address(
-            CyberAccountFactory(oldFact).createAccount(
-                iev,
-                abi.encodePacked(owner),
-                1
-            )
-        );
-        console.log(newAcc);
-        //Soul(soul).createSoul(newAcc, false);
-        // address simpleAcc = address(0x4ECb75756C44de6A1971bd14B129EC22F45ea730);
-        // Soul(soul).createSoul(simpleAcc, false);
-        // require(IERC721(soul).balanceOf(simpleAcc) == 1, "NOT_OWNED");
-        // address test721 = address(new Test721("Test", "TEST"));
-        // _write(vm, "Test721", test721);
+        // address val = address(0x180D6465F921C7E0DEA0040107D342c87455fFF5);
+        // address owner = address(0x8ddD03b89116ba89E28Ef703fe037fF77451e38E);
+        // IKernelValidator iev = IKernelValidator(val);
+        // address newAcc = address(
+        //     CyberAccountFactory(target).createAccount(
+        //         iev,
+        //         abi.encodePacked(owner),
+        //         1
+        //     )
+        // );
+        // require(IERC721(soul).balanceOf(newAcc) == 1, "NOT_OWNED");
     }
 
     function deployFactory(

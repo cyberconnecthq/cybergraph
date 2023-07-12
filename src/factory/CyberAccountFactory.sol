@@ -2,12 +2,11 @@
 pragma solidity ^0.8.0;
 
 import "kernel/src/Kernel.sol";
-
 import { Create2 } from "openzeppelin-contracts/contracts/utils/Create2.sol";
 import { ERC1967Proxy } from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ECDSAValidator } from "kernel/src/validator/ECDSAValidator.sol";
-import { TempKernel } from "kernel/src/factory/TempKernel.sol";
 import { EIP1967Proxy } from "kernel/src/factory/EIP1967Proxy.sol";
+import { TempKernel } from "kernel/src/factory/TempKernel.sol";
 
 import { IEntryPoint } from "account-abstraction/interfaces/IEntryPoint.sol";
 import { ISoul } from "../interfaces/ISoul.sol";
@@ -64,8 +63,7 @@ contract CyberAccountFactory {
             )
         );
 
-        // recover this after Kernel bug is resolved.
-        // ISoul(soul).createSoul(address(proxy), false);
+        ISoul(soul).createSoul(address(proxy), false);
         emit AccountCreated(address(proxy), address(_validator), _data, _index);
     }
 
