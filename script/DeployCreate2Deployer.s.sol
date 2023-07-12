@@ -27,8 +27,19 @@ contract DeployerCreate2Deployer is Script, DeploySetting {
                 msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
                 "address must be deployer"
             );
+        } else if (block.chainid == DeploySetting.LINEA_GOERLI) {
+            require(
+                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
+                "address must be deployer"
+            );
+        } else if (block.chainid == DeploySetting.SCROLL_ALPHA) {
+            require(
+                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
+                "address must be deployer"
+            );
         } else {
             revert("PARAMS_NOT_SET");
+1ba7 (zk rollup and factory test)
         }
 
         vm.startBroadcast();

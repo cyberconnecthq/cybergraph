@@ -26,9 +26,27 @@ contract DeployFactory is Script, DeploySetting {
                 vm,
                 deployParams.deployerContract,
                 deployParams.entryPoint,
-                address(0x950453Fdc75510e250806769A342F3129E3C3Fad) // soul address
+                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
+                true
+            );
+        } else if (block.chainid == DeploySetting.LINEA_GOERLI) {
+            LibDeploy.deployFactory(
+                vm,
+                deployParams.deployerContract,
+                deployParams.entryPoint,
+                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
+                true
+            );
+        } else if (block.chainid == DeploySetting.SCROLL_ALPHA) {
+            LibDeploy.deployFactory(
+                vm,
+                deployParams.deployerContract,
+                deployParams.entryPoint,
+                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
+                true
             );
         }
+
         vm.stopBroadcast();
     }
 }
