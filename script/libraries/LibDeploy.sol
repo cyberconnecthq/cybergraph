@@ -21,6 +21,7 @@ import { Content } from "../../src/core/Content.sol";
 import { Essence } from "../../src/core/Essence.sol";
 import { W3st } from "../../src/core/W3st.sol";
 import { Subscribe } from "../../src/core/Subscribe.sol";
+import { TokenReceiver } from "../../src/periphery/TokenReceiver.sol";
 import { CyberEngine } from "../../src/core/CyberEngine.sol";
 import { DeploySetting } from "./DeploySetting.sol";
 import { LibString } from "../../src/libraries/LibString.sol";
@@ -335,6 +336,26 @@ library LibDeploy {
             _write(vm, "W3ST", addrs.deployedW3stImpl);
             _write(vm, "Subscribe", addrs.deployedSubImpl);
             _write(vm, "Treasury", addrs.cyberTreasury);
+        }
+    }
+
+    function deployReceiver(
+        Vm vm,
+        address _dc,
+        address protocolOwner,
+        bool writeFile
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address tr = dc.deploy(
+            abi.encodePacked(
+                type(TokenReceiver).creationCode,
+                abi.encode(protocolOwner)
+            ),
+            SALT
+        );
+
+        if (writeFile) {
+            _write(vm, "TokenReceiver", tr);
         }
     }
 

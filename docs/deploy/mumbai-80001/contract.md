@@ -13,3 +13,4 @@
 | PermissionMw         | 0xecf2638eb13c96b8395b81e88ffd3fc6f13a6ea8 |
 | ECDSAValidator       | 0xf94e5a47150d20c4b804c30b6699d786549a5821 |
 | CyberAccount Factory | 0x5755b524cd9433677508a98507da469b625d003b |
+| TokenReceiver        | 0x1d57f240127d1a61717e16e5e3d8bb707cfb1f3c |
