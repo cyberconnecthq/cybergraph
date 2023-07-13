@@ -61,12 +61,12 @@ contract PermissionMwTest is TestIntegrationBase {
             bob,
             aliceSk,
             deadline,
-            DataTypes.CollectParams(alice, id, 1, DataTypes.Category.W3ST)
+            DataTypes.CollectParams(alice, id, 1, bob, DataTypes.Category.W3ST)
         );
 
         vm.startPrank(bob);
         CyberEngine(addrs.engine).collect(
-            DataTypes.CollectParams(alice, id, 1, DataTypes.Category.W3ST),
+            DataTypes.CollectParams(alice, id, 1, bob, DataTypes.Category.W3ST),
             abi.encode(v, r, s, deadline)
         );
 
@@ -103,13 +103,13 @@ contract PermissionMwTest is TestIntegrationBase {
             bob,
             aliceSk,
             deadline,
-            DataTypes.CollectParams(alice, id, 1, DataTypes.Category.W3ST)
+            DataTypes.CollectParams(alice, id, 1, bob, DataTypes.Category.W3ST)
         );
 
         vm.startPrank(bob);
         vm.expectRevert("DEADLINE_EXCEEDED");
         CyberEngine(addrs.engine).collect(
-            DataTypes.CollectParams(alice, id, 1, DataTypes.Category.W3ST),
+            DataTypes.CollectParams(alice, id, 1, bob, DataTypes.Category.W3ST),
             abi.encode(v, r, s, deadline)
         );
     }
@@ -126,13 +126,13 @@ contract PermissionMwTest is TestIntegrationBase {
             bob,
             aliceSk,
             deadline,
-            DataTypes.CollectParams(alice, id, 2, DataTypes.Category.W3ST)
+            DataTypes.CollectParams(alice, id, 2, bob, DataTypes.Category.W3ST)
         );
 
         vm.startPrank(bob);
         vm.expectRevert("INVALID_SIGNATURE");
         CyberEngine(addrs.engine).collect(
-            DataTypes.CollectParams(alice, id, 1, DataTypes.Category.W3ST),
+            DataTypes.CollectParams(alice, id, 1, bob, DataTypes.Category.W3ST),
             abi.encode(v, r, s, deadline)
         );
     }

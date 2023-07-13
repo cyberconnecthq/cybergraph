@@ -200,7 +200,7 @@ contract IntegrationSubscribeTest is TestIntegrationBase {
     function test_SubscriptionNotRegistered_Subscribe_Revert() public {
         vm.prank(bob);
         vm.expectRevert("SUBSCRIBE_DOES_NOT_EXIST");
-        CyberEngine(addrs.engine).subscribe(alice);
+        CyberEngine(addrs.engine).subscribe(alice, bob);
     }
 
     function test_SubscribeWithNotEnoughFee_Revert() public {
@@ -219,7 +219,10 @@ contract IntegrationSubscribeTest is TestIntegrationBase {
 
         vm.prank(bob);
         vm.expectRevert("FEE_NOT_ENOUGH");
-        CyberEngine(addrs.engine).subscribe{ value: 1 ether - 1 wei }(alice);
+        CyberEngine(addrs.engine).subscribe{ value: 1 ether - 1 wei }(
+            alice,
+            bob
+        );
     }
 
     function test_SubscribeWithEnoughFee_Success() public {
@@ -238,7 +241,8 @@ contract IntegrationSubscribeTest is TestIntegrationBase {
 
         vm.startPrank(bob);
         uint256 tokenId = CyberEngine(addrs.engine).subscribe{ value: 1 ether }(
-            alice
+            alice,
+            bob
         );
         assertEq(bob.balance, initBalance - 1 ether);
         assertEq(alice.balance, initBalance + 1 ether);
@@ -285,7 +289,7 @@ contract IntegrationSubscribeTest is TestIntegrationBase {
         vm.startPrank(bob);
         uint256 tokenId = CyberEngine(addrs.engine).subscribe{
             value: 2 ether + 1 wei
-        }(alice);
+        }(alice, bob);
         assertEq(bob.balance, initBalance - 2 ether);
         assertEq(alice.balance, initBalance + 2 ether);
         address subAddr = CyberEngine(addrs.engine).getSubscriptionAddr(alice);
@@ -312,9 +316,10 @@ contract IntegrationSubscribeTest is TestIntegrationBase {
         );
 
         vm.startPrank(bob);
-        CyberEngine(addrs.engine).subscribe{ value: 1 ether }(alice);
+        CyberEngine(addrs.engine).subscribe{ value: 1 ether }(alice, bob);
         uint256 tokenId = CyberEngine(addrs.engine).subscribe{ value: 1 ether }(
-            alice
+            alice,
+            bob
         );
         assertEq(bob.balance, initBalance - 2 ether);
         assertEq(alice.balance, initBalance + 2 ether);
@@ -342,13 +347,14 @@ contract IntegrationSubscribeTest is TestIntegrationBase {
         );
 
         vm.startPrank(bob);
-        CyberEngine(addrs.engine).subscribe{ value: 1 ether }(alice);
+        CyberEngine(addrs.engine).subscribe{ value: 1 ether }(alice, bob);
 
         uint256 currentTs = block.timestamp + 90 days;
         vm.warp(currentTs);
 
         uint256 tokenId = CyberEngine(addrs.engine).subscribe{ value: 1 ether }(
-            alice
+            alice,
+            bob
         );
         assertEq(bob.balance, initBalance - 2 ether);
         assertEq(alice.balance, initBalance + 2 ether);

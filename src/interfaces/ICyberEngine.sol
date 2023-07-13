@@ -34,9 +34,13 @@ interface ICyberEngine is ICyberEngineEvents {
      * @notice Subscribe to a CyberAccount.
      *
      * @param account The account to subscribe.
+     * @param to The address that will receive the subscription.
      * @return uint256 The new token id.
      */
-    function subscribe(address account) external payable returns (uint256);
+    function subscribe(
+        address account,
+        address to
+    ) external payable returns (uint256);
 
     /**
      * @notice Register an essence.

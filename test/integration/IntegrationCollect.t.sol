@@ -164,7 +164,13 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         vm.prank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).collect(
-            DataTypes.CollectParams(bob, essId, 1, DataTypes.Category.Essence),
+            DataTypes.CollectParams(
+                bob,
+                essId,
+                1,
+                alice,
+                DataTypes.Category.Essence
+            ),
             new bytes(0)
         );
         assertEq(mintedId, 0);
@@ -204,7 +210,13 @@ contract IntegrationCollectTest is TestIntegrationBase {
         vm.prank(alice);
         vm.expectRevert("INCORRECT_COLLECT_AMOUNT");
         CyberEngine(addrs.engine).collect(
-            DataTypes.CollectParams(bob, essId, 2, DataTypes.Category.Essence),
+            DataTypes.CollectParams(
+                bob,
+                essId,
+                2,
+                alice,
+                DataTypes.Category.Essence
+            ),
             new bytes(0)
         );
     }
@@ -231,6 +243,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
                 bob,
                 tokenId,
                 3,
+                alice,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -278,7 +291,13 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         vm.prank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).collect(
-            DataTypes.CollectParams(bob, tokenId, 3, DataTypes.Category.W3ST),
+            DataTypes.CollectParams(
+                bob,
+                tokenId,
+                3,
+                alice,
+                DataTypes.Category.W3ST
+            ),
             new bytes(0)
         );
         assertEq(mintedId, 0);
@@ -402,6 +421,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
                 alice,
                 mintedId,
                 1000,
+                charles,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -496,6 +516,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
                 charles,
                 mintedIdCharles,
                 5,
+                alice,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -527,7 +548,13 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         vm.prank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).collect(
-            DataTypes.CollectParams(bob, essId, 1, DataTypes.Category.Essence),
+            DataTypes.CollectParams(
+                bob,
+                essId,
+                1,
+                alice,
+                DataTypes.Category.Essence
+            ),
             new bytes(0)
         );
         assertEq(mintedId, 0);
@@ -575,6 +602,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
                 bob,
                 tokenId,
                 1,
+                alice,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -655,6 +683,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
                 alice,
                 tokenId,
                 1000,
+                charles,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -688,7 +717,13 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         vm.prank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).collect(
-            DataTypes.CollectParams(bob, tokenId, 3, DataTypes.Category.W3ST),
+            DataTypes.CollectParams(
+                bob,
+                tokenId,
+                3,
+                alice,
+                DataTypes.Category.W3ST
+            ),
             new bytes(0)
         );
         assertEq(mintedId, 0);

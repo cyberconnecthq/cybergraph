@@ -145,71 +145,71 @@ contract LimitedTimePaidMw is IMiddleware, FeeMw, OnlyEngineMw {
     }
 
     function preProcess(
-        address account,
-        DataTypes.Category category,
-        uint256 id,
-        uint256 amount,
-        address collector,
-        address referrerAccount,
-        bytes calldata
+        DataTypes.MwParams calldata params
     ) external override onlyEngine {
-        require(amount == 1, "INCORRECT_COLLECT_AMOUNT");
+        require(params.amount == 1, "INCORRECT_COLLECT_AMOUNT");
         require(
-            _data[account][category][id].totalSupply >
-                _data[account][category][id].currentCollect,
+            _data[params.account][params.category][params.id].totalSupply >
+                _data[params.account][params.category][params.id]
+                    .currentCollect,
             "COLLECT_LIMIT_EXCEEDED"
         );
 
         require(
-            block.timestamp >= _data[account][category][id].startTimestamp,
+            block.timestamp >=
+                _data[params.account][params.category][params.id]
+                    .startTimestamp,
             "NOT_STARTED"
         );
 
         require(
-            block.timestamp <= _data[account][category][id].endTimestamp,
+            block.timestamp <=
+                _data[params.account][params.category][params.id].endTimestamp,
             "ENDED"
         );
 
-        if (_data[account][category][id].soulRequired) {
-            require(_checkSoul(collector), "NOT_SOUL_OWNER");
+        if (_data[params.account][params.category][params.id].soulRequired) {
+            require(_checkSoul(params.to), "NOT_SOUL_OWNER");
         }
 
-        uint256 price = _data[account][category][id].price;
-        address currency = _data[account][category][id].currency;
+        uint256 price = _data[params.account][params.category][params.id].price;
+        address currency = _data[params.account][params.category][params.id]
+            .currency;
         uint256 treasuryCollected = (price * _treasuryFee()) /
             Constants._MAX_BPS;
         uint256 creatorCollected = price - treasuryCollected;
 
         if (
-            account != referrerAccount &&
-            _data[account][category][id].referralFee > 0
+            params.account != params.referrerAccount &&
+            _data[params.account][params.category][params.id].referralFee > 0
         ) {
             uint256 referrerCollected = (creatorCollected *
-                _data[account][category][id].referralFee) / Constants._MAX_BPS;
+                _data[params.account][params.category][params.id].referralFee) /
+                Constants._MAX_BPS;
             creatorCollected = creatorCollected - referrerCollected;
 
             IERC20(currency).safeTransferFrom(
-                collector,
-                referrerAccount,
+                params.from,
+                params.referrerAccount,
                 referrerCollected
             );
         }
 
         IERC20(currency).safeTransferFrom(
-            collector,
-            _data[account][category][id].recipient,
+            params.from,
+            _data[params.account][params.category][params.id].recipient,
             creatorCollected
         );
 
         if (treasuryCollected > 0) {
             IERC20(currency).safeTransferFrom(
-                collector,
+                params.from,
                 _treasuryAddress(),
                 treasuryCollected
             );
         }
 
-        ++_data[account][category][id].currentCollect;
+        ++_data[params.account][params.category][params.id].currentCollect;
     }
 
     /*//////////////////////////////////////////////////////////////

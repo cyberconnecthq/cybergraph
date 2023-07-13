@@ -127,7 +127,19 @@ library DataTypes {
         address account;
         uint256 id;
         uint256 amount;
+        address to;
         Category category;
+    }
+
+    struct MwParams {
+        address account;
+        Category category;
+        uint256 id;
+        uint256 amount;
+        address from;
+        address to;
+        address referrerAccount;
+        bytes data;
     }
 
     struct DeployParameters {

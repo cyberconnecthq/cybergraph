@@ -180,6 +180,7 @@ contract LimitedTimePaidMwTest is TestIntegrationBase {
                 alice,
                 tokenId,
                 1,
+                bob,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -221,6 +222,7 @@ contract LimitedTimePaidMwTest is TestIntegrationBase {
                 alice,
                 tokenId,
                 1,
+                bob,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -232,6 +234,7 @@ contract LimitedTimePaidMwTest is TestIntegrationBase {
                 alice,
                 tokenId,
                 1,
+                bob,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -264,6 +267,7 @@ contract LimitedTimePaidMwTest is TestIntegrationBase {
                 alice,
                 tokenId,
                 1,
+                bob,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -276,6 +280,7 @@ contract LimitedTimePaidMwTest is TestIntegrationBase {
                 alice,
                 tokenId,
                 1,
+                bob,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -304,6 +309,7 @@ contract LimitedTimePaidMwTest is TestIntegrationBase {
                 alice,
                 tokenId,
                 2,
+                alice,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -333,6 +339,7 @@ contract LimitedTimePaidMwTest is TestIntegrationBase {
                 alice,
                 tokenId,
                 1,
+                charlie,
                 DataTypes.Category.Content
             ),
             new bytes(0)
@@ -369,6 +376,7 @@ contract LimitedTimePaidMwTest is TestIntegrationBase {
                 bob,
                 shareTokenId,
                 1,
+                charlie,
                 DataTypes.Category.Content
             ),
             new bytes(0)

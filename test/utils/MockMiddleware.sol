@@ -19,13 +19,7 @@ contract MockMiddleware is IMiddleware {
     }
 
     function preProcess(
-        address account,
-        DataTypes.Category category,
-        uint256 id,
-        uint256 amount,
-        address collector,
-        address referrerAccount,
-        bytes calldata data
+        DataTypes.MwParams calldata params
     ) external pure override {
         // do nothing
     }

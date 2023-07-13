@@ -72,34 +72,30 @@ contract PermissionMw is IMiddleware, EIP712, OnlyEngineMw {
      * @notice Process that checks if the collector has the correct signature from the signer
      */
     function preProcess(
-        address account,
-        DataTypes.Category category,
-        uint256 id,
-        uint256 amount,
-        address collector,
-        address,
-        bytes calldata data
+        DataTypes.MwParams calldata params
     ) external override onlyEngine {
         DataTypes.EIP712Signature memory sig;
 
         (sig.v, sig.r, sig.s, sig.deadline) = abi.decode(
-            data,
+            params.data,
             (uint8, bytes32, bytes32, uint256)
         );
 
-        MiddlewareData storage mwData = _signerStorage[account][category][id];
+        MiddlewareData storage mwData = _signerStorage[params.account][
+            params.category
+        ][params.id];
 
         _requiresExpectedSigner(
             _hashTypedDataV4(
                 keccak256(
                     abi.encode(
                         COLLECT_TYPEHASH,
-                        collector,
-                        account,
-                        category,
-                        id,
-                        amount,
-                        mwData.nonces[collector]++,
+                        params.to,
+                        params.account,
+                        params.category,
+                        params.id,
+                        params.amount,
+                        mwData.nonces[params.to]++,
                         sig.deadline
                     )
                 )

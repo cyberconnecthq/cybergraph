@@ -155,7 +155,8 @@ interface ICyberEngineEvents {
     /**
      * @notice Emitted when an essence has been collected.
      *
-     * @param collector The collector address.
+     * @param to The address that will receive the NFT.
+     * @param from The address pays related fees.
      * @param account The account addresss.
      * @param id The id.
      * @param amount The amount to collect.
@@ -163,7 +164,8 @@ interface ICyberEngineEvents {
      * @param category The category to collect.
      */
     event Collect(
-        address indexed collector,
+        address indexed to,
+        address from,
         address indexed account,
         uint256 indexed id,
         uint256 amount,

@@ -151,7 +151,7 @@ contract CyberEngine is
         DataTypes.CollectParams calldata params,
         bytes calldata data
     ) external override nonReentrant returns (uint256 tokenId) {
-        address collector = msg.sender;
+        address from = msg.sender;
         _checkRegistered(params.account, params.id, params.category);
 
         (address account, uint256 id) = _getSrcIfShared(
@@ -170,25 +170,29 @@ contract CyberEngine is
                 "MW_NOT_ALLOWED"
             );
             IMiddleware(mw).preProcess(
-                account,
-                params.category,
-                id,
-                params.amount,
-                collector,
-                params.account,
-                data
+                DataTypes.MwParams(
+                    account,
+                    params.category,
+                    id,
+                    params.amount,
+                    from,
+                    params.to,
+                    params.account,
+                    data
+                )
             );
         }
 
         tokenId = _mintNFT(
             deployAddr,
-            collector,
+            params.to,
             id,
             params.amount,
             params.category
         );
         emit Collect(
-            collector,
+            params.to,
+            from,
             params.account,
             params.id,
             params.amount,
@@ -199,9 +203,10 @@ contract CyberEngine is
 
     /// @inheritdoc ICyberEngine
     function subscribe(
-        address account
+        address account,
+        address to
     ) external payable override returns (uint256 tokenId) {
-        address subscriber = msg.sender;
+        address from = msg.sender;
 
         _requireSubscriptionRegistered(account);
 
@@ -213,17 +218,17 @@ contract CyberEngine is
         _chargeAndRefundOverPayment(
             _subscribeByAccount[account].recipient,
             numOfSub * _subscribeByAccount[account].pricePerSub,
-            msg.sender
+            from
         );
 
-        if (IERC721(deployAddr).balanceOf(subscriber) == 0) {
+        if (IERC721(deployAddr).balanceOf(to) == 0) {
             tokenId = ISubscribe(deployAddr).mint(
-                subscriber,
+                to,
                 numOfSub * _subscribeByAccount[account].dayPerSub
             );
         } else {
             tokenId = ISubscribe(deployAddr).extend(
-                subscriber,
+                to,
                 numOfSub * _subscribeByAccount[account].dayPerSub
             );
         }
@@ -927,20 +932,20 @@ contract CyberEngine is
 
     function _mintNFT(
         address deployAddr,
-        address collector,
+        address to,
         uint256 id,
         uint256 amount,
         DataTypes.Category category
     ) internal returns (uint256 tokenId) {
         if (category == DataTypes.Category.W3ST) {
-            IW3st(deployAddr).mint(collector, id, amount, new bytes(0));
+            IW3st(deployAddr).mint(to, id, amount, new bytes(0));
             tokenId = id;
         } else if (category == DataTypes.Category.Content) {
-            IContent(deployAddr).mint(collector, id, amount, new bytes(0));
+            IContent(deployAddr).mint(to, id, amount, new bytes(0));
             tokenId = id;
         } else if (category == DataTypes.Category.Essence) {
             require(amount == 1, "INCORRECT_COLLECT_AMOUNT");
-            tokenId = IEssence(deployAddr).mint(collector);
+            tokenId = IEssence(deployAddr).mint(to);
         } else {
             revert("WRONG_CATEGORY");
         }

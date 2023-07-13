@@ -27,21 +27,7 @@ interface IMiddleware {
     /**
      * @notice Process that runs before the NFT mint happens.
      *
-     * @param account The account address.
-     * @param category The category of target NFT.
-     * @param id The corresponding identifier for a specific category.
-     * @param amount The amount of NFT to mint.
-     * @param collector The collector address.
-     * @param referrerAccount The referrer account address.
-     * @param data Extra data to process.
+     * @param params The middleware related params.
      */
-    function preProcess(
-        address account,
-        DataTypes.Category category,
-        uint256 id,
-        uint256 amount,
-        address collector,
-        address referrerAccount,
-        bytes calldata data
-    ) external;
+    function preProcess(DataTypes.MwParams calldata params) external;
 }
