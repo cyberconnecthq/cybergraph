@@ -8,6 +8,7 @@ contract DeploySetting {
         address protocolOwner;
         address treasuryReceiver;
         address entryPoint;
+        address backendSigner;
     }
 
     DeployParameters internal deployParams;
@@ -32,6 +33,9 @@ contract DeploySetting {
             );
             deployParams.entryPoint = address(
                 0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
+            );
+            deployParams.backendSigner = address(
+                0xaB24749c622AF8FC567CA2b4d3EC53019F83dB8F
             );
         } else if (block.chainid == OP_GOERLI) {
             deployParams.deployerContract = address(

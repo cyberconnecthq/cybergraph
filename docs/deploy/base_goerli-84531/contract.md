@@ -1,15 +1,16 @@
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| Soul                 | 0xf0bebc0708b758ebfc329833a6063cc2195fc725 |
-| MiddlewareManager    | 0x3de80b44fc15fc0376f0ba0ae9ce53a261c03b56 |
-| Deployer             | 0xb0dc9bc29b388e252b6f1c44c836b6ca6b4119ee |
-| SubscribeDeployer    | 0x129dfd109da7653251689719b615e4dab99a1f4b |
-| CyberEngine          | 0x9c7f8e6284cf8999f04a51e5dd44ff5ed91fee76 |
-| Essence              | 0x51675ac15d7404e13ec9cbfbb7623c466d3fda30 |
-| Content              | 0xd4652a9e7c328abee1dd133028238d9a6ab15f21 |
-| W3ST                 | 0xf3df03038517122ca997bad65b08e9d46da8168b |
-| Subscribe            | 0xfed9695aafadd50b119c6002f181e447ac49c9d3 |
-| Treasury             | 0x9aae8db34d47f33da0b69e79caa429bde610e097 |
-| CyberAccount Factory | 0x2dab5e3e3449b5cadf5126154fabfe6d1e0e8aad |
-| PermissionMw         | 0xecf2638eb13c96b8395b81e88ffd3fc6f13a6ea8 |
-| ECDSAValidator       | 0xf94e5a47150d20c4b804c30b6699d786549a5821 |
+| Soul                 | 0xa94fa738a33697df67d12fa7b435a86ee1ae5667 |
+| MiddlewareManager    | 0xb45a694fbe18a13531ec65b46d80f52cfadcfdba |
+| Deployer             | 0x75852c2bc6c1e9f877492ed6c80efe29a78caab4 |
+| SubscribeDeployer    | 0xfc5b53287905d2fcaed63af57e9168f37cbf8423 |
+| CyberEngine          | 0x9cf4cf4f255366fa045f7e56014dfe97ecce6d41 |
+| Essence              | 0xc25f5dd2a3ab9a575f7b36e613cb79a03214cec8 |
+| Content              | 0xd192657602ef0fdbe76cb0ac83be9fcb6af4940c |
+| W3ST                 | 0x33f11a55425bc16e34d2348863131122b20c02b1 |
+| Subscribe            | 0x4eab567f6e035d3e38164f07f8794926bc46d430 |
+| Treasury             | 0x5bcdfb2f80792eadaa7b8c62452087f6bb945239 |
+| PermissionMw         | 0xba8bfa2fb9b2c83c11261c91757c67d73a2e302d |
+| ECDSAValidator       | 0xfd06500de1a5d49b64a416eedc9451218f8ab78e |
+| CyberAccount Factory | 0xecb13962de4d484d988ad5927e92168bed1ac3ce |
+| TokenReceiver        | 0x816cc80aa22fa4553b89925e8f38f910010ec5ed |

@@ -44,10 +44,4 @@ contract TokenReceiver is Owned {
         payable(to).transfer(amount);
         emit Withdraw(to, amount);
     }
-
-    function getDepositBalance(
-        address account
-    ) external view returns (uint256) {
-        return deposits[account];
-    }
 }

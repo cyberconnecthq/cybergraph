@@ -22,38 +22,31 @@ contract TempScript is Script {
     function run() external {
         vm.startBroadcast();
 
+        CyberAccountFactory fac = CyberAccountFactory(
+            0xeCB13962De4d484d988ad5927e92168bed1ac3ce
+        );
+        console.log(address(fac.kernelTemplate()));
+
+        console.log(address(fac.nextTemplate()));
         console.log(
             address(
-                CyberAccountFactory(0x2DAB5E3e3449b5CaDf5126154fAbFe6d1e0e8aaD)
-                    .kernelTemplate()
+                fac.getAccountAddress(
+                    IKernelValidator(
+                        0xfd06500DE1A5D49B64A416eeDc9451218f8ab78e
+                    ),
+                    hex"2E0446079705B6Bacc4730fB3EDA5DA68aE5Fe4D",
+                    0
+                )
             )
         );
 
-        console.log(
-            address(
-                CyberAccountFactory(0x2DAB5E3e3449b5CaDf5126154fAbFe6d1e0e8aaD)
-                    .nextTemplate()
-            )
-        );
-        console.log(
-            address(
-                CyberAccountFactory(0x2DAB5E3e3449b5CaDf5126154fAbFe6d1e0e8aaD)
-                    .getAccountAddress(
-                        IKernelValidator(
-                            0xf94E5a47150d20C4B804C30B6699d786549A5821
-                        ),
-                        hex"2E0446079705B6Bacc4730fB3EDA5DA68aE5Fe4D",
-                        0
-                    )
-            )
+        fac.createAccount(
+            IKernelValidator(0xfd06500DE1A5D49B64A416eeDc9451218f8ab78e),
+            hex"2E0446079705B6Bacc4730fB3EDA5DA68aE5Fe4D",
+            0
         );
 
         // console.logBytes(type(EIP1967Proxy).creationCode);
-
-        // Soul(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725).setMinter(
-        //     0xaB24749c622AF8FC567CA2b4d3EC53019F83dB8F,
-        //     true
-        // );
 
         vm.stopBroadcast();
     }

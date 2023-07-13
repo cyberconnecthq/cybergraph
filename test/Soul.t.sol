@@ -52,21 +52,21 @@ contract SoulTest is Test {
     function testCreateNonOrgSoul() public {
         vm.prank(soulOwner);
         Soul(soulProxy).createSoul(alice, false);
-        assertEq(Soul(soulProxy).ownerOf(0), alice);
+        assertEq(Soul(soulProxy).ownerOf(uint256(uint160(alice))), alice);
         assertFalse(Soul(soulProxy).isOrgAccount(alice));
     }
 
     function testCreateOrgSoul() public {
         vm.prank(soulOwner);
         Soul(soulProxy).createSoul(alice, true);
-        assertEq(Soul(soulProxy).ownerOf(0), alice);
+        assertEq(Soul(soulProxy).ownerOf(uint256(uint160(alice))), alice);
         assertTrue(Soul(soulProxy).isOrgAccount(alice));
     }
 
     function testPromoteToOrg() public {
         vm.prank(soulOwner);
         Soul(soulProxy).createSoul(alice, false);
-        assertEq(Soul(soulProxy).ownerOf(0), alice);
+        assertEq(Soul(soulProxy).ownerOf(uint256(uint160(alice))), alice);
         assertFalse(Soul(soulProxy).isOrgAccount(alice));
 
         vm.prank(soulOwner);
@@ -77,7 +77,7 @@ contract SoulTest is Test {
     function testOrgDegrade() public {
         vm.prank(soulOwner);
         Soul(soulProxy).createSoul(alice, true);
-        assertEq(Soul(soulProxy).ownerOf(0), alice);
+        assertEq(Soul(soulProxy).ownerOf(uint256(uint160(alice))), alice);
         assertTrue(Soul(soulProxy).isOrgAccount(alice));
 
         vm.prank(soulOwner);
@@ -91,25 +91,30 @@ contract SoulTest is Test {
 
         vm.prank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
-        Soul(soulProxy).transferFrom(alice, bob, 0);
+        Soul(soulProxy).transferFrom(alice, bob, uint256(uint160(alice)));
 
         vm.prank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
-        Soul(soulProxy).safeTransferFrom(alice, bob, 0);
+        Soul(soulProxy).safeTransferFrom(alice, bob, uint256(uint160(alice)));
 
         vm.prank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
-        Soul(soulProxy).safeTransferFrom(alice, bob, 0, "");
+        Soul(soulProxy).safeTransferFrom(
+            alice,
+            bob,
+            uint256(uint160(alice)),
+            ""
+        );
     }
 
     function testGetTokenURI() public {
         vm.prank(soulOwner);
         Soul(soulProxy).createSoul(alice, false);
 
-        assertEq(Soul(soulProxy).tokenURI(0), "0");
+        assertEq(Soul(soulProxy).tokenURI(uint256(uint160(alice))), "2");
 
         vm.expectRevert("NOT_MINTED");
-        assertEq(Soul(soulProxy).tokenURI(1), "");
+        assertEq(Soul(soulProxy).tokenURI(0), "");
     }
 
     function testOnlyMinterCanMint() public {
@@ -122,7 +127,7 @@ contract SoulTest is Test {
 
         vm.prank(alice);
         Soul(soulProxy).createSoul(alice, false);
-        assertEq(Soul(soulProxy).ownerOf(0), alice);
+        assertEq(Soul(soulProxy).ownerOf(uint256(uint160(alice))), alice);
     }
 
     function test_SoulMinted_SetMetadata_ReadSuccess() public {

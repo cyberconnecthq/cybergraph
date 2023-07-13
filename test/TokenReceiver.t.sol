@@ -26,8 +26,8 @@ contract TokenReceiverTest is Test {
         tr.depositTo{ value: 1 ether }(bob);
 
         require(alice.balance == 9 ether, "WRONG_BAL");
-        require(tr.getDepositBalance(bob) == 1 ether, "WRONG_DEPOSIT");
-        require(tr.getDepositBalance(alice) == 0 ether, "WRONG_DEPOSIT");
+        require(tr.deposits(bob) == 1 ether, "WRONG_DEPOSIT");
+        require(tr.deposits(alice) == 0 ether, "WRONG_DEPOSIT");
     }
 
     function testWithdraw() public {
@@ -41,7 +41,7 @@ contract TokenReceiverTest is Test {
 
         require(address(tr).balance == 4 ether, "WRONG_BAL");
         require(bob.balance == 1 ether, "WRONG_BAL");
-        require(tr.getDepositBalance(bob) == 5 ether, "WRONG_DEPOSIT");
+        require(tr.deposits(bob) == 5 ether, "WRONG_DEPOSIT");
     }
 
     function testWithdrawNotOwner() public {

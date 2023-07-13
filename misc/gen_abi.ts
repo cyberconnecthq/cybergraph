@@ -13,6 +13,7 @@ const writeAbi = async () => {
     "Subscribe.sol/Subscribe.json",
     "W3st.sol/W3st.json",
     "PermissionMw.sol/PermissionMw.json",
+    "TokenReceiver.sol/TokenReceiver.json",
   ];
   const ps = folders.map(async (file) => {
     const f = await fs.readFile(path.join("./out", file), "utf8");

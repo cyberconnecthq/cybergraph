@@ -32,7 +32,9 @@
     "deploy_validator:base_goerli": "source .env.base_goerli && FOUNDRY_PROFILE=stg forge script script/DeployValidator.s.sol:DeployValidator --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_receiver:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployReceiver.s.sol:DeployReceiver --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_deployer:scroll_alpha": "source .env.scroll_alpha && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL  --legacy --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
-    "deploy_deployer:linea_goerli": "source .env.linea_goerli && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv"
+    "deploy_deployer:linea_goerli": "source .env.linea_goerli && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
+    "deploy_all:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
+    "deploy_all:base_goerli": "source .env.base_goerli && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv"
   },
   "devDependencies": {
     "husky": "^8.0.1",

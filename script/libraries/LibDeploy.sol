@@ -33,7 +33,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-    bytes32 constant SALT = keccak256(bytes("Test10"));
+    bytes32 constant SALT = keccak256(bytes("Test11"));
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 
@@ -140,25 +140,13 @@ library LibDeploy {
     }
 
     function setSoulMinter(
-        Vm vm,
+        Vm,
         address soul,
         address target,
         bool isMinter
     ) internal {
         ISoul(soul).setMinter(target, isMinter);
         require(ISoul(soul).isMinter(target) == isMinter, "NOT_CORRECT_MINTER");
-
-        // address val = address(0x180D6465F921C7E0DEA0040107D342c87455fFF5);
-        // address owner = address(0x8ddD03b89116ba89E28Ef703fe037fF77451e38E);
-        // IKernelValidator iev = IKernelValidator(val);
-        // address newAcc = address(
-        //     CyberAccountFactory(target).createAccount(
-        //         iev,
-        //         abi.encodePacked(owner),
-        //         1
-        //     )
-        // );
-        // require(IERC721(soul).balanceOf(newAcc) == 1, "NOT_OWNED");
     }
 
     function deployFactory(
@@ -195,6 +183,39 @@ library LibDeploy {
         address deployedSubImpl;
         address cyberTreasury;
         address cyberFactory;
+    }
+
+    function deployAll(
+        Vm vm,
+        address _dc,
+        address protocolOwner,
+        address treasuryReceiver,
+        address soulManager,
+        address entryPoint,
+        address backendSigner,
+        bool writeFile
+    ) internal {
+        ContractAddresses memory contractAddresses = deployGraph(
+            vm,
+            _dc,
+            protocolOwner,
+            treasuryReceiver,
+            soulManager,
+            writeFile
+        );
+
+        deployMw(vm, _dc, contractAddresses.engine, contractAddresses.manager);
+        deployValidator(vm, _dc);
+        address factory = deployFactory(
+            vm,
+            _dc,
+            entryPoint,
+            contractAddresses.soul,
+            writeFile
+        );
+        deployReceiver(vm, _dc, protocolOwner, writeFile);
+        setSoulMinter(vm, contractAddresses.soul, factory, true);
+        setSoulMinter(vm, contractAddresses.soul, backendSigner, true);
     }
 
     function deployGraph(

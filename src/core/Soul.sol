@@ -3,10 +3,10 @@
 pragma solidity 0.8.14;
 
 import { Owned } from "../dependencies/solmate/Owned.sol";
+import { ERC721 } from "../dependencies/solmate/ERC721.sol";
 
 import { ISoul } from "../interfaces/ISoul.sol";
 
-import { CyberNFT721 } from "../base/CyberNFT721.sol";
 import { MetadataResolver } from "../base/MetadataResolver.sol";
 import { LibString } from "../libraries/LibString.sol";
 
@@ -15,7 +15,7 @@ import { LibString } from "../libraries/LibString.sol";
  * @author CyberConnect
  * @notice A 721 NFT contract that indicates if an address is a CyberAccount.
  */
-contract Soul is Owned, CyberNFT721, MetadataResolver, ISoul {
+contract Soul is Owned, ERC721, MetadataResolver, ISoul {
     /*//////////////////////////////////////////////////////////////
                                 STATES
     //////////////////////////////////////////////////////////////*/
@@ -55,7 +55,7 @@ contract Soul is Owned, CyberNFT721, MetadataResolver, ISoul {
     ) external initializer {
         _minters[owner] = true;
         Owned.__Owned_Init(owner);
-        super._initialize(name, symbol);
+        ERC721.__ERC721_Init(name, symbol);
     }
 
     /// @inheritdoc ISoul
@@ -66,7 +66,8 @@ contract Soul is Owned, CyberNFT721, MetadataResolver, ISoul {
         if (isOrg) {
             _orgs[to] = true;
         }
-        uint256 tokenId = super._mint(to);
+        uint256 tokenId = uint256(uint160(to));
+        ERC721._safeMint(to, tokenId);
         emit CreateSoul(to, isOrg, tokenId);
 
         return tokenId;
@@ -126,7 +127,7 @@ contract Soul is Owned, CyberNFT721, MetadataResolver, ISoul {
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {
-        _requireMinted(tokenId);
+        require(_ownerOf[tokenId] != address(0), "NOT_MINTED");
         return string(abi.encodePacked(_tokenURI, LibString.toString(tokenId)));
     }
 
