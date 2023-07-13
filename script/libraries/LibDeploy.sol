@@ -25,6 +25,7 @@ import { TokenReceiver } from "../../src/periphery/TokenReceiver.sol";
 import { CyberEngine } from "../../src/core/CyberEngine.sol";
 import { DeploySetting } from "./DeploySetting.sol";
 import { LibString } from "../../src/libraries/LibString.sol";
+import { DataTypes } from "../../src/libraries/DataTypes.sol";
 import { Create2Deployer } from "../../src/deployer/Create2Deployer.sol";
 import { Deployer } from "../../src/deployer/Deployer.sol";
 import { SubscribeDeployer } from "../../src/deployer/SubscribeDeployer.sol";
@@ -175,6 +176,7 @@ library LibDeploy {
         address soul;
         address manager;
         address engine;
+        address engineImpl;
         address deployer;
         address subscribeDeployer;
         address deployedEssImpl;
@@ -183,6 +185,10 @@ library LibDeploy {
         address deployedSubImpl;
         address cyberTreasury;
         address cyberFactory;
+        address calculatedEssImpl;
+        address calculatedContentImpl;
+        address calculatedW3stImpl;
+        address calculatedSubImpl;
     }
 
     function deployAll(
@@ -257,41 +263,49 @@ library LibDeploy {
             SALT
         );
 
-        address calculatedEssImpl = _computeAddress(
+        addrs.calculatedEssImpl = _computeAddress(
             abi.encodePacked(type(Essence).creationCode),
             SALT,
             addrs.deployer
         );
 
-        address calculatedContentImpl = _computeAddress(
+        addrs.calculatedContentImpl = _computeAddress(
             abi.encodePacked(type(Content).creationCode),
             SALT,
             addrs.deployer
         );
 
-        address calculatedW3stImpl = _computeAddress(
+        addrs.calculatedW3stImpl = _computeAddress(
             abi.encodePacked(type(W3st).creationCode),
             SALT,
             addrs.deployer
         );
 
-        address calculatedSubImpl = _computeAddress(
+        addrs.calculatedSubImpl = _computeAddress(
             abi.encodePacked(type(Subscribe).creationCode),
             SALT,
             addrs.subscribeDeployer
         );
 
         // 4. deploy engine
+        addrs.engineImpl = dc.deploy(type(CyberEngine).creationCode, SALT);
         addrs.engine = dc.deploy(
             abi.encodePacked(
-                type(CyberEngine).creationCode,
+                type(ERC1967Proxy).creationCode,
                 abi.encode(
-                    addrs.soul,
-                    addrs.manager,
-                    calculatedEssImpl,
-                    calculatedContentImpl,
-                    calculatedW3stImpl,
-                    calculatedSubImpl
+                    addrs.engineImpl,
+                    abi.encodeWithSelector(
+                        CyberEngine.initialize.selector,
+                        DataTypes.InitParams(
+                            addrs.soul,
+                            addrs.manager,
+                            addrs.calculatedEssImpl,
+                            addrs.calculatedContentImpl,
+                            addrs.calculatedW3stImpl,
+                            addrs.calculatedSubImpl,
+                            protocolOwner
+                        )
+                    )
                 )
             ),
             SALT
@@ -302,14 +316,17 @@ library LibDeploy {
             SALT,
             addrs.engine
         );
-        require(addrs.deployedEssImpl == calculatedEssImpl, "WRONG_ESS_ADDR");
+        require(
+            addrs.deployedEssImpl == addrs.calculatedEssImpl,
+            "WRONG_ESS_ADDR"
+        );
 
         addrs.deployedContentImpl = IDeployer(addrs.deployer).deployContent(
             SALT,
             addrs.engine
         );
         require(
-            addrs.deployedContentImpl == calculatedContentImpl,
+            addrs.deployedContentImpl == addrs.calculatedContentImpl,
             "WRONG_CONTENT_ADDR"
         );
 
@@ -318,13 +335,16 @@ library LibDeploy {
             addrs.engine
         );
         require(
-            addrs.deployedW3stImpl == calculatedW3stImpl,
+            addrs.deployedW3stImpl == addrs.calculatedW3stImpl,
             "WRONG_W3ST_ADDR"
         );
 
         addrs.deployedSubImpl = ISubscribeDeployer(addrs.subscribeDeployer)
             .deploySubscribe(SALT, addrs.engine);
-        require(addrs.deployedSubImpl == calculatedSubImpl, "WRONG_SUB_ADDR");
+        require(
+            addrs.deployedSubImpl == addrs.calculatedSubImpl,
+            "WRONG_SUB_ADDR"
+        );
 
         // 6. deploy treasury
         addrs.cyberTreasury = dc.deploy(
@@ -340,6 +360,7 @@ library LibDeploy {
             _write(vm, "MiddlewareManager", addrs.manager);
             _write(vm, "Deployer", addrs.deployer);
             _write(vm, "SubscribeDeployer", addrs.subscribeDeployer);
+            _write(vm, "CyberEngineImpl", addrs.engineImpl);
             _write(vm, "CyberEngine", addrs.engine);
             _write(vm, "Essence", addrs.deployedEssImpl);
             _write(vm, "Content", addrs.deployedContentImpl);

@@ -12,7 +12,14 @@ import { DataTypes } from "../libraries/DataTypes.sol";
  */
 interface ICyberEngine is ICyberEngineEvents {
     /**
-     * @notice Collect an CyberAccount's essence, content or w3st. Anyone can collect for itself.
+     * @notice Initialize the CyberEngine.
+     *
+     * @param params The params for init.
+     */
+    function initialize(DataTypes.InitParams calldata params) external;
+
+    /**
+     * @notice Collect an CyberAccount's essence, content or w3st.
      *
      * @param params The params for collect.
      * @param data The collect data for pre process.
@@ -401,4 +408,11 @@ interface ICyberEngine is ICyberEngineEvents {
     function getSubscriptionAddr(
         address account
     ) external view returns (address);
+
+    /**
+     * @notice Contract version number.
+     *
+     * @return uint256 The version number.
+     */
+    function version() external pure returns (uint256);
 }

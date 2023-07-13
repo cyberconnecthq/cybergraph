@@ -4,6 +4,8 @@ pragma solidity 0.8.14;
 
 import { ReentrancyGuard } from "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
 import { Clones } from "openzeppelin-contracts/contracts/proxy/Clones.sol";
+import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
+import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Initializable.sol";
 
 import { IERC721 } from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import { ICyberEngine } from "../interfaces/ICyberEngine.sol";
@@ -23,20 +25,26 @@ import { DataTypes } from "../libraries/DataTypes.sol";
  * @notice The core contract of the CyberConnect Protocol.
  * Address with a Soul token can create Content, Comment, Share, Essence and register Subscribe.
  * Address with a Org Soul token can issue W3st.
- * Any address can collect Content, Comment, Share, Essence and W3st. And can subscribe to an address with Soul token.
+ * Any address can collect Content, Comment, Share, Essence, W3st and make a subscription.
  */
-contract CyberEngine is ReentrancyGuard, ICyberEngine {
+contract CyberEngine is
+    Initializable,
+    UUPSUpgradeable,
+    ReentrancyGuard,
+    ICyberEngine
+{
     /*//////////////////////////////////////////////////////////////
                                 STATES
     //////////////////////////////////////////////////////////////*/
 
-    address public immutable SOUL;
-    address public immutable MANAGER;
+    address public soul;
+    address public manager;
+    address public admin;
 
-    address internal immutable ESSENCE_IMPL;
-    address internal immutable SUBSCRIBE_IMPL;
-    address internal immutable CONTENT_IMPL;
-    address internal immutable W3ST_IMPL;
+    address internal _essenceImpl;
+    address internal _subscribeImpl;
+    address internal _contentImpl;
+    address internal _w3stImpl;
 
     mapping(address => mapping(uint256 => DataTypes.EssenceStruct))
         internal _essenceByIdByAccount;
@@ -48,6 +56,8 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     mapping(address => DataTypes.AccountStruct) internal _accounts;
     mapping(address => mapping(address => bool)) internal _operatorApproval;
 
+    uint256 internal constant _VERSION = 1;
+
     /*//////////////////////////////////////////////////////////////
                               MODIFIERS
     //////////////////////////////////////////////////////////////*/
@@ -56,7 +66,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
      * @notice Checks the account is a soul owner.
      */
     modifier onlySoulOwner() {
-        require(IERC721(SOUL).balanceOf(msg.sender) > 0, "ONLY_SOUL_OWNER");
+        require(IERC721(soul).balanceOf(msg.sender) > 0, "ONLY_SOUL_OWNER");
         _;
     }
 
@@ -64,7 +74,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
      * @notice Checks the account is a soul owner or operator.
      */
     modifier onlySoulOwnerOrOperator(address account) {
-        require(IERC721(SOUL).balanceOf(account) > 0, "ONLY_SOUL_OWNER");
+        require(IERC721(soul).balanceOf(account) > 0, "ONLY_SOUL_OWNER");
         require(
             msg.sender == account || getOperatorApproval(account, msg.sender),
             "ONLY_OWNER_OR_OPERATOR"
@@ -76,7 +86,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
      * @notice Checks the account is an org owner or operator.
      */
     modifier onlyOrgOwnerOrOperator(address account) {
-        require(ISoul(SOUL).isOrgAccount(account), "ONLY_ORG_ACCOUNT");
+        require(ISoul(soul).isOrgAccount(account), "ONLY_ORG_ACCOUNT");
         require(
             msg.sender == account || getOperatorApproval(account, msg.sender),
             "ONLY_OWNER_OR_OPERATOR"
@@ -84,36 +94,57 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         _;
     }
 
+    /**
+     * @notice Checks if the sender is authorized to upgrade the contract.
+     */
+    modifier canUpgrade() {
+        require(msg.sender == admin, "UNAUTHORIZED");
+        _;
+    }
+
     /*//////////////////////////////////////////////////////////////
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(
-        address soul,
-        address mwManager,
-        address essImpl,
-        address contentImpl,
-        address w3stImpl,
-        address subImpl
-    ) {
-        require(soul != address(0), "SOUL_NOT_SET");
-        require(mwManager != address(0), "MW_MANAGER_NOT_SET");
-        require(essImpl != address(0), "ESS_IMPL_NOT_SET");
-        require(contentImpl != address(0), "CONTENT_IMPL_NOT_SET");
-        require(w3stImpl != address(0), "W3ST_IMPL_NOT_SET");
-        require(subImpl != address(0), "SUB_IMPL_NOT_SET");
-
-        SOUL = soul;
-        MANAGER = mwManager;
-        ESSENCE_IMPL = essImpl;
-        CONTENT_IMPL = contentImpl;
-        W3ST_IMPL = w3stImpl;
-        SUBSCRIBE_IMPL = subImpl;
+    constructor() {
+        _disableInitializers();
     }
 
     /*//////////////////////////////////////////////////////////////
                                  EXTERNAL
     //////////////////////////////////////////////////////////////*/
+
+    /// @inheritdoc ICyberEngine
+    function initialize(
+        DataTypes.InitParams calldata params
+    ) external override initializer {
+        require(params.soulAddr != address(0), "SOUL_NOT_SET");
+        require(params.mwManagerAddr != address(0), "MW_MANAGER_NOT_SET");
+        require(params.essImpl != address(0), "ESS_IMPL_NOT_SET");
+        require(params.contentImpl != address(0), "CONTENT_IMPL_NOT_SET");
+        require(params.w3stImpl != address(0), "W3ST_IMPL_NOT_SET");
+        require(params.subImpl != address(0), "SUB_IMPL_NOT_SET");
+        require(params.adminAddr != address(0), "ADMIN_NOT_SET");
+
+        soul = params.soulAddr;
+        manager = params.mwManagerAddr;
+        admin = params.adminAddr;
+
+        _essenceImpl = params.essImpl;
+        _contentImpl = params.contentImpl;
+        _w3stImpl = params.w3stImpl;
+        _subscribeImpl = params.subImpl;
+
+        emit Initialize(
+            soul,
+            manager,
+            _essenceImpl,
+            _contentImpl,
+            _w3stImpl,
+            _subscribeImpl,
+            admin
+        );
+    }
 
     /// @inheritdoc ICyberEngine
     function collect(
@@ -135,7 +166,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
         if (mw != address(0)) {
             require(
-                IMiddlewareManager(MANAGER).isMwAllowed(mw),
+                IMiddlewareManager(manager).isMwAllowed(mw),
                 "MW_NOT_ALLOWED"
             );
             IMiddleware(mw).preProcess(
@@ -210,7 +241,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     {
         require(
             params.mw == address(0) ||
-                IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
+                IMiddlewareManager(manager).isMwAllowed(params.mw),
             "MW_NOT_ALLOWED"
         );
 
@@ -235,7 +266,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
             );
         }
 
-        address essence = Clones.clone(ESSENCE_IMPL);
+        address essence = Clones.clone(_essenceImpl);
         IEssence(essence).initialize(
             params.account,
             id,
@@ -279,7 +310,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         _subscribeByAccount[params.account].dayPerSub = params.dayPerSub;
         _subscribeByAccount[params.account].recipient = params.recipient;
 
-        address deployedSubscribe = Clones.clone(SUBSCRIBE_IMPL);
+        address deployedSubscribe = Clones.clone(_subscribeImpl);
         ISubscribe(deployedSubscribe).initialize(
             params.account,
             params.name,
@@ -312,7 +343,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     {
         require(
             params.mw == address(0) ||
-                IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
+                IMiddlewareManager(manager).isMwAllowed(params.mw),
             "MW_NOT_ALLOWED"
         );
 
@@ -321,7 +352,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
         // deploy the contract for the first time
         if (tokenId == 0) {
-            address content = Clones.clone(CONTENT_IMPL);
+            address content = Clones.clone(_contentImpl);
             IContent(content).initialize(account);
             _accounts[account].content = content;
         }
@@ -375,7 +406,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
         // deploy the contract for the first time
         if (tokenId == 0) {
-            address content = Clones.clone(CONTENT_IMPL);
+            address content = Clones.clone(_contentImpl);
             IContent(content).initialize(account);
             _accounts[account].content = content;
         }
@@ -403,7 +434,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     {
         require(
             params.mw == address(0) ||
-                IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
+                IMiddlewareManager(manager).isMwAllowed(params.mw),
             "MW_NOT_ALLOWED"
         );
 
@@ -414,7 +445,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
         // deploy the contract for the first time
         if (tokenId == 0) {
-            address content = Clones.clone(CONTENT_IMPL);
+            address content = Clones.clone(_contentImpl);
             IContent(content).initialize(account);
             _accounts[account].content = content;
         }
@@ -464,7 +495,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
     {
         require(
             params.mw == address(0) ||
-                IMiddlewareManager(MANAGER).isMwAllowed(params.mw),
+                IMiddlewareManager(manager).isMwAllowed(params.mw),
             "MW_NOT_ALLOWED"
         );
 
@@ -473,7 +504,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
 
         // deploy the contract for the first time
         if (tokenId == 0) {
-            address w3st = Clones.clone(W3ST_IMPL);
+            address w3st = Clones.clone(_w3stImpl);
             IW3st(w3st).initialize(account);
             _accounts[account].w3st = w3st;
         }
@@ -512,7 +543,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         bytes calldata data
     ) external override onlySoulOwnerOrOperator(account) {
         require(
-            mw == address(0) || IMiddlewareManager(MANAGER).isMwAllowed(mw),
+            mw == address(0) || IMiddlewareManager(manager).isMwAllowed(mw),
             "MW_NOT_ALLOWED"
         );
         _requireEssenceRegistered(account, essenceId);
@@ -562,7 +593,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         bytes calldata data
     ) external override onlySoulOwnerOrOperator(account) {
         require(
-            mw == address(0) || IMiddlewareManager(MANAGER).isMwAllowed(mw),
+            mw == address(0) || IMiddlewareManager(manager).isMwAllowed(mw),
             "MW_NOT_ALLOWED"
         );
         _requireContentRegistered(account, tokenId);
@@ -594,7 +625,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         bytes calldata data
     ) external override onlySoulOwnerOrOperator(account) {
         require(
-            mw == address(0) || IMiddlewareManager(MANAGER).isMwAllowed(mw),
+            mw == address(0) || IMiddlewareManager(manager).isMwAllowed(mw),
             "MW_NOT_ALLOWED"
         );
         _requireW3stRegistered(account, tokenId);
@@ -805,6 +836,10 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         return _subscribeByAccount[account].subscribe;
     }
 
+    function version() external pure virtual override returns (uint256) {
+        return _VERSION;
+    }
+
     /*//////////////////////////////////////////////////////////////
                             PUBLIC VIEW
     //////////////////////////////////////////////////////////////*/
@@ -944,4 +979,7 @@ contract CyberEngine is ReentrancyGuard, ICyberEngine {
         (bool chargeSuccess, ) = recipient.call{ value: cost }("");
         require(chargeSuccess, "CHARGE_FAILED");
     }
+
+    // UUPS upgradeability
+    function _authorizeUpgrade(address) internal override canUpgrade {}
 }

@@ -10,7 +10,28 @@ import { DataTypes } from "../libraries/DataTypes.sol";
  */
 interface ICyberEngineEvents {
     /**
-     * @notice Emitted when a new essence been created.
+     * @notice Emitted when a CyberEngine has been created.
+     *
+     * @param soul The soul contract address.
+     * @param mwManager The middleware contract address.
+     * @param essImpl The essence impl address.
+     * @param contentImpl The content impl address.
+     * @param w3stImpl The w3st impl address.
+     * @param subImpl The sub impl address.
+     * @param admin The admin address to upgrade the contract.
+     */
+    event Initialize(
+        address soul,
+        address mwManager,
+        address essImpl,
+        address contentImpl,
+        address w3stImpl,
+        address subImpl,
+        address indexed admin
+    );
+
+    /**
+     * @notice Emitted when a new essence has been created.
      *
      * @param account The account address.
      * @param essenceId The essence id.
@@ -33,7 +54,7 @@ interface ICyberEngineEvents {
     );
 
     /**
-     * @notice Emitted when a new Subscription been registered.
+     * @notice Emitted when a new Subscription has been registered.
      *
      * @param account The account address.
      * @param name The subscription name.
@@ -56,7 +77,7 @@ interface ICyberEngineEvents {
     );
 
     /**
-     * @notice Emitted when a new content been created.
+     * @notice Emitted when a new content has been created.
      *
      * @param account The account address.
      * @param tokenId The token id.
@@ -75,7 +96,7 @@ interface ICyberEngineEvents {
     );
 
     /**
-     * @notice Emitted when a new comment been created.
+     * @notice Emitted when a new comment has been created.
      *
      * @param account The account address.
      * @param tokenId The token id.
@@ -98,7 +119,7 @@ interface ICyberEngineEvents {
     );
 
     /**
-     * @notice Emitted when a new share been created.
+     * @notice Emitted when a new share has been created.
      *
      * @param account The account address.
      * @param tokenId The token id.
@@ -113,7 +134,7 @@ interface ICyberEngineEvents {
     );
 
     /**
-     * @notice Emitted when a new w3st been created.
+     * @notice Emitted when a new w3st has been created.
      *
      * @param account The account address.
      * @param tokenId The token id.
@@ -213,7 +234,7 @@ interface ICyberEngineEvents {
     );
 
     /**
-     * @notice Emitted when a new operator been approved.
+     * @notice Emitted when a new operator has been approved.
      *
      * @param account The account address.
      * @param operator The operator address.

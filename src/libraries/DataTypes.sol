@@ -55,6 +55,16 @@ library DataTypes {
         uint256 idShared;
     }
 
+    struct InitParams {
+        address soulAddr;
+        address mwManagerAddr;
+        address essImpl;
+        address contentImpl;
+        address w3stImpl;
+        address subImpl;
+        address adminAddr;
+    }
+
     struct CommentParams {
         address account;
         string tokenURI;
