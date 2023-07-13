@@ -33,7 +33,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-    bytes32 constant SALT = keccak256(bytes("Test11"));
+    bytes32 constant SALT = keccak256(bytes("Test16"));
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 
@@ -229,21 +229,10 @@ library LibDeploy {
         Create2Deployer dc = Create2Deployer(_dc);
 
         // 1. deploy soul
-        address soulImpl = dc.deploy(
-            abi.encodePacked(type(Soul).creationCode),
-            SALT
-        );
-
         addrs.soul = dc.deploy(
             abi.encodePacked(
-                type(ERC1967Proxy).creationCode,
-                abi.encode(
-                    soulImpl,
-                    abi.encodeCall(
-                        Soul.initialize,
-                        (soulManager, "CyberSoul", "SOUL")
-                    )
-                )
+                type(Soul).creationCode,
+                abi.encode(soulManager, "CyberSoul", "SOUL")
             ),
             SALT
         );

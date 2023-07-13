@@ -17,36 +17,14 @@ contract SoulTest is Test {
     address public soulProxy;
 
     function setUp() public {
-        Soul soulImpl = new Soul();
-        soulProxy = address(
-            new ERC1967Proxy(
-                address(soulImpl),
-                abi.encodeWithSelector(
-                    Soul.initialize.selector,
-                    soulOwner,
-                    "soul",
-                    "SOUL"
-                )
-            )
-        );
+        soulProxy = address(new Soul(soulOwner, "soul", "SOUL"));
     }
 
     /* solhint-disable func-name-mixedcase */
     function testInitialize() public {
-        Soul soulImpl = new Soul();
-        ERC1967Proxy proxy = new ERC1967Proxy(
-            address(soulImpl),
-            abi.encodeWithSelector(
-                Soul.initialize.selector,
-                soulOwner,
-                "soul",
-                "SOUL"
-            )
-        );
-
-        assertEq(Soul(address(proxy)).owner(), soulOwner);
-        assertEq(Soul(address(proxy)).name(), "soul");
-        assertEq(Soul(address(proxy)).symbol(), "SOUL");
+        assertEq(Soul(soulProxy).owner(), soulOwner);
+        assertEq(Soul(soulProxy).name(), "soul");
+        assertEq(Soul(soulProxy).symbol(), "SOUL");
     }
 
     function testCreateNonOrgSoul() public {

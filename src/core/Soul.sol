@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.14;
 
-import { Owned } from "../dependencies/solmate/Owned.sol";
-import { ERC721 } from "../dependencies/solmate/ERC721.sol";
+import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
+import { SBTERC721 } from "../dependencies/solmate/SBTERC721.sol";
 
 import { ISoul } from "../interfaces/ISoul.sol";
 
@@ -15,7 +15,7 @@ import { LibString } from "../libraries/LibString.sol";
  * @author CyberConnect
  * @notice A 721 NFT contract that indicates if an address is a CyberAccount.
  */
-contract Soul is Owned, ERC721, MetadataResolver, ISoul {
+contract Soul is Ownable, SBTERC721, MetadataResolver, ISoul {
     /*//////////////////////////////////////////////////////////////
                                 STATES
     //////////////////////////////////////////////////////////////*/
@@ -40,23 +40,18 @@ contract Soul is Owned, ERC721, MetadataResolver, ISoul {
                                  CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor() {
-        _disableInitializers();
+    constructor(
+        address _owner,
+        string memory _name,
+        string memory _symbol
+    ) SBTERC721(_name, _symbol) {
+        _minters[_owner] = true;
+        _transferOwnership(_owner);
     }
 
     /*//////////////////////////////////////////////////////////////
                                  EXTERNAL
     //////////////////////////////////////////////////////////////*/
-
-    function initialize(
-        address owner,
-        string calldata name,
-        string calldata symbol
-    ) external initializer {
-        _minters[owner] = true;
-        Owned.__Owned_Init(owner);
-        ERC721.__ERC721_Init(name, symbol);
-    }
 
     /// @inheritdoc ISoul
     function createSoul(
@@ -67,7 +62,7 @@ contract Soul is Owned, ERC721, MetadataResolver, ISoul {
             _orgs[to] = true;
         }
         uint256 tokenId = uint256(uint160(to));
-        ERC721._safeMint(to, tokenId);
+        super._safeMint(to);
         emit CreateSoul(to, isOrg, tokenId);
 
         return tokenId;
@@ -106,17 +101,6 @@ contract Soul is Owned, ERC721, MetadataResolver, ISoul {
     /// @inheritdoc ISoul
     function setTokenURI(string calldata uri) external override onlyOwner {
         _tokenURI = uri;
-    }
-
-    /*//////////////////////////////////////////////////////////////
-                                 PUBLIC
-    //////////////////////////////////////////////////////////////*/
-
-    /**
-     * @notice Disallows the transfer of the soul.
-     */
-    function transferFrom(address, address, uint256) public pure override {
-        revert("TRANSFER_NOT_ALLOWED");
     }
 
     /*//////////////////////////////////////////////////////////////

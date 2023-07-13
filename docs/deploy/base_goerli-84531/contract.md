@@ -1,16 +1,16 @@
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| Soul                 | 0xa94fa738a33697df67d12fa7b435a86ee1ae5667 |
-| MiddlewareManager    | 0xb45a694fbe18a13531ec65b46d80f52cfadcfdba |
-| Deployer             | 0x75852c2bc6c1e9f877492ed6c80efe29a78caab4 |
-| SubscribeDeployer    | 0xfc5b53287905d2fcaed63af57e9168f37cbf8423 |
-| CyberEngine          | 0x9cf4cf4f255366fa045f7e56014dfe97ecce6d41 |
-| Essence              | 0xc25f5dd2a3ab9a575f7b36e613cb79a03214cec8 |
-| Content              | 0xd192657602ef0fdbe76cb0ac83be9fcb6af4940c |
-| W3ST                 | 0x33f11a55425bc16e34d2348863131122b20c02b1 |
-| Subscribe            | 0x4eab567f6e035d3e38164f07f8794926bc46d430 |
-| Treasury             | 0x5bcdfb2f80792eadaa7b8c62452087f6bb945239 |
-| PermissionMw         | 0xba8bfa2fb9b2c83c11261c91757c67d73a2e302d |
-| ECDSAValidator       | 0xfd06500de1a5d49b64a416eedc9451218f8ab78e |
-| CyberAccount Factory | 0xecb13962de4d484d988ad5927e92168bed1ac3ce |
-| TokenReceiver        | 0x816cc80aa22fa4553b89925e8f38f910010ec5ed |
+| Soul                 | 0xb942509713bdc1418fe4e8e8d59030c95b40dcaf |
+| MiddlewareManager    | 0xc8c61e8d22c6090b9b919e47e6e7eb70b19bf906 |
+| Deployer             | 0x900448753aa60bf02d75a02e551e0b7c59d95125 |
+| SubscribeDeployer    | 0x463a0eb2e6711d2d45dfe86f3a19666f79b1fa4e |
+| CyberEngine          | 0x1f1ae80fa8e63c9c25de55799b3939fafbc86f8a |
+| Essence              | 0x0a171e450323e7fc2b6e892e0c1bffb56cedef25 |
+| Content              | 0x1dd1fdfec352c992ff9cda2d3864f0972b302031 |
+| W3ST                 | 0xe87b9da68ff8c0a5c4984d664166c91a252d4db2 |
+| Subscribe            | 0x40585ff9b8326665f6485c178d9551609d33e93e |
+| Treasury             | 0xe0a73e1ba9618ef5a1ff558ba31a1d6ba9d763bb |
+| PermissionMw         | 0xed8091bc8bc25281dfbd137a156732976b3aeced |
+| ECDSAValidator       | 0xe573cb631588541841d4265c91fed90498b485ba |
+| CyberAccount Factory | 0x1a2f4f79a7a4616c0c59f489c9984db01ccbbe89 |
+| TokenReceiver        | 0xbfae8fcf96f68c445a45e72dd580f29ed1f271cb |

@@ -3,7 +3,6 @@ import * as path from "path";
 
 const writeAbi = async () => {
   const folders = [
-    "CyberAccount.sol/CyberAccount.json",
     "CyberAccountFactory.sol/CyberAccountFactory.json",
     "CyberEngine.sol/CyberEngine.json",
     "Content.sol/Content.json",
