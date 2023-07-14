@@ -55,17 +55,12 @@ contract Soul is Ownable, SBTERC721, MetadataResolver, ISoul {
 
     /// @inheritdoc ISoul
     function createSoul(
-        address to,
-        bool isOrg
+        address to
     ) external override onlyMinter returns (uint256) {
-        if (isOrg) {
-            _orgs[to] = true;
-        }
-        uint256 tokenId = uint256(uint160(to));
-        super._safeMint(to);
-        emit CreateSoul(to, isOrg, tokenId);
+        uint256 id = super._safeMint(to);
+        emit CreateSoul(to, id);
 
-        return tokenId;
+        return id;
     }
 
     /// @inheritdoc ISoul

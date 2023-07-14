@@ -53,7 +53,8 @@ abstract contract SBTERC721 {
 
     function balanceOf(address owner) public view virtual returns (uint256) {
         require(owner != address(0), "ZERO_ADDRESS");
-        owner = _ownerOf[uint256(uint160(owner))];
+        uint256 id = getTokenId(owner);
+        owner = _ownerOf[id];
         if (owner == address(0)) {
             return 0;
         } else {
@@ -132,18 +133,28 @@ abstract contract SBTERC721 {
     }
 
     /*//////////////////////////////////////////////////////////////
+                              PUBLIC
+    //////////////////////////////////////////////////////////////*/
+    function getTokenId(address owner) public pure returns (uint256) {
+        return uint256(keccak256(abi.encodePacked(owner)));
+    }
+
+    /*//////////////////////////////////////////////////////////////
                         INTERNAL MINT/BURN LOGIC
     //////////////////////////////////////////////////////////////*/
 
-    function _mint(address to) internal virtual {
+    function _mint(address to) internal virtual returns (uint256) {
         require(to != address(0), "INVALID_RECIPIENT");
-        uint256 id = uint256(uint160(to));
+
+        uint256 id = getTokenId(to);
 
         require(_ownerOf[id] == address(0), "ALREADY_MINTED");
 
         _ownerOf[id] = to;
 
         emit Transfer(address(0), to, id);
+
+        return id;
     }
 
     function _burn(uint256 id) internal virtual {
@@ -162,38 +173,39 @@ abstract contract SBTERC721 {
                         INTERNAL SAFE MINT LOGIC
     //////////////////////////////////////////////////////////////*/
 
-    function _safeMint(address to) internal virtual {
-        _mint(to);
+    function _safeMint(address to) internal virtual returns (uint256) {
+        uint256 id = _mint(to);
 
         if (to.code.length != 0)
             require(
                 ERC721TokenReceiver(to).onERC721Received(
                     msg.sender,
                     address(0),
-                    uint256(uint160(to)),
+                    id,
                     ""
                 ) == ERC721TokenReceiver.onERC721Received.selector,
                 "UNSAFE_RECIPIENT"
             );
+        return id;
     }
 
     function _safeMint(
         address to,
-        uint256,
         bytes memory data
-    ) internal virtual {
-        _mint(to);
+    ) internal virtual returns (uint256) {
+        uint256 id = _mint(to);
 
         if (to.code.length != 0)
             require(
                 ERC721TokenReceiver(to).onERC721Received(
                     msg.sender,
                     address(0),
-                    uint256(uint160(to)),
+                    id,
                     data
                 ) == ERC721TokenReceiver.onERC721Received.selector,
                 "UNSAFE_RECIPIENT"
             );
+        return id;
     }
 }
 

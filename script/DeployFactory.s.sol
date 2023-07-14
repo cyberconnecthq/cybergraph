@@ -20,6 +20,7 @@ contract DeployFactory is Script, DeploySetting {
                 deployParams.deployerContract,
                 deployParams.entryPoint,
                 address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
+                deployParams.protocolOwner,
                 true
             );
         } else if (block.chainid == DeploySetting.OP_GOERLI) {
@@ -28,6 +29,7 @@ contract DeployFactory is Script, DeploySetting {
                 deployParams.deployerContract,
                 deployParams.entryPoint,
                 address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
+                deployParams.protocolOwner,
                 true
             );
         } else if (block.chainid == DeploySetting.LINEA_GOERLI) {
@@ -36,6 +38,7 @@ contract DeployFactory is Script, DeploySetting {
                 deployParams.deployerContract,
                 deployParams.entryPoint,
                 address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
+                deployParams.protocolOwner,
                 true
             );
         } else if (block.chainid == DeploySetting.SCROLL_ALPHA) {
@@ -44,6 +47,7 @@ contract DeployFactory is Script, DeploySetting {
                 deployParams.deployerContract,
                 deployParams.entryPoint,
                 address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
+                deployParams.protocolOwner,
                 true
             );
         }

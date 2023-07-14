@@ -34,7 +34,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-    bytes32 constant SALT = keccak256(bytes("Test16"));
+    bytes32 constant SALT = keccak256(bytes("Test17"));
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 
@@ -155,6 +155,7 @@ library LibDeploy {
         address _dc,
         address entryPoint,
         address soul,
+        address factoryOwner,
         bool writeFile
     ) internal returns (address factory) {
         Create2Deployer dc = Create2Deployer(_dc);
@@ -162,7 +163,7 @@ library LibDeploy {
         factory = dc.deploy(
             abi.encodePacked(
                 type(CyberAccountFactory).creationCode,
-                abi.encode(iep, soul)
+                abi.encode(iep, soul, factoryOwner)
             ),
             SALT
         );
@@ -217,6 +218,7 @@ library LibDeploy {
             _dc,
             entryPoint,
             contractAddresses.soul,
+            protocolOwner,
             writeFile
         );
         deployReceiver(vm, _dc, protocolOwner, writeFile);
@@ -410,6 +412,7 @@ library LibDeploy {
             address(dc),
             entryPoint,
             addrs.soul,
+            protocolOwner,
             false
         );
     }

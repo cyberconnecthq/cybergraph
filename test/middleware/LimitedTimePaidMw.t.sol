@@ -24,8 +24,8 @@ contract LimitedTimePaidMwTest is TestIntegrationBase {
 
     function setUp() public {
         _setUp();
-        Soul(addrs.soul).createSoul(alice, false);
-        Soul(addrs.soul).createSoul(bob, false);
+        Soul(addrs.soul).createSoul(alice);
+        Soul(addrs.soul).createSoul(bob);
         mw = address(
             new LimitedTimePaidMw(addrs.cyberTreasury, addrs.engine, addrs.soul)
         );

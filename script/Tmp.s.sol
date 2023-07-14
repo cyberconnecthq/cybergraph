@@ -23,22 +23,22 @@ contract TempScript is Script {
         vm.startBroadcast();
 
         CyberAccountFactory fac = CyberAccountFactory(
-            0x1a2F4f79A7a4616c0C59f489c9984dB01ccbbE89
+            0x69157777e8FBd592E319cF887c029F3269F7615c
         );
         console.log(address(fac.kernelTemplate()));
 
         console.log(address(fac.nextTemplate()));
-        console.log(
-            address(
-                fac.getAccountAddress(
-                    IKernelValidator(
-                        0xe573cb631588541841D4265C91fEd90498B485BA
-                    ),
-                    hex"2E0446079705B6Bacc4730fB3EDA5DA68aE5Fe4D",
-                    0
-                )
-            )
-        );
+        // console.log(
+        //     address(
+        //         fac.getAccountAddress(
+        //             IKernelValidator(
+        //                 0xe573cb631588541841D4265C91fEd90498B485BA
+        //             ),
+        //             hex"2E0446079705B6Bacc4730fB3EDA5DA68aE5Fe4D",
+        //             0
+        //         )
+        //     )
+        // );
 
         // console.logBytes(type(EIP1967Proxy).creationCode);
 

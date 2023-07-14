@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "kernel/src/Kernel.sol";
+import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
 import { Create2 } from "openzeppelin-contracts/contracts/utils/Create2.sol";
 import { ERC1967Proxy } from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ECDSAValidator } from "kernel/src/validator/ECDSAValidator.sol";
@@ -11,7 +12,7 @@ import { TempKernel } from "kernel/src/factory/TempKernel.sol";
 import { IEntryPoint } from "account-abstraction/interfaces/IEntryPoint.sol";
 import { ISoul } from "../interfaces/ISoul.sol";
 
-contract CyberAccountFactory {
+contract CyberAccountFactory is Ownable {
     TempKernel public immutable kernelTemplate;
     Kernel public immutable nextTemplate;
     IEntryPoint public immutable entryPoint;
@@ -24,11 +25,12 @@ contract CyberAccountFactory {
         uint256 index
     );
 
-    constructor(IEntryPoint _entryPoint, address _soul) {
+    constructor(IEntryPoint _entryPoint, address _soul, address _owner) {
         kernelTemplate = new TempKernel(_entryPoint);
         nextTemplate = new Kernel(_entryPoint);
         entryPoint = _entryPoint;
         soul = _soul;
+        _transferOwnership(_owner);
     }
 
     function createAccount(
@@ -63,7 +65,7 @@ contract CyberAccountFactory {
             )
         );
 
-        ISoul(soul).createSoul(address(proxy), false);
+        ISoul(soul).createSoul(address(proxy));
         emit AccountCreated(address(proxy), address(_validator), _data, _index);
     }
 
@@ -89,5 +91,17 @@ contract CyberAccountFactory {
                     )
                 )
             );
+    }
+
+    function addStake(uint32 _unstakeDelaySec) external payable {
+        IEntryPoint(entryPoint).addStake{ value: msg.value }(_unstakeDelaySec);
+    }
+
+    function unlockStake() external {
+        IEntryPoint(entryPoint).unlockStake();
+    }
+
+    function withdrawStake() external {
+        IEntryPoint(entryPoint).withdrawStake(payable(owner()));
     }
 }

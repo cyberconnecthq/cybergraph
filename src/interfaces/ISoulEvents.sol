@@ -11,14 +11,9 @@ interface ISoulEvents {
      * @notice Emitted when a soul is created.
      *
      * @param to The recipient address.
-     * @param isOrg Whether the soul is an organization.
      * @param tokenId The soul token ID.
      */
-    event CreateSoul(
-        address indexed to,
-        bool indexed isOrg,
-        uint256 indexed tokenId
-    );
+    event CreateSoul(address indexed to, uint256 indexed tokenId);
 
     /**
      * @notice Emitted when a soul is set/unset as an organization.

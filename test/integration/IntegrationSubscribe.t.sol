@@ -19,9 +19,10 @@ contract IntegrationSubscribeTest is TestIntegrationBase {
 
     function setUp() public {
         _setUp();
-        Soul(addrs.soul).createSoul(bob, true);
-        Soul(addrs.soul).createSoul(alice, false);
-        Soul(addrs.soul).createSoul(charles, false);
+        Soul(addrs.soul).createSoul(bob);
+        Soul(addrs.soul).setOrg(bob, true);
+        Soul(addrs.soul).createSoul(alice);
+        Soul(addrs.soul).createSoul(charles);
         vm.deal(bob, initBalance);
         vm.deal(alice, initBalance);
     }

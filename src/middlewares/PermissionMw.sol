@@ -37,7 +37,7 @@ contract PermissionMw is IMiddleware, EIP712, OnlyEngineMw {
 
     bytes32 public constant COLLECT_TYPEHASH =
         keccak256(
-            "collect(address collector,address account,uint8 category,uint256 id,uint256 amount,uint256 nonce,uint256 deadline)"
+            "collect(address to,address account,uint8 category,uint256 id,uint256 amount,uint256 nonce,uint256 deadline)"
         );
 
     mapping(address => mapping(DataTypes.Category => mapping(uint256 => MiddlewareData)))

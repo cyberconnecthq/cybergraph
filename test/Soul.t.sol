@@ -29,22 +29,21 @@ contract SoulTest is Test {
 
     function testCreateNonOrgSoul() public {
         vm.prank(soulOwner);
-        Soul(soulProxy).createSoul(alice, false);
-        assertEq(Soul(soulProxy).ownerOf(uint256(uint160(alice))), alice);
+        Soul(soulProxy).createSoul(alice);
+        assertEq(
+            Soul(soulProxy).ownerOf(Soul(soulProxy).getTokenId(alice)),
+            alice
+        );
         assertFalse(Soul(soulProxy).isOrgAccount(alice));
-    }
-
-    function testCreateOrgSoul() public {
-        vm.prank(soulOwner);
-        Soul(soulProxy).createSoul(alice, true);
-        assertEq(Soul(soulProxy).ownerOf(uint256(uint160(alice))), alice);
-        assertTrue(Soul(soulProxy).isOrgAccount(alice));
     }
 
     function testPromoteToOrg() public {
         vm.prank(soulOwner);
-        Soul(soulProxy).createSoul(alice, false);
-        assertEq(Soul(soulProxy).ownerOf(uint256(uint160(alice))), alice);
+        Soul(soulProxy).createSoul(alice);
+        assertEq(
+            Soul(soulProxy).ownerOf(Soul(soulProxy).getTokenId(alice)),
+            alice
+        );
         assertFalse(Soul(soulProxy).isOrgAccount(alice));
 
         vm.prank(soulOwner);
@@ -54,8 +53,13 @@ contract SoulTest is Test {
 
     function testOrgDegrade() public {
         vm.prank(soulOwner);
-        Soul(soulProxy).createSoul(alice, true);
-        assertEq(Soul(soulProxy).ownerOf(uint256(uint160(alice))), alice);
+        Soul(soulProxy).createSoul(alice);
+        vm.prank(soulOwner);
+        Soul(soulProxy).setOrg(alice, true);
+        assertEq(
+            Soul(soulProxy).ownerOf(Soul(soulProxy).getTokenId(alice)),
+            alice
+        );
         assertTrue(Soul(soulProxy).isOrgAccount(alice));
 
         vm.prank(soulOwner);
@@ -65,31 +69,30 @@ contract SoulTest is Test {
 
     function testSoulCannotTransfer() public {
         vm.prank(soulOwner);
-        Soul(soulProxy).createSoul(alice, false);
+        Soul(soulProxy).createSoul(alice);
+
+        uint256 id = Soul(soulProxy).getTokenId(alice);
+        vm.prank(alice);
+        vm.expectRevert("TRANSFER_NOT_ALLOWED");
+        Soul(soulProxy).transferFrom(alice, bob, id);
 
         vm.prank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
-        Soul(soulProxy).transferFrom(alice, bob, uint256(uint160(alice)));
+        Soul(soulProxy).safeTransferFrom(alice, bob, id);
 
         vm.prank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
-        Soul(soulProxy).safeTransferFrom(alice, bob, uint256(uint160(alice)));
-
-        vm.prank(alice);
-        vm.expectRevert("TRANSFER_NOT_ALLOWED");
-        Soul(soulProxy).safeTransferFrom(
-            alice,
-            bob,
-            uint256(uint160(alice)),
-            ""
-        );
+        Soul(soulProxy).safeTransferFrom(alice, bob, id, "");
     }
 
     function testGetTokenURI() public {
         vm.prank(soulOwner);
-        Soul(soulProxy).createSoul(alice, false);
+        Soul(soulProxy).createSoul(alice);
 
-        assertEq(Soul(soulProxy).tokenURI(uint256(uint160(alice))), "2");
+        assertEq(
+            Soul(soulProxy).tokenURI(Soul(soulProxy).getTokenId(alice)),
+            "96410720129710237375451070825415435584404743201776233794242755335442674601826"
+        );
 
         vm.expectRevert("NOT_MINTED");
         assertEq(Soul(soulProxy).tokenURI(0), "");
@@ -98,19 +101,22 @@ contract SoulTest is Test {
     function testOnlyMinterCanMint() public {
         vm.prank(alice);
         vm.expectRevert("ONLY_MINTER");
-        Soul(soulProxy).createSoul(alice, false);
+        Soul(soulProxy).createSoul(alice);
 
         vm.prank(soulOwner);
         Soul(soulProxy).setMinter(alice, true);
 
         vm.prank(alice);
-        Soul(soulProxy).createSoul(alice, false);
-        assertEq(Soul(soulProxy).ownerOf(uint256(uint160(alice))), alice);
+        Soul(soulProxy).createSoul(alice);
+        assertEq(
+            Soul(soulProxy).ownerOf(Soul(soulProxy).getTokenId(alice)),
+            alice
+        );
     }
 
     function test_SoulMinted_SetMetadata_ReadSuccess() public {
         vm.prank(soulOwner);
-        uint256 tokenId = Soul(soulProxy).createSoul(alice, true);
+        uint256 tokenId = Soul(soulProxy).createSoul(alice);
 
         string memory avatarKey = "avatar";
         string
@@ -131,7 +137,7 @@ contract SoulTest is Test {
 
     function test_SoulMinted_ClearMetadata_ReadSuccess() public {
         vm.prank(soulOwner);
-        uint256 tokenId = Soul(soulProxy).createSoul(alice, true);
+        uint256 tokenId = Soul(soulProxy).createSoul(alice);
 
         DataTypes.MetadataPair[]
             memory metadatas = new DataTypes.MetadataPair[](2);
@@ -161,7 +167,7 @@ contract SoulTest is Test {
 
     function test_SoulMinted_ClearMetadataByOthers_RevertUnAuth() public {
         vm.prank(soulOwner);
-        uint256 tokenId = Soul(soulProxy).createSoul(alice, true);
+        uint256 tokenId = Soul(soulProxy).createSoul(alice);
 
         DataTypes.MetadataPair[]
             memory metadatas = new DataTypes.MetadataPair[](2);
@@ -181,7 +187,7 @@ contract SoulTest is Test {
 
     function test_SoulMinted_SetGatedMetadata_ReadSuccess() public {
         vm.startPrank(soulOwner);
-        uint256 tokenId = Soul(soulProxy).createSoul(alice, true);
+        uint256 tokenId = Soul(soulProxy).createSoul(alice);
 
         string memory avatarKey = "avatar";
         string
@@ -204,7 +210,7 @@ contract SoulTest is Test {
 
     function test_GatedMetadataSet_ClearGatedMetadata_ReadSuccess() public {
         vm.startPrank(soulOwner);
-        uint256 tokenId = Soul(soulProxy).createSoul(alice, true);
+        uint256 tokenId = Soul(soulProxy).createSoul(alice);
 
         DataTypes.MetadataPair[]
             memory metadatas = new DataTypes.MetadataPair[](2);
@@ -222,7 +228,7 @@ contract SoulTest is Test {
         public
     {
         vm.startPrank(soulOwner);
-        uint256 tokenId = Soul(soulProxy).createSoul(alice, true);
+        uint256 tokenId = Soul(soulProxy).createSoul(alice);
 
         DataTypes.MetadataPair[]
             memory metadatas = new DataTypes.MetadataPair[](2);
