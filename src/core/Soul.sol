@@ -61,7 +61,7 @@ contract Soul is Ownable, SBTERC721, MetadataResolver, ISoul {
         if (isOrg) {
             _orgs[to] = true;
         }
-        uint256 tokenId = super._safeMint(to);
+        uint256 tokenId = super._mint(to);
         emit CreateSoul(to, isOrg, tokenId);
 
         return tokenId;

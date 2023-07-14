@@ -1,17 +1,17 @@
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| Soul                 | 0xea7dca997f9daac3f53fa6df2010e86accf54e04 |
-| MiddlewareManager    | 0x6d93f097c79265658267e8e6a55d2ff07b90b9a3 |
-| Deployer             | 0x6d6d711babe92ffec400dc8dcedd2d62e99db9fc |
-| SubscribeDeployer    | 0x114478b9184d6058026b46979997eef660f591df |
-| CyberEngineImpl      | 0xdfffdb887e967bafa63f8ddfafd1ca2e2ca7ab72 |
-| CyberEngine          | 0x0c67aef8e95ddc6412b7f84465da528492f9b3c9 |
-| Essence              | 0xf45aedef539795a011dffa9a38c299a6e190437a |
-| Content              | 0x66401c118b315a18e5a298d93c336afd0ffff56a |
-| W3ST                 | 0xcb6b18145b9466e3ec503473c2ba25a33569fce0 |
-| Subscribe            | 0xce8aaa574c4685f0c548db58182ce215cf83d4e6 |
-| Treasury             | 0x5fb77dfca18a73ede41ab47ac491c47f445bf1d7 |
-| PermissionMw         | 0x69ca6c83dc4cbda01a9ba561c2a33f54533fcbf2 |
-| ECDSAValidator       | 0x6289cfda355773c214fe0fa13a6470d42871f271 |
-| CyberAccount Factory | 0x6c894bfd56ebba3504c1b0d1b7808a037c7c5747 |
-| TokenReceiver        | 0x300b08ef3cc92e0a61eff375bbcfad60fd845c01 |
+| Soul                 | 0x04ad9332fe13c61ef9c58cd8a7fff77230dd6e77 |
+| MiddlewareManager    | 0x2e0fa762fb63a2df1ed76f20e776e291f777fa6f |
+| Deployer             | 0x319fd4bb842e7bc0c8060733036a02042964ba85 |
+| SubscribeDeployer    | 0xdbdbd54c27b4f3e86b47538bf6172f485c4b96b8 |
+| CyberEngineImpl      | 0xb2dbc2e7e189913084f19cb6b1efe0d446df4cbe |
+| CyberEngine          | 0x72ca12e2aae0c1c12d9796d9974a5f1204cf51f3 |
+| Essence              | 0x993b5ea6f4b9a356b6165f87dfbe42a163b65f09 |
+| Content              | 0x42809bb1f615ca7ce847a78d71d35f20d6dbe799 |
+| W3ST                 | 0x97b250cb4778b105e4a00d5841e06bcd6aa0703f |
+| Subscribe            | 0xd3d97776d651fe30897eeb6c956427b999b6cb26 |
+| Treasury             | 0x8dbe34d06f02ee20be036c87867c03e40aa39d41 |
+| PermissionMw         | 0x17477f95b791627846c397fa2a890883f2922882 |
+| ECDSAValidator       | 0x1a062d6105612570e86cba4ed43da69371ea4755 |
+| CyberAccount Factory | 0x70efb7410922159dd482cd848fb4a7e8c266f95c |
+| TokenReceiver        | 0x52b90f8e69ac72fe0f46726eadda13835cbb01fa |

@@ -34,7 +34,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-    bytes32 constant SALT = keccak256(bytes("Test22"));
+    bytes32 constant SALT = keccak256(bytes("Test23"));
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 
