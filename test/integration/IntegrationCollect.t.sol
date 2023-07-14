@@ -38,10 +38,9 @@ contract IntegrationCollectTest is TestIntegrationBase {
         mockMiddleware = address(new MockMiddleware());
         vm.prank(protocolOwner);
         MiddlewareManager(addrs.manager).allowMw(address(mockMiddleware), true);
-        Soul(addrs.soul).createSoul(bob);
-        Soul(addrs.soul).setOrg(bob, true);
-        Soul(addrs.soul).createSoul(alice);
-        Soul(addrs.soul).createSoul(charles);
+        Soul(addrs.soul).createSoul(bob, true);
+        Soul(addrs.soul).createSoul(alice, false);
+        Soul(addrs.soul).createSoul(charles, false);
     }
 
     function testRegisterEssence() public {

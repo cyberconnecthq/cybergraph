@@ -55,12 +55,16 @@ contract Soul is Ownable, SBTERC721, MetadataResolver, ISoul {
 
     /// @inheritdoc ISoul
     function createSoul(
-        address to
+        address to,
+        bool isOrg
     ) external override onlyMinter returns (uint256) {
-        uint256 id = super._safeMint(to);
-        emit CreateSoul(to, id);
+        if (isOrg) {
+            _orgs[to] = true;
+        }
+        uint256 tokenId = super._safeMint(to);
+        emit CreateSoul(to, isOrg, tokenId);
 
-        return id;
+        return tokenId;
     }
 
     /// @inheritdoc ISoul
@@ -106,7 +110,7 @@ contract Soul is Ownable, SBTERC721, MetadataResolver, ISoul {
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {
-        require(_ownerOf[tokenId] != address(0), "NOT_MINTED");
+        require(_balanceOf[address(uint160(tokenId))] != 0, "NOT_MINTED");
         return string(abi.encodePacked(_tokenURI, LibString.toString(tokenId)));
     }
 
@@ -116,7 +120,7 @@ contract Soul is Ownable, SBTERC721, MetadataResolver, ISoul {
     function _isMetadataAuthorised(
         uint256 tokenId
     ) internal view override returns (bool) {
-        address from = _ownerOf[tokenId];
+        address from = address(uint160(tokenId));
 
         return
             msg.sender == from ||

@@ -34,7 +34,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-    bytes32 constant SALT = keccak256(bytes("Test17"));
+    bytes32 constant SALT = keccak256(bytes("Test22"));
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 
@@ -224,6 +224,7 @@ library LibDeploy {
         deployReceiver(vm, _dc, protocolOwner, writeFile);
         setSoulMinter(vm, contractAddresses.soul, factory, true);
         setSoulMinter(vm, contractAddresses.soul, backendSigner, true);
+        CyberAccountFactory(factory).addStake{ value: 0.002 ether }(1 days);
     }
 
     function deployGraph(

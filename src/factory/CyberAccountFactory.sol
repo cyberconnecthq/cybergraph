@@ -65,7 +65,7 @@ contract CyberAccountFactory is Ownable {
             )
         );
 
-        ISoul(soul).createSoul(address(proxy));
+        ISoul(soul).createSoul(address(proxy), false);
         emit AccountCreated(address(proxy), address(_validator), _data, _index);
     }
 

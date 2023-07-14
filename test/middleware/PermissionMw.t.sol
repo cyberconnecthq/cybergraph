@@ -23,9 +23,8 @@ contract PermissionMwTest is TestIntegrationBase {
 
     function setUp() public {
         _setUp();
-        Soul(addrs.soul).createSoul(alice);
-        Soul(addrs.soul).setOrg(alice, true);
-        Soul(addrs.soul).createSoul(bob);
+        Soul(addrs.soul).createSoul(alice, true);
+        Soul(addrs.soul).createSoul(bob, false);
         mw = address(new PermissionMw(addrs.engine));
 
         vm.prank(protocolOwner);

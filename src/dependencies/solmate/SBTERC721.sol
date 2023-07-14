@@ -6,7 +6,7 @@ pragma solidity >=0.8.0;
 
 /// @notice Modern, minimalist, and gas efficient ERC-721 implementation.
 /// @author Solmate (https://github.com/Rari-Capital/solmate/blob/main/src/tokens/ERC721.sol)
-/// @dev this is a modified version that removes _balanceOf storage and make the NFT non-transferable
+/// @dev this is a modified version that removes _ownerOf storage and make the NFT non-transferable
 ///      each address can only hold one NFT
 abstract contract SBTERC721 {
     /*//////////////////////////////////////////////////////////////
@@ -45,21 +45,18 @@ abstract contract SBTERC721 {
                       ERC721 BALANCE/OWNER STORAGE
     //////////////////////////////////////////////////////////////*/
 
-    mapping(uint256 => address) internal _ownerOf;
+    mapping(address => uint256) internal _balanceOf;
 
     function ownerOf(uint256 id) public view virtual returns (address owner) {
-        require((owner = _ownerOf[id]) != address(0), "NOT_MINTED");
+        require(id != 0, "NOT_MINTED");
+        owner = address(uint160(id));
+        uint256 balance = _balanceOf[owner];
+        require(balance > 0, "NOT_MINTED");
     }
 
     function balanceOf(address owner) public view virtual returns (uint256) {
         require(owner != address(0), "ZERO_ADDRESS");
-        uint256 id = getTokenId(owner);
-        owner = _ownerOf[id];
-        if (owner == address(0)) {
-            return 0;
-        } else {
-            return 1;
-        }
+        return _balanceOf[owner];
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -84,7 +81,7 @@ abstract contract SBTERC721 {
     //////////////////////////////////////////////////////////////*/
 
     function approve(address spender, uint256 id) public virtual {
-        address owner = _ownerOf[id];
+        address owner = address(uint160(id));
 
         require(
             msg.sender == owner || isApprovedForAll[owner][msg.sender],
@@ -133,24 +130,16 @@ abstract contract SBTERC721 {
     }
 
     /*//////////////////////////////////////////////////////////////
-                              PUBLIC
-    //////////////////////////////////////////////////////////////*/
-    function getTokenId(address owner) public pure returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(owner)));
-    }
-
-    /*//////////////////////////////////////////////////////////////
                         INTERNAL MINT/BURN LOGIC
     //////////////////////////////////////////////////////////////*/
 
     function _mint(address to) internal virtual returns (uint256) {
         require(to != address(0), "INVALID_RECIPIENT");
 
-        uint256 id = getTokenId(to);
+        require(_balanceOf[to] == 0, "ALREADY_MINTED");
 
-        require(_ownerOf[id] == address(0), "ALREADY_MINTED");
-
-        _ownerOf[id] = to;
+        _balanceOf[to] = 1;
+        uint256 id = uint256(uint160(to));
 
         emit Transfer(address(0), to, id);
 
@@ -158,11 +147,11 @@ abstract contract SBTERC721 {
     }
 
     function _burn(uint256 id) internal virtual {
-        address owner = _ownerOf[id];
+        address owner = address(uint160(id));
 
         require(owner != address(0), "NOT_MINTED");
 
-        delete _ownerOf[id];
+        delete _balanceOf[owner];
 
         delete getApproved[id];
 

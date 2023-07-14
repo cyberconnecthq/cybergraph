@@ -13,9 +13,10 @@ interface ISoul is ISoulEvents {
      * @notice Creates a soul.
      *
      * @param to The recipient address.
+     * @param isOrg Whether the soul is an organization.
      * @return uint256 The soul token ID.
      */
-    function createSoul(address to) external returns (uint256);
+    function createSoul(address to, bool isOrg) external returns (uint256);
 
     /**
      * @notice Sets if a soul is a organization.
