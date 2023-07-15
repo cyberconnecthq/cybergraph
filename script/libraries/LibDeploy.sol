@@ -34,7 +34,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-    bytes32 constant SALT = keccak256(bytes("Test23"));
+    bytes32 constant SALT = keccak256(bytes("CCV3"));
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 
@@ -118,16 +118,15 @@ library LibDeploy {
         address _dc,
         address engine,
         address mwManager
-    ) internal {
+    ) internal returns (address permissionMw) {
         Create2Deployer dc = Create2Deployer(_dc);
-        address permissionMw = dc.deploy(
+        permissionMw = dc.deploy(
             abi.encodePacked(
                 type(PermissionMw).creationCode,
                 abi.encode(engine)
             ),
             SALT
         );
-        MiddlewareManager(mwManager).allowMw(permissionMw, true);
         _write(vm, "PermissionMw", permissionMw);
     }
 
@@ -202,6 +201,7 @@ library LibDeploy {
         address backendSigner,
         bool writeFile
     ) internal {
+        // sending from deployer
         ContractAddresses memory contractAddresses = deployGraph(
             vm,
             _dc,
@@ -211,7 +211,12 @@ library LibDeploy {
             writeFile
         );
 
-        deployMw(vm, _dc, contractAddresses.engine, contractAddresses.manager);
+        address permissionMw = deployMw(
+            vm,
+            _dc,
+            contractAddresses.engine,
+            contractAddresses.manager
+        );
         deployValidator(vm, _dc);
         address factory = deployFactory(
             vm,
@@ -222,9 +227,28 @@ library LibDeploy {
             writeFile
         );
         deployReceiver(vm, _dc, protocolOwner, writeFile);
-        setSoulMinter(vm, contractAddresses.soul, factory, true);
-        setSoulMinter(vm, contractAddresses.soul, backendSigner, true);
-        CyberAccountFactory(factory).addStake{ value: 0.002 ether }(1 days);
+
+        // sending from protocol owner
+        // MiddlewareManager(mwManager).allowMw(permissionMw, true);
+        // setSoulMinter(vm, contractAddresses.soul, factory, true);
+        // setSoulMinter(vm, contractAddresses.soul, backendSigner, true);
+        // CyberAccountFactory(factory).addStake{ value: 0.002 ether }(1 days);
+    }
+
+    function setInitialState(
+        Vm vm,
+        address _dc,
+        address mwManager,
+        address permissionMw,
+        address soul,
+        address factory,
+        address backendSigner
+    ) internal {
+        // sending from protocol owner
+        MiddlewareManager(mwManager).allowMw(permissionMw, true);
+        setSoulMinter(vm, soul, factory, true);
+        //setSoulMinter(vm, contractAddresses.soul, backendSigner, true);
+        CyberAccountFactory(factory).addStake{ value: 1 ether }(1 days);
     }
 
     function deployGraph(

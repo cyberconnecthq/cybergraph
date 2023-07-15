@@ -76,6 +76,19 @@ contract DeploySetting {
             deployParams.treasuryReceiver = address(
                 0x526010620cAB87A4afD0599914Bc57aac095Dd34
             );
+        } else if (block.chainid == POLYGON) {
+            deployParams.deployerContract = address(
+                0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
+            );
+            deployParams.entryPoint = address(
+                0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
+            );
+            deployParams.protocolOwner = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+            deployParams.treasuryReceiver = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
         } else {
             revert("PARAMS_NOT_SET");
         }
