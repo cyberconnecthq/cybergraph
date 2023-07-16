@@ -247,7 +247,7 @@ library LibDeploy {
         // sending from protocol owner
         MiddlewareManager(mwManager).allowMw(permissionMw, true);
         setSoulMinter(vm, soul, factory, true);
-        //setSoulMinter(vm, contractAddresses.soul, backendSigner, true);
+        setSoulMinter(vm, soul, backendSigner, true);
         CyberAccountFactory(factory).addStake{ value: 1 ether }(1 days);
     }
 
