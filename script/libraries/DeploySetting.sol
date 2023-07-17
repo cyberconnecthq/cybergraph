@@ -19,6 +19,12 @@ contract DeploySetting {
     uint256 internal constant BASE_GOERLI = 84531;
     uint256 internal constant LINEA_GOERLI = 59140;
     uint256 internal constant SCROLL_ALPHA = 534353;
+    uint256 internal constant OPTIMISM = 10;
+    uint256 internal constant ARBITRUM = 42161;
+    uint256 internal constant BNB = 56;
+    uint256 internal constant ETH = 1;
+    uint256 internal constant LINEA = 59140;
+    uint256 internal constant NOVA = 42170;
 
     function _setDeployParams() internal {
         if (block.chainid == MUMBAI || block.chainid == BASE_GOERLI) {
@@ -88,6 +94,26 @@ contract DeploySetting {
             );
             deployParams.treasuryReceiver = address(
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+        } else if (block.chainid == BNB) {
+            deployParams.deployerContract = address(
+                0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
+            );
+        } else if (block.chainid == OPTIMISM) {
+            deployParams.deployerContract = address(
+                0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
+            );
+        } else if (block.chainid == ARBITRUM) {
+            deployParams.deployerContract = address(
+                0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
+            );
+        } else if (block.chainid == NOVA) {
+            deployParams.deployerContract = address(
+                0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
+            );
+        } else if (block.chainid == ETH) {
+            deployParams.deployerContract = address(
+                0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
             );
         } else {
             revert("PARAMS_NOT_SET");

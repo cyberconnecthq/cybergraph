@@ -42,6 +42,36 @@ contract DeployerCreate2Deployer is Script, DeploySetting {
                 msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
                 "address must be deployer"
             );
+        } else if (block.chainid == DeploySetting.OPTIMISM) {
+            require(
+                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
+                "address must be deployer"
+            );
+        } else if (block.chainid == DeploySetting.ARBITRUM) {
+            require(
+                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
+                "address must be deployer"
+            );
+        } else if (block.chainid == DeploySetting.LINEA) {
+            require(
+                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
+                "address must be deployer"
+            );
+        } else if (block.chainid == DeploySetting.BNB) {
+            require(
+                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
+                "address must be deployer"
+            );
+        } else if (block.chainid == DeploySetting.ETH) {
+            require(
+                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
+                "address must be deployer"
+            );
+        } else if (block.chainid == DeploySetting.NOVA) {
+            require(
+                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
+                "address must be deployer"
+            );
         } else {
             revert("PARAMS_NOT_SET");
         }
