@@ -9,6 +9,7 @@ contract DeploySetting {
         address treasuryReceiver;
         address entryPoint;
         address backendSigner;
+        address protocolSafe;
     }
 
     DeployParameters internal deployParams;
@@ -94,6 +95,9 @@ contract DeploySetting {
             );
             deployParams.treasuryReceiver = address(
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+            deployParams.protocolSafe = address(
+                0xAd09648A3b2e725d606c6440Ef3D1FB9693BAC1B
             );
         } else if (block.chainid == BNB) {
             deployParams.deployerContract = address(

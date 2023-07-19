@@ -12,6 +12,7 @@ import { ISubscribeDeployer } from "../../src/interfaces/ISubscribeDeployer.sol"
 import { IEntryPoint } from "account-abstraction/interfaces/IEntryPoint.sol";
 import { Clones } from "openzeppelin-contracts/contracts/proxy/Clones.sol";
 import { ERC1967Proxy } from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { TimelockController } from "openzeppelin-contracts/contracts/governance/TimelockController.sol";
 import { ECDSAValidator } from "kernel/src/validator/ECDSAValidator.sol";
 import { IERC721 } from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import { CyberAccountFactory } from "../../src/factory/CyberAccountFactory.sol";
@@ -415,6 +416,40 @@ library LibDeploy {
         if (writeFile) {
             _write(vm, "TokenReceiver", tr);
         }
+    }
+
+    function deployTimeLock(
+        Vm vm,
+        address ownerSafe,
+        uint256 minDeplay,
+        bool writeFile
+    ) internal returns (address lock) {
+        require(ownerSafe != address(0), "WRONG_OWNER");
+
+        address[] memory proposers = new address[](1);
+        proposers[0] = ownerSafe;
+        address[] memory executors = new address[](1);
+        executors[0] = ownerSafe;
+
+        lock = address(
+            new TimelockController(minDeplay, proposers, executors, ownerSafe)
+        );
+        if (writeFile) {
+            _write(vm, "Timelock", lock);
+        }
+    }
+
+    function changeOwnership(
+        Vm vm,
+        address timelock,
+        address receiver
+    ) internal {
+        // Receiver owner role change to timelock
+        TokenReceiver(receiver).transferOwnership(timelock);
+        require(
+            TokenReceiver(receiver).owner() == timelock,
+            "WRONG_RECEIVER_OWNER"
+        );
     }
 
     function deployInTest(

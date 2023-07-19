@@ -43,6 +43,8 @@
     "deploy_all:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_all:polygon": "source .env.polygon && FOUNDRY_PROFILE=prd forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_all:base_goerli": "source .env.base_goerli && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
+    "deploy_timelock:polygon": "source .env.polygon && FOUNDRY_PROFILE=prd forge script script/DeployTimeLock.s.sol:DeployTimeLock --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
+    "change_owner:polygon": "source .env.polygon.owner && FOUNDRY_PROFILE=prd forge script script/ChangeOwner.s.sol:ChangeOwner --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "set_state:polygon": "source .env.polygon.owner && FOUNDRY_PROFILE=prd forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv"
   },
   "devDependencies": {
