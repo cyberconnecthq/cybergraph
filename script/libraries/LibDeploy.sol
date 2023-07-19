@@ -49,6 +49,7 @@ library LibDeploy {
         else if (chainId == 84531) chainName = "base_goerli";
         else if (chainId == 59140) chainName = "linea_goerli";
         else if (chainId == 534353) chainName = "scroll_alpha";
+        else if (chainId == 59144) chainName = "linea";
         else chainName = "unknown";
         return
             string(

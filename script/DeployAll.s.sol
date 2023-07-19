@@ -14,7 +14,8 @@ contract DeployAll is Script, DeploySetting {
         if (
             block.chainid == DeploySetting.MUMBAI ||
             block.chainid == DeploySetting.BASE_GOERLI ||
-            block.chainid == DeploySetting.POLYGON
+            block.chainid == DeploySetting.POLYGON ||
+            block.chainid == DeploySetting.LINEA
         ) {
             LibDeploy.deployAll(
                 vm,

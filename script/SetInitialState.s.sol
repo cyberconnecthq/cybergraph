@@ -21,6 +21,16 @@ contract SetInitialState is Script, DeploySetting {
                 address(0xAEE9762ce625E0a8F7b184670fB57C37BFE1d0f1), // factory
                 address(0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82) // backendSigner
             );
+        } else if (block.chainid == DeploySetting.LINEA) {
+            LibDeploy.setInitialState(
+                vm,
+                deployParams.deployerContract,
+                address(0), // mwManager
+                address(0), // permissionMw
+                address(0), // soul
+                address(0), // factory
+                deployParams.backendSigner // backendSigner
+            );
         }
         vm.stopBroadcast();
     }
