@@ -250,7 +250,7 @@ library LibDeploy {
         MiddlewareManager(mwManager).allowMw(permissionMw, true);
         setSoulMinter(vm, soul, factory, true);
         setSoulMinter(vm, soul, backendSigner, true);
-        CyberAccountFactory(factory).addStake{ value: 1 ether }(1 days);
+        CyberAccountFactory(factory).addStake{ value: 0.01 ether }(1 days);
     }
 
     function deployGraph(
