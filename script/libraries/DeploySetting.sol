@@ -64,7 +64,7 @@ contract DeploySetting {
             deployParams.treasuryReceiver = address(
                 0x526010620cAB87A4afD0599914Bc57aac095Dd34
             );
-        } else if (block.chainid == POLYGON || block.chainid == LINEA) {
+        } else if (block.chainid == POLYGON) {
             deployParams.deployerContract = address(
                 0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
             );
@@ -79,6 +79,25 @@ contract DeploySetting {
             );
             deployParams.protocolSafe = address(
                 0xAd09648A3b2e725d606c6440Ef3D1FB9693BAC1B
+            );
+            deployParams.backendSigner = address(
+                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+            );
+        } else if (block.chainid == LINEA) {
+            deployParams.deployerContract = address(
+                0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
+            );
+            deployParams.entryPoint = address(
+                0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
+            );
+            deployParams.protocolOwner = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+            deployParams.treasuryReceiver = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+            deployParams.protocolSafe = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
                 0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82

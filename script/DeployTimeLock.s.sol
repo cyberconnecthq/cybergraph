@@ -11,7 +11,10 @@ contract DeployTimeLock is Script, DeploySetting {
         _setDeployParams();
         vm.startBroadcast();
 
-        if (block.chainid == DeploySetting.POLYGON) {
+        if (
+            block.chainid == DeploySetting.POLYGON ||
+            block.chainid == DeploySetting.LINEA
+        ) {
             address timelock = LibDeploy.deployTimeLock(
                 vm,
                 deployParams.protocolSafe,
