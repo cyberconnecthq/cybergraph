@@ -118,6 +118,9 @@ contract DeploySetting {
             deployParams.backendSigner = address(
                 0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
             );
+            deployParams.protocolSafe = address(
+                0xf9E12df9428F1a15BC6CfD4092ADdD683738cE96
+            );
         } else if (block.chainid == OPTIMISM) {
             deployParams.deployerContract = address(
                 0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f

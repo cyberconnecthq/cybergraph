@@ -23,6 +23,12 @@ contract ChangeOwner is Script, DeploySetting {
                 address(0x3c84a5d37aF5b8Cc435D9c8C1994deBa40fC9c19), // timelock
                 address(0xcd97405Fb58e94954E825E46dB192b916A45d412) // token receiver
             );
+        } else if (block.chainid == DeploySetting.BNB) {
+            LibDeploy.changeOwnership(
+                vm,
+                address(0x3c84a5d37aF5b8Cc435D9c8C1994deBa40fC9c19), // timelock
+                address(0xcd97405Fb58e94954E825E46dB192b916A45d412) // token receiver
+            );
         }
         vm.stopBroadcast();
     }
