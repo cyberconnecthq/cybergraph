@@ -23,6 +23,7 @@ contract DeploySetting {
     uint256 internal constant OPTIMISM = 10;
     uint256 internal constant ARBITRUM = 42161;
     uint256 internal constant BNB = 56;
+    uint256 internal constant BNBT = 97;
     uint256 internal constant ETH = 1;
     uint256 internal constant LINEA = 59144;
     uint256 internal constant NOVA = 42170;
@@ -32,7 +33,8 @@ contract DeploySetting {
             block.chainid == MUMBAI ||
             block.chainid == BASE_GOERLI ||
             block.chainid == OP_GOERLI ||
-            block.chainid == LINEA_GOERLI
+            block.chainid == LINEA_GOERLI ||
+            block.chainid == BNBT
         ) {
             deployParams.deployerContract = address(
                 0xF191131dAB798dD6c500816338d4B6EBC34825C7
@@ -84,6 +86,18 @@ contract DeploySetting {
         } else if (block.chainid == BNB) {
             deployParams.deployerContract = address(
                 0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
+            );
+            deployParams.entryPoint = address(
+                0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
+            );
+            deployParams.protocolOwner = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+            deployParams.treasuryReceiver = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+            deployParams.backendSigner = address(
+                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
             );
         } else if (block.chainid == OPTIMISM) {
             deployParams.deployerContract = address(

@@ -50,6 +50,8 @@ library LibDeploy {
         else if (chainId == 59140) chainName = "linea_goerli";
         else if (chainId == 534353) chainName = "scroll_alpha";
         else if (chainId == 59144) chainName = "linea";
+        else if (chainId == 56) chainName = "bnb";
+        else if (chainId == 97) chainName = "bnbt";
         else chainName = "unknown";
         return
             string(

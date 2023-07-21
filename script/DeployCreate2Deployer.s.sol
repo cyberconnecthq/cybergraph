@@ -17,6 +17,11 @@ contract DeployerCreate2Deployer is Script, DeploySetting {
                 msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
                 "address must be deployer"
             );
+        } else if (block.chainid == DeploySetting.BNBT) {
+            require(
+                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
+                "address must be deployer"
+            );
         } else if (block.chainid == DeploySetting.OP_GOERLI) {
             require(
                 msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,

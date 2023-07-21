@@ -37,10 +37,13 @@
     "deploy_deployer:polygon": "source .env.polygon && FOUNDRY_PROFILE=prd forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
     "deploy_deployer:arbitrum": "source .env.arbitrum && FOUNDRY_PROFILE=prd forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
     "deploy_deployer:bnb": "source .env.bnb && FOUNDRY_PROFILE=prd forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
+    "deploy_deployer:bnbt": "source .env.bnbt && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
     "deploy_deployer:eth": "source .env.eth && FOUNDRY_PROFILE=prd forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
     "deploy_deployer:linea": "source .env.linea && FOUNDRY_PROFILE=prd forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
     "deploy_deployer:nova": "source .env.nova && FOUNDRY_PROFILE=prd forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
     "deploy_deployer:op": "source .env.op && FOUNDRY_PROFILE=prd forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv --etherscan-api-key $API_KEY -vvv",
+    "deploy_all:bnb": "source .env.bnb && FOUNDRY_PROFILE=prd forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --etherscan-api-key $API_KEY -vvv",
+    "deploy_all:bnbt": "source .env.bnbt && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_all:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_all:polygon": "source .env.polygon && FOUNDRY_PROFILE=prd forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_all:linea": "source .env.linea && FOUNDRY_PROFILE=prd forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
@@ -50,6 +53,8 @@
     "change_owner:polygon": "source .env.polygon.owner && FOUNDRY_PROFILE=prd forge script script/ChangeOwner.s.sol:ChangeOwner --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "set_state:polygon": "source .env.polygon.owner && FOUNDRY_PROFILE=prd forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "set_state:linea": "source .env.linea.owner && FOUNDRY_PROFILE=prd forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
+    "set_state:bnb": "source .env.bnb.owner && FOUNDRY_PROFILE=prd forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
+    "set_state:bnbt": "source .env.bnbt && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "set_state:linea_goerli": "source .env.linea_goerli && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --etherscan-api-key $API_KEY -vvv"
   },
   "devDependencies": {

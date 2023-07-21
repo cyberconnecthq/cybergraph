@@ -13,7 +13,8 @@ contract SetInitialState is Script, DeploySetting {
 
         if (
             block.chainid == DeploySetting.POLYGON ||
-            block.chainid == DeploySetting.LINEA
+            block.chainid == DeploySetting.LINEA ||
+            block.chainid == DeploySetting.BNB
         ) {
             LibDeploy.setInitialState(
                 vm,
@@ -24,7 +25,10 @@ contract SetInitialState is Script, DeploySetting {
                 address(0xAEE9762ce625E0a8F7b184670fB57C37BFE1d0f1), // factory
                 deployParams.backendSigner
             );
-        } else if (block.chainid == DeploySetting.LINEA_GOERLI) {
+        } else if (
+            block.chainid == DeploySetting.LINEA_GOERLI ||
+            block.chainid == DeploySetting.BNBT
+        ) {
             LibDeploy.setInitialState(
                 vm,
                 deployParams.deployerContract,
