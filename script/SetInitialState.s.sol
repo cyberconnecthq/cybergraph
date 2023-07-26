@@ -14,7 +14,8 @@ contract SetInitialState is Script, DeploySetting {
         if (
             block.chainid == DeploySetting.POLYGON ||
             block.chainid == DeploySetting.LINEA ||
-            block.chainid == DeploySetting.BNB
+            block.chainid == DeploySetting.BNB ||
+            block.chainid == DeploySetting.OPTIMISM
         ) {
             LibDeploy.setInitialState(
                 vm,
