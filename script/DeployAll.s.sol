@@ -19,7 +19,8 @@ contract DeployAll is Script, DeploySetting {
             block.chainid == DeploySetting.LINEA_GOERLI ||
             block.chainid == DeploySetting.BNBT ||
             block.chainid == DeploySetting.BNB ||
-            block.chainid == DeploySetting.OPTIMISM
+            block.chainid == DeploySetting.OPTIMISM ||
+            block.chainid == DeploySetting.OP_GOERLI
         ) {
             LibDeploy.deployAll(
                 vm,
