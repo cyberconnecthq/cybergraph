@@ -31,7 +31,8 @@ contract SetInitialState is Script, DeploySetting {
         } else if (
             block.chainid == DeploySetting.LINEA_GOERLI ||
             block.chainid == DeploySetting.BNBT ||
-            block.chainid == DeploySetting.OP_GOERLI
+            block.chainid == DeploySetting.OP_GOERLI ||
+            block.chainid == DeploySetting.ARBITRUM_GOERLI
         ) {
             LibDeploy.setInitialState(
                 vm,

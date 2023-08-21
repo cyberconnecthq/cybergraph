@@ -1,5 +1,5 @@
 | Contract             | Address                                    |
-| -------------------- | ------------------------------------------ | --- | -------- | ------------------------------------------ |
+| -------------------- | ------------------------------------------ |
 | Soul                 | 0x14a725839184f879f3c09ce3d707e5a3e4c5869d |
 | MiddlewareManager    | 0x72c837fe8ba6c7fd69cef66b6e85c0d7eabf1f9b |
 | Deployer             | 0x22d4843df1836f12b02b69ca6ad90575bbc03897 |
@@ -14,4 +14,5 @@
 | PermissionMw         | 0x414cb5822ca5141aedaea9d64a12f511071f7613 |
 | ECDSAValidator       | 0x417f5a41305ddc99d18b5e176521b468b2a31b86 |
 | CyberAccount Factory | 0xaee9762ce625e0a8f7b184670fb57c37bfe1d0f1 |
-| TokenReceiver        | 0xcd97405fb58e94954e825e46db192b916a45d412 |     | Timelock | 0x3c84a5d37af5b8cc435d9c8c1994deba40fc9c19 |
+| TokenReceiver        | 0xcd97405fb58e94954e825e46db192b916a45d412 |
+| Timelock             | 0x3c84a5d37af5b8cc435d9c8c1994deba40fc9c19 |

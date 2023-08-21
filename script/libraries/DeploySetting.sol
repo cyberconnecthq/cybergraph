@@ -22,6 +22,7 @@ contract DeploySetting {
     uint256 internal constant SCROLL_ALPHA = 534353;
     uint256 internal constant OPTIMISM = 10;
     uint256 internal constant ARBITRUM = 42161;
+    uint256 internal constant ARBITRUM_GOERLI = 421613;
     uint256 internal constant BNB = 56;
     uint256 internal constant BNBT = 97;
     uint256 internal constant ETH = 1;
@@ -35,7 +36,8 @@ contract DeploySetting {
             block.chainid == BASE_GOERLI ||
             block.chainid == OP_GOERLI ||
             block.chainid == LINEA_GOERLI ||
-            block.chainid == BNBT
+            block.chainid == BNBT ||
+            block.chainid == ARBITRUM_GOERLI
         ) {
             deployParams.deployerContract = address(
                 0xF191131dAB798dD6c500816338d4B6EBC34825C7
