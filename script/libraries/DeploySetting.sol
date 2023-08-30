@@ -29,6 +29,7 @@ contract DeploySetting {
     uint256 internal constant BASE = 8453;
     uint256 internal constant LINEA = 59144;
     uint256 internal constant NOVA = 42170;
+    uint256 internal constant OPBNB_TESTNET = 5611;
 
     function _setDeployParams() internal {
         if (
@@ -37,7 +38,8 @@ contract DeploySetting {
             block.chainid == OP_GOERLI ||
             block.chainid == LINEA_GOERLI ||
             block.chainid == BNBT ||
-            block.chainid == ARBITRUM_GOERLI
+            block.chainid == ARBITRUM_GOERLI ||
+            block.chainid == OPBNB_TESTNET
         ) {
             deployParams.deployerContract = address(
                 0xF191131dAB798dD6c500816338d4B6EBC34825C7
