@@ -19,6 +19,10 @@ contract DeployTimeLock is Script, DeploySetting {
             block.chainid == DeploySetting.BASE ||
             block.chainid == DeploySetting.ARBITRUM
         ) {
+            require(
+                deployParams.protocolSafe != address(0),
+                "protocolSafe is 0"
+            );
             address timelock = LibDeploy.deployTimeLock(
                 vm,
                 deployParams.protocolSafe,

@@ -56,6 +56,7 @@ library LibDeploy {
         else if (chainId == 97) chainName = "bnbt";
         else if (chainId == 8453) chainName = "base";
         else if (chainId == 5611) chainName = "opbnbt";
+        else if (chainId == 204) chainName = "opbnb";
         else chainName = "unknown";
         return
             string(
@@ -256,7 +257,7 @@ library LibDeploy {
         MiddlewareManager(mwManager).allowMw(permissionMw, true);
         setSoulMinter(vm, soul, factory, true);
         setSoulMinter(vm, soul, backendSigner, true);
-        CyberAccountFactory(factory).addStake{ value: 0.01 ether }(1 days);
+        CyberAccountFactory(factory).addStake{ value: 0.1 ether }(1 days);
     }
 
     function deployGraph(
