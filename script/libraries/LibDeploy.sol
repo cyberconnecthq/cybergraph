@@ -32,6 +32,7 @@ import { Deployer } from "../../src/deployer/Deployer.sol";
 import { SubscribeDeployer } from "../../src/deployer/SubscribeDeployer.sol";
 import { Treasury } from "../../src/middlewares/base/Treasury.sol";
 import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
+import { LimitedOnlyOnceMw } from "../../src/middlewares/LimitedOnlyOnceMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -122,7 +123,25 @@ library LibDeploy {
         return address(uint160(uint256(hash_)));
     }
 
-    function deployMw(
+    function deployLimitedOnlyOnceMw(
+        Vm vm,
+        address _dc,
+        address engine,
+        address mwManager
+    ) internal returns (address mw) {
+        Create2Deployer dc = Create2Deployer(_dc);
+        mw = dc.deploy(
+            abi.encodePacked(
+                type(LimitedOnlyOnceMw).creationCode,
+                abi.encode(engine)
+            ),
+            SALT
+        );
+        _write(vm, "LimitedOnlyOnceMw", mw);
+        MiddlewareManager(mwManager).allowMw(mw, true);
+    }
+
+    function deployPermissionMw(
         Vm vm,
         address _dc,
         address engine,
@@ -220,7 +239,7 @@ library LibDeploy {
             writeFile
         );
 
-        address permissionMw = deployMw(
+        deployPermissionMw(
             vm,
             _dc,
             contractAddresses.engine,
@@ -236,12 +255,6 @@ library LibDeploy {
             writeFile
         );
         deployReceiver(vm, _dc, protocolOwner, writeFile);
-
-        // sending from protocol owner
-        // MiddlewareManager(mwManager).allowMw(permissionMw, true);
-        // setSoulMinter(vm, contractAddresses.soul, factory, true);
-        // setSoulMinter(vm, contractAddresses.soul, backendSigner, true);
-        // CyberAccountFactory(factory).addStake{ value: 0.002 ether }(1 days);
     }
 
     function setInitialState(

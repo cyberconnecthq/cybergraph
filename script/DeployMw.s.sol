@@ -13,13 +13,20 @@ contract DeployMw is Script, DeploySetting {
 
         if (
             block.chainid == DeploySetting.MUMBAI ||
-            block.chainid == DeploySetting.BASE_GOERLI
+            block.chainid == DeploySetting.BASE_GOERLI ||
+            block.chainid == DeploySetting.OP_GOERLI
         ) {
-            LibDeploy.deployMw(
+            // LibDeploy.deployPermissionMw(
+            //     vm,
+            //     deployParams.deployerContract,
+            //     address(0x72cA12E2aae0C1c12D9796D9974a5F1204cf51f3), // engine
+            //     address(0x2e0fa762fb63A2df1Ed76f20E776E291F777FA6F) // mwManager
+            // );
+            LibDeploy.deployLimitedOnlyOnceMw(
                 vm,
                 deployParams.deployerContract,
-                address(0x9C7f8e6284Cf8999F04A51e5dd44ff5ED91fEE76),
-                address(0x3De80b44fC15fc0376F0Ba0Ae9CE53A261c03B56)
+                address(0x72cA12E2aae0C1c12D9796D9974a5F1204cf51f3), // engine
+                address(0x2e0fa762fb63A2df1Ed76f20E776E291F777FA6F) // mwManager
             );
         }
         vm.stopBroadcast();

@@ -15,3 +15,4 @@
 | ECDSAValidator       | 0x1a062d6105612570e86cba4ed43da69371ea4755 |
 | CyberAccount Factory | 0x70efb7410922159dd482cd848fb4a7e8c266f95c |
 | TokenReceiver        | 0x52b90f8e69ac72fe0f46726eadda13835cbb01fa |
+| LimitedOnlyOnceMw    | 0x8a8fb61494a3b949072effbf75ab01820a1e94af |
