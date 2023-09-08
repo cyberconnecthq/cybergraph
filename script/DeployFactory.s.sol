@@ -13,43 +13,30 @@ contract DeployFactory is Script, DeploySetting {
 
         if (
             block.chainid == DeploySetting.MUMBAI ||
-            block.chainid == DeploySetting.BASE_GOERLI
+            block.chainid == DeploySetting.BASE_GOERLI ||
+            block.chainid == DeploySetting.ARBITRUM_GOERLI ||
+            block.chainid == DeploySetting.LINEA_GOERLI ||
+            block.chainid == DeploySetting.OP_GOERLI ||
+            block.chainid == DeploySetting.OPBNB_TESTNET
         ) {
-            LibDeploy.deployFactory(
+            // LibDeploy.deployFactory(
+            //     vm,
+            //     deployParams.deployerContract,
+            //     deployParams.entryPoint,
+            //     address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
+            //     deployParams.protocolOwner,
+            //     true
+            // );
+            LibDeploy.deployFactoryV2(
                 vm,
                 deployParams.deployerContract,
+                address(0x70Efb7410922159Dd482CD848fB4a7e8c266F95c), // v1 factory
                 deployParams.entryPoint,
-                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
                 deployParams.protocolOwner,
                 true
             );
-        } else if (block.chainid == DeploySetting.OP_GOERLI) {
-            LibDeploy.deployFactory(
-                vm,
-                deployParams.deployerContract,
-                deployParams.entryPoint,
-                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
-                deployParams.protocolOwner,
-                true
-            );
-        } else if (block.chainid == DeploySetting.LINEA_GOERLI) {
-            LibDeploy.deployFactory(
-                vm,
-                deployParams.deployerContract,
-                deployParams.entryPoint,
-                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
-                deployParams.protocolOwner,
-                true
-            );
-        } else if (block.chainid == DeploySetting.SCROLL_ALPHA) {
-            LibDeploy.deployFactory(
-                vm,
-                deployParams.deployerContract,
-                deployParams.entryPoint,
-                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul address
-                deployParams.protocolOwner,
-                true
-            );
+        } else {
+            revert("NOT_SUPPORTED");
         }
 
         vm.stopBroadcast();

@@ -6,6 +6,7 @@ import { ECDSAValidator } from "kernel/src/validator/ECDSAValidator.sol";
 import { TestIntegrationBase } from "../utils/TestIntegrationBase.sol";
 import { Soul } from "../../src/core/Soul.sol";
 import { CyberAccountFactory } from "../../src/factory/CyberAccountFactory.sol";
+import { ICyberAccountFactory } from "../../src/interfaces/ICyberAccountFactory.sol";
 
 pragma solidity 0.8.14;
 
@@ -28,5 +29,27 @@ contract IntegrationFactoryTest is TestIntegrationBase {
             )
         );
         require(ERC721(addrs.soul).balanceOf(newAcc) == 1, "NOT_OWNER");
+    }
+
+    function test_CreateAccountV2() public {
+        address owner = address(0xb0b);
+        IKernelValidator iev = IKernelValidator(address(validator));
+        address newAcc = address(
+            CyberAccountFactory(addrs.cyberFactory).createAccount(
+                iev,
+                abi.encodePacked(owner),
+                0
+            )
+        );
+        require(ERC721(addrs.soul).balanceOf(newAcc) == 1, "NOT_OWNER");
+
+        address v2Acc = address(
+            ICyberAccountFactory(addrs.cyberFactoryV2).createAccount(
+                iev,
+                abi.encodePacked(owner),
+                0
+            )
+        );
+        require(v2Acc == newAcc, "NOT_SAME_ACC");
     }
 }

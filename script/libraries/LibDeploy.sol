@@ -16,6 +16,7 @@ import { TimelockController } from "openzeppelin-contracts/contracts/governance/
 import { ECDSAValidator } from "kernel/src/validator/ECDSAValidator.sol";
 import { IERC721 } from "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import { CyberAccountFactory } from "../../src/factory/CyberAccountFactory.sol";
+import { CyberAccountFactoryV2 } from "../../src/factory/CyberAccountFactoryV2.sol";
 import { Soul } from "../../src/core/Soul.sol";
 import { MiddlewareManager } from "../../src/core/MiddlewareManager.sol";
 import { Content } from "../../src/core/Content.sol";
@@ -36,7 +37,7 @@ import { LimitedOnlyOnceMw } from "../../src/middlewares/LimitedOnlyOnceMw.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
-    bytes32 constant SALT = keccak256(bytes("CCV3"));
+    bytes32 constant SALT = keccak256(bytes("Test23"));
 
     string internal constant OUTPUT_FILE = "docs/deploy/";
 
@@ -58,6 +59,7 @@ library LibDeploy {
         else if (chainId == 8453) chainName = "base";
         else if (chainId == 5611) chainName = "opbnbt";
         else if (chainId == 204) chainName = "opbnb";
+        else if (chainId == 421613) chainName = "arbitrum_goerli";
         else chainName = "unknown";
         return
             string(
@@ -177,6 +179,47 @@ library LibDeploy {
         require(ISoul(soul).isMinter(target) == isMinter, "NOT_CORRECT_MINTER");
     }
 
+    function deployFactoryV2(
+        Vm vm,
+        address _dc,
+        address factoryV1,
+        address entryPoint,
+        address factoryOwner,
+        bool writeFile
+    ) internal returns (address factoryV2Proxy) {
+        Create2Deployer dc = Create2Deployer(_dc);
+
+        address factoryV2Impl = dc.deploy(
+            type(CyberAccountFactoryV2).creationCode,
+            SALT
+        );
+
+        if (writeFile) {
+            _write(vm, "CyberAccount Factory V2(Impl)", factoryV2Impl);
+        }
+
+        IEntryPoint iep = IEntryPoint(entryPoint);
+        factoryV2Proxy = dc.deploy(
+            abi.encodePacked(
+                type(ERC1967Proxy).creationCode,
+                abi.encode(
+                    factoryV2Impl,
+                    abi.encodeWithSelector(
+                        CyberAccountFactoryV2.initialize.selector,
+                        iep,
+                        factoryV1,
+                        factoryOwner
+                    )
+                )
+            ),
+            SALT
+        );
+
+        if (writeFile) {
+            _write(vm, "CyberAccount Factory V2(Proxy)", factoryV2Proxy);
+        }
+    }
+
     function deployFactory(
         Vm vm,
         address _dc,
@@ -213,6 +256,7 @@ library LibDeploy {
         address deployedSubImpl;
         address cyberTreasury;
         address cyberFactory;
+        address cyberFactoryV2;
         address calculatedEssImpl;
         address calculatedContentImpl;
         address calculatedW3stImpl;
@@ -246,7 +290,7 @@ library LibDeploy {
             contractAddresses.manager
         );
         deployValidator(vm, _dc);
-        address factory = deployFactory(
+        address factoryV1 = deployFactory(
             vm,
             _dc,
             entryPoint,
@@ -254,6 +298,16 @@ library LibDeploy {
             protocolOwner,
             writeFile
         );
+
+        deployFactoryV2(
+            vm,
+            _dc,
+            factoryV1,
+            entryPoint,
+            protocolOwner,
+            writeFile
+        );
+
         deployReceiver(vm, _dc, protocolOwner, writeFile);
     }
 
@@ -493,6 +547,14 @@ library LibDeploy {
             address(dc),
             entryPoint,
             addrs.soul,
+            protocolOwner,
+            false
+        );
+        addrs.cyberFactoryV2 = deployFactoryV2(
+            vm,
+            address(dc),
+            addrs.cyberFactory,
+            entryPoint,
             protocolOwner,
             false
         );
