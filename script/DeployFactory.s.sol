@@ -41,7 +41,7 @@ contract DeployFactory is Script, DeploySetting {
                 deployParams.protocolOwner,
                 true
             );
-        } else if (block.chainid == DeploySetting.SCROLL_ALPHA) {
+        } else if (block.chainid == DeploySetting.SCROLL_SEPOLIA) {
             LibDeploy.deployFactory(
                 vm,
                 deployParams.deployerContract,

@@ -49,7 +49,7 @@ library LibDeploy {
         else if (chainId == 420) chainName = "op_goerli";
         else if (chainId == 84531) chainName = "base_goerli";
         else if (chainId == 59140) chainName = "linea_goerli";
-        else if (chainId == 534353) chainName = "scroll_alpha";
+        else if (chainId == 534351) chainName = "scroll_sepolia";
         else if (chainId == 59144) chainName = "linea";
         else if (chainId == 56) chainName = "bnb";
         else if (chainId == 10) chainName = "op";
@@ -270,7 +270,7 @@ library LibDeploy {
         MiddlewareManager(mwManager).allowMw(permissionMw, true);
         setSoulMinter(vm, soul, factory, true);
         setSoulMinter(vm, soul, backendSigner, true);
-        CyberAccountFactory(factory).addStake{ value: 0.1 ether }(1 days);
+        // CyberAccountFactory(factory).addStake{ value: 0.1 ether }(1 days);
     }
 
     function deployGraph(

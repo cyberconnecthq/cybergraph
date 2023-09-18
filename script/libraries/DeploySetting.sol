@@ -19,7 +19,7 @@ contract DeploySetting {
     uint256 internal constant OP_GOERLI = 420;
     uint256 internal constant BASE_GOERLI = 84531;
     uint256 internal constant LINEA_GOERLI = 59140;
-    uint256 internal constant SCROLL_ALPHA = 534353;
+    uint256 internal constant SCROLL_SEPOLIA = 534351;
     uint256 internal constant OPTIMISM = 10;
     uint256 internal constant ARBITRUM = 42161;
     uint256 internal constant ARBITRUM_GOERLI = 421613;
@@ -40,7 +40,8 @@ contract DeploySetting {
             block.chainid == LINEA_GOERLI ||
             block.chainid == BNBT ||
             block.chainid == ARBITRUM_GOERLI ||
-            block.chainid == OPBNB_TESTNET
+            block.chainid == OPBNB_TESTNET ||
+            block.chainid == SCROLL_SEPOLIA
         ) {
             deployParams.deployerContract = address(
                 0xF191131dAB798dD6c500816338d4B6EBC34825C7
@@ -56,19 +57,6 @@ contract DeploySetting {
             );
             deployParams.backendSigner = address(
                 0xaB24749c622AF8FC567CA2b4d3EC53019F83dB8F
-            );
-        } else if (block.chainid == SCROLL_ALPHA) {
-            deployParams.deployerContract = address(
-                0xF191131dAB798dD6c500816338d4B6EBC34825C7
-            );
-            deployParams.entryPoint = address(
-                0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
-            );
-            deployParams.protocolOwner = address(
-                0x526010620cAB87A4afD0599914Bc57aac095Dd34
-            );
-            deployParams.treasuryReceiver = address(
-                0x526010620cAB87A4afD0599914Bc57aac095Dd34
             );
         } else if (block.chainid == POLYGON) {
             deployParams.deployerContract = address(
