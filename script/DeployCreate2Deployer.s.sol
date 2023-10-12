@@ -12,87 +12,25 @@ contract DeployerCreate2Deployer is Script, DeploySetting {
         uint256 nonce = vm.getNonce(msg.sender);
         require(nonce == 0, "nonce must be 0");
 
-        if (block.chainid == DeploySetting.MUMBAI) {
-            require(
-                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.BNBT) {
-            require(
-                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.OP_GOERLI) {
-            require(
-                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.BASE_GOERLI) {
-            require(
-                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.LINEA_GOERLI) {
-            require(
-                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.ARBITRUM_GOERLI) {
-            require(
-                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.SCROLL_SEPOLIA) {
-            require(
-                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.POLYGON) {
-            require(
-                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.OPTIMISM) {
-            require(
-                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.ARBITRUM) {
-            require(
-                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.LINEA) {
-            require(
-                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.BNB) {
-            require(
-                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.ETH) {
-            require(
-                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.NOVA) {
-            require(
-                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.BASE) {
-            require(
-                msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.OPBNB_TESTNET) {
-            require(
-                msg.sender == 0x526010620cAB87A4afD0599914Bc57aac095Dd34,
-                "address must be deployer"
-            );
-        } else if (block.chainid == DeploySetting.OPBNB) {
+        if (
+            block.chainid == DeploySetting.MUMBAI ||
+            block.chainid == DeploySetting.OP_GOERLI ||
+            block.chainid == DeploySetting.BASE_GOERLI ||
+            block.chainid == DeploySetting.LINEA_GOERLI ||
+            block.chainid == DeploySetting.ARBITRUM_GOERLI ||
+            block.chainid == DeploySetting.SCROLL_SEPOLIA ||
+            block.chainid == DeploySetting.BNBT ||
+            block.chainid == DeploySetting.OPBNB_TESTNET ||
+            block.chainid == DeploySetting.OPBNB ||
+            block.chainid == DeploySetting.POLYGON ||
+            block.chainid == DeploySetting.OPTIMISM ||
+            block.chainid == DeploySetting.ARBITRUM ||
+            block.chainid == DeploySetting.LINEA ||
+            block.chainid == DeploySetting.BNB ||
+            block.chainid == DeploySetting.ETH ||
+            block.chainid == DeploySetting.NOVA ||
+            block.chainid == DeploySetting.BASE
+        ) {
             require(
                 msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
                 "address must be deployer"

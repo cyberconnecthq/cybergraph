@@ -54,6 +54,7 @@ library LibDeploy {
         else if (chainId == 56) chainName = "bnb";
         else if (chainId == 10) chainName = "op";
         else if (chainId == 42161) chainName = "arbitrum";
+        else if (chainId == 421613) chainName = "arbitrum_goerli";
         else if (chainId == 97) chainName = "bnbt";
         else if (chainId == 8453) chainName = "base";
         else if (chainId == 5611) chainName = "opbnbt";
