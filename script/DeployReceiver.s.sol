@@ -13,7 +13,9 @@ contract DeployReceiver is Script, DeploySetting {
 
         if (
             block.chainid == DeploySetting.MUMBAI ||
-            block.chainid == DeploySetting.BASE_GOERLI
+            block.chainid == DeploySetting.BASE_GOERLI ||
+            block.chainid == DeploySetting.ETH ||
+            block.chainid == DeploySetting.GOERLI
         ) {
             LibDeploy.deployReceiver(
                 vm,

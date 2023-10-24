@@ -44,7 +44,7 @@ library LibDeploy {
     function _fileName() internal view returns (string memory) {
         uint256 chainId = block.chainid;
         string memory chainName;
-        if (chainId == 1) chainName = "mainnet";
+        if (chainId == 1) chainName = "eth";
         else if (chainId == 80001) chainName = "mumbai";
         else if (chainId == 137) chainName = "polygon";
         else if (chainId == 420) chainName = "op_goerli";
