@@ -33,6 +33,7 @@ import { SubscribeDeployer } from "../../src/deployer/SubscribeDeployer.sol";
 import { Treasury } from "../../src/middlewares/base/Treasury.sol";
 import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 import { LimitedOnlyOnceMw } from "../../src/middlewares/LimitedOnlyOnceMw.sol";
+import { SpecialReward } from "../../src/periphery/SpecialReward.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -59,6 +60,7 @@ library LibDeploy {
         else if (chainId == 8453) chainName = "base";
         else if (chainId == 5611) chainName = "opbnbt";
         else if (chainId == 204) chainName = "opbnb";
+        else if (chainId == 534352) chainName = "scroll";
         else chainName = "unknown";
         return
             string(
@@ -140,6 +142,16 @@ library LibDeploy {
         );
         _write(vm, "LimitedOnlyOnceMw", mw);
         MiddlewareManager(mwManager).allowMw(mw, true);
+    }
+
+    function deploySpecialReward(
+        Vm vm,
+        address owner,
+        string memory tokenURI,
+        string memory contractName
+    ) internal {
+        address sr = address(new SpecialReward(owner, tokenURI));
+        _writeHelper(vm, contractName, sr);
     }
 
     function deployPermissionMw(

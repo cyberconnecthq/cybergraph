@@ -26,7 +26,8 @@ contract DeployAll is Script, DeploySetting {
             block.chainid == DeploySetting.ARBITRUM_GOERLI ||
             block.chainid == DeploySetting.OPBNB_TESTNET ||
             block.chainid == DeploySetting.OPBNB ||
-            block.chainid == DeploySetting.SCROLL_SEPOLIA
+            block.chainid == DeploySetting.SCROLL_SEPOLIA ||
+            block.chainid == DeploySetting.SCROLL
         ) {
             LibDeploy.deployAll(
                 vm,

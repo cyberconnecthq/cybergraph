@@ -29,7 +29,8 @@ contract DeployerCreate2Deployer is Script, DeploySetting {
             block.chainid == DeploySetting.BNB ||
             block.chainid == DeploySetting.ETH ||
             block.chainid == DeploySetting.NOVA ||
-            block.chainid == DeploySetting.BASE
+            block.chainid == DeploySetting.BASE ||
+            block.chainid == DeploySetting.SCROLL
         ) {
             require(
                 msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,

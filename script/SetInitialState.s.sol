@@ -17,6 +17,7 @@ contract SetInitialState is Script, DeploySetting {
             block.chainid == DeploySetting.BNB ||
             block.chainid == DeploySetting.OPTIMISM ||
             block.chainid == DeploySetting.BASE ||
+            block.chainid == DeploySetting.BASE_GOERLI ||
             block.chainid == DeploySetting.ARBITRUM ||
             block.chainid == DeploySetting.OPBNB ||
             block.chainid == DeploySetting.LINEA_GOERLI ||
@@ -25,7 +26,8 @@ contract SetInitialState is Script, DeploySetting {
             block.chainid == DeploySetting.ARBITRUM_GOERLI ||
             block.chainid == DeploySetting.OPBNB_TESTNET ||
             block.chainid == DeploySetting.SCROLL_SEPOLIA ||
-            block.chainid == DeploySetting.MUMBAI
+            block.chainid == DeploySetting.MUMBAI ||
+            block.chainid == DeploySetting.SCROLL
         ) {
             LibDeploy.setInitialState(
                 vm,
