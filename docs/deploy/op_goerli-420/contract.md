@@ -16,3 +16,5 @@
 | CyberAccount Factory | 0xaee9762ce625e0a8f7b184670fb57c37bfe1d0f1 |
 | TokenReceiver        | 0xcd97405fb58e94954e825e46db192b916a45d412 |
 | LimitedOnlyOnceMw    | 0x839f47ece56b38c50fd41d97459f32d6952d6be6 |
+| CyberVault(Impl)     | 0xc69e0c0e215c8b2a5bf14cd504c2a0f5344c9c81 |
+| CyberVault(Proxy)    | 0xfda6208411bd3ffbb4624c13faa72372897d25d7 |
