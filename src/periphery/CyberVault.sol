@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.14;
 
-import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
+import { AccessControl } from "openzeppelin-contracts/contracts/access/AccessControl.sol";
 import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Initializable.sol";
@@ -16,7 +16,7 @@ import { ReentrancyGuard } from "openzeppelin-contracts/contracts/security/Reent
  */
 contract CyberVault is
     Initializable,
-    Ownable,
+    AccessControl,
     UUPSUpgradeable,
     ReentrancyGuard
 {
@@ -54,6 +54,9 @@ contract CyberVault is
     mapping(address => uint256) public balances;
     mapping(address => mapping(address => uint256)) public balancesByCurrency;
 
+    bytes32 internal constant _OPERATOR_ROLE =
+        keccak256(bytes("OPERATOR_ROLE"));
+
     /*//////////////////////////////////////////////////////////////
                         CONSTRUCTOR & INITIALIZER
     //////////////////////////////////////////////////////////////*/
@@ -66,7 +69,8 @@ contract CyberVault is
         address _owner,
         address _receipient
     ) external initializer {
-        _transferOwnership(_owner);
+        _grantRole(DEFAULT_ADMIN_ROLE, _owner);
+        _grantRole(_OPERATOR_ROLE, _owner);
         receipient = _receipient;
         emit ReceipientChanged(_receipient);
     }
@@ -92,10 +96,13 @@ contract CyberVault is
     }
 
     /*//////////////////////////////////////////////////////////////
-                            ONLY OWNER
+                            ONLY OPERATOR 
     //////////////////////////////////////////////////////////////*/
 
-    function withdraw(address to, uint256 amount) external onlyOwner {
+    function withdraw(
+        address to,
+        uint256 amount
+    ) external onlyRole(_OPERATOR_ROLE) {
         require(balances[to] >= amount, "INSUFFICIENT_BALANCE");
         (bool success, ) = to.call{ value: amount }("");
         require(success, "WITHDRAW_FAILED");
@@ -106,7 +113,7 @@ contract CyberVault is
         address to,
         address currency,
         uint256 amount
-    ) external onlyOwner {
+    ) external onlyRole(_OPERATOR_ROLE) {
         require(
             balancesByCurrency[to][currency] >= amount,
             "INSUFFICIENT_BALANCE"
@@ -120,7 +127,7 @@ contract CyberVault is
         address receiver,
         uint256 amount,
         uint256 fee
-    ) external onlyOwner {
+    ) external onlyRole(_OPERATOR_ROLE) {
         uint256 total = amount + fee;
         require(balances[consumer] >= total, "INSUFFICIENT_BALANCE");
         balances[consumer] -= total;
@@ -140,7 +147,7 @@ contract CyberVault is
         address currency,
         uint256 amount,
         uint256 fee
-    ) external onlyOwner {
+    ) external onlyRole(_OPERATOR_ROLE) {
         uint256 total = amount + fee;
         require(
             balancesByCurrency[consumer][currency] >= total,
@@ -154,12 +161,18 @@ contract CyberVault is
         emit ConsumeERC20(consumer, receiver, currency, amount, fee);
     }
 
-    function setReceipient(address _receipient) external onlyOwner {
+    /*//////////////////////////////////////////////////////////////
+                            ONLY OWNER
+    //////////////////////////////////////////////////////////////*/
+
+    function setReceipient(
+        address _receipient
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         receipient = _receipient;
         emit ReceipientChanged(_receipient);
     }
 
     function _authorizeUpgrade(address) internal view override {
-        require(msg.sender == owner(), "ONLY_OWNER");
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "ONLY_ADMIN");
     }
 }
