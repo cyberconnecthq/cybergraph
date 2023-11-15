@@ -28,7 +28,10 @@ contract SetInitialState is Script, DeploySetting {
             block.chainid == DeploySetting.SCROLL_SEPOLIA ||
             block.chainid == DeploySetting.MUMBAI ||
             block.chainid == DeploySetting.SCROLL ||
-            block.chainid == DeploySetting.ETH
+            block.chainid == DeploySetting.ETH ||
+            block.chainid == DeploySetting.SEPOLIA ||
+            block.chainid == DeploySetting.MANTLE_TESTENT ||
+            block.chainid == DeploySetting.MANTLE
         ) {
             LibDeploy.setInitialState(
                 vm,

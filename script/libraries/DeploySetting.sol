@@ -24,7 +24,9 @@ contract DeploySetting {
     uint256 internal constant NOVA = 42170;
     uint256 internal constant OPBNB = 204;
     uint256 internal constant SCROLL = 534352;
+    uint256 internal constant MANTLE = 5000;
 
+    uint256 internal constant SEPOLIA = 11155111;
     uint256 internal constant GOERLI = 5;
     uint256 internal constant MUMBAI = 80001;
     uint256 internal constant OP_GOERLI = 420;
@@ -34,6 +36,7 @@ contract DeploySetting {
     uint256 internal constant ARBITRUM_GOERLI = 421613;
     uint256 internal constant BNBT = 97;
     uint256 internal constant OPBNB_TESTNET = 5611;
+    uint256 internal constant MANTLE_TESTENT = 5001;
 
     function _setDeployParams() internal {
         if (
@@ -45,7 +48,9 @@ contract DeploySetting {
             block.chainid == ARBITRUM_GOERLI ||
             block.chainid == OPBNB_TESTNET ||
             block.chainid == SCROLL_SEPOLIA ||
-            block.chainid == GOERLI
+            block.chainid == GOERLI ||
+            block.chainid == SEPOLIA ||
+            block.chainid == MANTLE_TESTENT
         ) {
             deployParams.deployerContract = address(
                 0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
@@ -213,6 +218,22 @@ contract DeploySetting {
                 0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
             );
         } else if (block.chainid == SCROLL) {
+            deployParams.deployerContract = address(
+                0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
+            );
+            deployParams.entryPoint = address(
+                0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
+            );
+            deployParams.protocolOwner = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+            deployParams.treasuryReceiver = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+            deployParams.backendSigner = address(
+                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+            );
+        } else if (block.chainid == MANTLE) {
             deployParams.deployerContract = address(
                 0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
             );
