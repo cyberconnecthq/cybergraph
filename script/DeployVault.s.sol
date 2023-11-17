@@ -17,8 +17,9 @@ contract DeployVault is Script, DeploySetting {
             LibDeploy.deployVault(
                 vm,
                 deployParams.deployerContract,
-                deployParams.backendSigner,
-                deployParams.treasuryReceiver
+                deployParams.protocolOwner,
+                deployParams.treasuryReceiver,
+                deployParams.backendSigner
             );
         }
         vm.stopBroadcast();

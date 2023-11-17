@@ -291,7 +291,8 @@ library LibDeploy {
         Vm vm,
         address _dc,
         address owner,
-        address receipient
+        address receipient,
+        address operator
     ) internal {
         Create2Deployer dc = Create2Deployer(_dc);
 
@@ -315,6 +316,11 @@ library LibDeploy {
         );
 
         _write(vm, "CyberVault(Proxy)", cyberVaultProxy);
+
+        CyberVault(cyberVaultProxy).grantRole(
+            keccak256(bytes("OPERATOR_ROLE")),
+            operator
+        );
     }
 
     function deployGraph(

@@ -70,7 +70,6 @@ contract CyberVault is
         address _receipient
     ) external initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, _owner);
-        _grantRole(_OPERATOR_ROLE, _owner);
         receipient = _receipient;
         emit ReceipientChanged(_receipient);
     }
