@@ -34,6 +34,7 @@ import { Treasury } from "../../src/middlewares/base/Treasury.sol";
 import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 import { LimitedOnlyOnceMw } from "../../src/middlewares/LimitedOnlyOnceMw.sol";
 import { SpecialReward } from "../../src/periphery/SpecialReward.sol";
+import { CyberVault } from "../../src/periphery/CyberVault.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -303,6 +304,42 @@ library LibDeploy {
         setSoulMinter(vm, soul, factory, true);
         setSoulMinter(vm, soul, backendSigner, true);
         // CyberAccountFactory(factory).addStake{ value: 0.1 ether }(1 days);
+    }
+
+    function deployVault(
+        Vm vm,
+        address _dc,
+        address owner,
+        address receipient,
+        address operator
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+
+        address cyberVaultImpl = dc.deploy(type(CyberVault).creationCode, SALT);
+
+        _write(vm, "CyberVault(Impl)", cyberVaultImpl);
+
+        address cyberVaultProxy = dc.deploy(
+            abi.encodePacked(
+                type(ERC1967Proxy).creationCode,
+                abi.encode(
+                    cyberVaultImpl,
+                    abi.encodeWithSelector(
+                        CyberVault.initialize.selector,
+                        owner,
+                        receipient
+                    )
+                )
+            ),
+            SALT
+        );
+
+        _write(vm, "CyberVault(Proxy)", cyberVaultProxy);
+
+        CyberVault(cyberVaultProxy).grantRole(
+            keccak256(bytes("OPERATOR_ROLE")),
+            operator
+        );
     }
 
     function deployGraph(
