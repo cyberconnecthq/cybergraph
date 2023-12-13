@@ -237,7 +237,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         address BOB_CONTENT_NFT = CyberEngine(addrs.engine).getContentAddr(bob);
 
-        vm.prank(alice);
+        vm.startPrank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).collect(
             DataTypes.CollectParams(
                 bob,
@@ -254,7 +254,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         ids[0] = mintedId;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 1;
-        vm.prank(alice);
+        vm.startPrank(alice);
         ERC1155(BOB_CONTENT_NFT).safeBatchTransferFrom(
             alice,
             bob,
@@ -264,7 +264,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         );
         assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(alice, mintedId), 2);
         assertEq(ERC1155(BOB_CONTENT_NFT).balanceOf(bob, mintedId), 1);
-        vm.prank(alice);
+        vm.startPrank(alice);
         ERC1155(BOB_CONTENT_NFT).safeTransferFrom(
             alice,
             bob,
@@ -289,7 +289,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         address BOB_W3ST_NFT = CyberEngine(addrs.engine).getW3stAddr(bob);
 
-        vm.prank(alice);
+        vm.startPrank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).collect(
             DataTypes.CollectParams(
                 bob,
@@ -307,7 +307,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         ids[0] = mintedId;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 1;
-        vm.prank(alice);
+        vm.startPrank(alice);
         ERC1155(BOB_W3ST_NFT).safeBatchTransferFrom(
             alice,
             bob,
@@ -317,7 +317,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         );
         assertEq(ERC1155(BOB_W3ST_NFT).balanceOf(alice, mintedId), 2);
         assertEq(ERC1155(BOB_W3ST_NFT).balanceOf(bob, mintedId), 1);
-        vm.prank(alice);
+        vm.startPrank(alice);
         ERC1155(BOB_W3ST_NFT).safeTransferFrom(
             alice,
             bob,
@@ -345,7 +345,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         uint256 idCommented = 0;
 
-        vm.prank(alice);
+        vm.startPrank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).comment(
             DataTypes.CommentParams(
                 alice,
@@ -397,7 +397,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         uint256 idCommented = 0;
 
         // alice comment on bob's content
-        vm.prank(alice);
+        vm.startPrank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).comment(
             DataTypes.CommentParams(
                 alice,
@@ -415,7 +415,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
             alice
         );
 
-        vm.prank(charles);
+        vm.startPrank(charles);
         CyberEngine(addrs.engine).collect(
             DataTypes.CollectParams(
                 alice,
@@ -444,7 +444,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         uint256 idShared = 0;
 
-        vm.prank(alice);
+        vm.startPrank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).share(
             DataTypes.ShareParams(alice, bob, idShared)
         );
@@ -483,13 +483,13 @@ contract IntegrationCollectTest is TestIntegrationBase {
         uint256 idShared = 0;
 
         // alice share bob's content
-        vm.prank(alice);
+        vm.startPrank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).share(
             DataTypes.ShareParams(alice, bob, idShared)
         );
 
         // charles share alice's share
-        vm.prank(charles);
+        vm.startPrank(charles);
         uint256 mintedIdCharles = CyberEngine(addrs.engine).share(
             DataTypes.ShareParams(charles, alice, mintedId)
         );
@@ -510,7 +510,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         // collect on charles's share will lead to collect on bob's content
         address BOB_CONTENT_NFT = CyberEngine(addrs.engine).getContentAddr(bob);
 
-        vm.prank(alice);
+        vm.startPrank(alice);
         CyberEngine(addrs.engine).collect(
             DataTypes.CollectParams(
                 charles,
@@ -527,7 +527,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
     function testCollectEssenceWithMw() public {
         bytes memory mockData = abi.encode("tmp");
         uint256 essId = 0;
-        vm.prank(bob);
+        vm.startPrank(bob);
 
         CyberEngine(addrs.engine).registerEssence(
             DataTypes.RegisterEssenceParams(
@@ -546,7 +546,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
             essId
         );
 
-        vm.prank(alice);
+        vm.startPrank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).collect(
             DataTypes.CollectParams(
                 bob,
@@ -568,13 +568,11 @@ contract IntegrationCollectTest is TestIntegrationBase {
             mockData
         );
 
-        vm.prank(alice);
+        vm.startPrank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
         ERC721(BOB_ESS_0_NFT).transferFrom(alice, bob, mintedId);
-        vm.prank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
         ERC721(BOB_ESS_0_NFT).safeTransferFrom(alice, bob, mintedId);
-        vm.prank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
         ERC721(BOB_ESS_0_NFT).safeTransferFrom(alice, bob, mintedId, "");
         assertFalse(Essence(BOB_ESS_0_NFT).isTransferable());
@@ -659,7 +657,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         uint256 idCommented = 0;
 
         // alice comment on bob's content
-        vm.prank(alice);
+        vm.startPrank(alice);
         uint256 tokenId = CyberEngine(addrs.engine).comment(
             DataTypes.CommentParams(
                 alice,
@@ -677,7 +675,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
             alice
         );
 
-        vm.prank(charles);
+        vm.startPrank(charles);
         CyberEngine(addrs.engine).collect(
             DataTypes.CollectParams(
                 alice,
@@ -715,7 +713,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         address BOB_W3ST_NFT = CyberEngine(addrs.engine).getW3stAddr(bob);
 
-        vm.prank(alice);
+        vm.startPrank(alice);
         uint256 mintedId = CyberEngine(addrs.engine).collect(
             DataTypes.CollectParams(
                 bob,
@@ -741,7 +739,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
         ids[0] = tokenId;
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 1;
-        vm.prank(alice);
+        vm.startPrank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
         ERC1155(BOB_W3ST_NFT).safeBatchTransferFrom(
             alice,
@@ -750,7 +748,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
             amounts,
             new bytes(0)
         );
-        vm.prank(alice);
+        vm.startPrank(alice);
         vm.expectRevert("TRANSFER_NOT_ALLOWED");
         ERC1155(BOB_W3ST_NFT).safeTransferFrom(
             alice,
@@ -764,7 +762,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
     function testSetEssenceData() public {
         bytes memory mockData = abi.encode("tmp");
         string memory newTokenUri = "newUri";
-        vm.prank(bob);
+        vm.startPrank(bob);
         uint256 essId = CyberEngine(addrs.engine).registerEssence(
             DataTypes.RegisterEssenceParams(
                 bob,
@@ -777,7 +775,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
             new bytes(0)
         );
 
-        vm.prank(bob);
+        vm.startPrank(bob);
         CyberEngine(addrs.engine).setEssenceData(
             bob,
             essId,
@@ -806,7 +804,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
     function testSetContentData() public {
         bytes memory mockData = abi.encode("tmp");
         string memory newTokenUri = "newUri";
-        vm.prank(bob);
+        vm.startPrank(bob);
 
         uint256 tokenId = CyberEngine(addrs.engine).publishContent(
             DataTypes.PublishContentParams(
@@ -820,7 +818,7 @@ contract IntegrationCollectTest is TestIntegrationBase {
 
         CyberEngine(addrs.engine).getContentAddr(bob);
 
-        vm.prank(bob);
+        vm.startPrank(bob);
         CyberEngine(addrs.engine).setContentData(
             bob,
             tokenId,

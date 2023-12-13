@@ -11,7 +11,10 @@ contract DeployPaymaster is Script, DeploySetting {
         _setDeployParams();
         vm.startBroadcast();
 
-        if (block.chainid == DeploySetting.BASE_GOERLI) {
+        if (
+            block.chainid == DeploySetting.BASE_GOERLI ||
+            block.chainid == DeploySetting.BASE
+        ) {
             LibDeploy.deployPaymaster(
                 vm,
                 deployParams.deployerContract,
