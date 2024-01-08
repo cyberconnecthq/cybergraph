@@ -35,6 +35,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 import { LimitedOnlyOnceMw } from "../../src/middlewares/LimitedOnlyOnceMw.sol";
 import { SpecialReward } from "../../src/periphery/SpecialReward.sol";
 import { CyberVault } from "../../src/periphery/CyberVault.sol";
+import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -304,6 +305,26 @@ library LibDeploy {
         setSoulMinter(vm, soul, factory, true);
         setSoulMinter(vm, soul, backendSigner, true);
         // CyberAccountFactory(factory).addStake{ value: 0.1 ether }(1 days);
+    }
+
+    function deployPaymaster(
+        Vm vm,
+        address _dc,
+        address entryPoint,
+        address owner,
+        address signer
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address paymaster = dc.deploy(
+            abi.encodePacked(
+                type(CyberPaymaster).creationCode,
+                abi.encode(entryPoint, owner)
+            ),
+            SALT
+        );
+        _write(vm, "CyberPaymaster", paymaster);
+
+        CyberPaymaster(payable(paymaster)).setVerifyingSigner(signer);
     }
 
     function deployVault(
