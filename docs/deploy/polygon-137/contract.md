@@ -17,3 +17,4 @@
 | TokenReceiver        | 0xcd97405fb58e94954e825e46db192b916a45d412 |
 | Timelock             | 0xcd78e2ab0f5363a5c3835c0423fa4055bacf91d6 |
 | MocaSpecialReward    | 0xd59db0536805308e7d4b4bde761fd80c1b8e9541 |
+| CyberPaymaster       | 0x672cf56a66b6f6a0a97f188abe57249fb7eef909 |

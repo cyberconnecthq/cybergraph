@@ -13,7 +13,22 @@ contract DeployPaymaster is Script, DeploySetting {
 
         if (
             block.chainid == DeploySetting.BASE_GOERLI ||
-            block.chainid == DeploySetting.BASE
+            block.chainid == DeploySetting.BASE ||
+            block.chainid == DeploySetting.SEPOLIA ||
+            block.chainid == DeploySetting.BNBT ||
+            block.chainid == DeploySetting.MUMBAI ||
+            block.chainid == DeploySetting.LINEA_GOERLI ||
+            block.chainid == DeploySetting.OP_GOERLI ||
+            block.chainid == DeploySetting.SCROLL_SEPOLIA ||
+            block.chainid == DeploySetting.POLYGON ||
+            block.chainid == DeploySetting.LINEA ||
+            block.chainid == DeploySetting.OPTIMISM ||
+            block.chainid == DeploySetting.ARBITRUM ||
+            block.chainid == DeploySetting.OPBNB ||
+            block.chainid == DeploySetting.SCROLL ||
+            block.chainid == DeploySetting.ETH ||
+            block.chainid == DeploySetting.BNB ||
+            block.chainid == DeploySetting.MANTLE
         ) {
             LibDeploy.deployPaymaster(
                 vm,

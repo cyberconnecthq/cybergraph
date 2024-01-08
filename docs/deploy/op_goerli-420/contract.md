@@ -18,3 +18,4 @@
 | LimitedOnlyOnceMw    | 0x839f47ece56b38c50fd41d97459f32d6952d6be6 |
 | CyberVault(Impl)     | 0x5371a2d5ec474d8ca804009f9da3a9a38cf7e073 |
 | CyberVault(Proxy)    | 0xd31166fc08dc885cd502b9f28cb546ac673be86a |
+| CyberPaymaster       | 0x672cf56a66b6f6a0a97f188abe57249fb7eef909 |

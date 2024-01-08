@@ -325,6 +325,7 @@ library LibDeploy {
         _write(vm, "CyberPaymaster", paymaster);
 
         CyberPaymaster(payable(paymaster)).setVerifyingSigner(signer);
+        // CyberPaymaster(payable(paymaster)).addStake{ value: 10 ether }(1 days);
     }
 
     function deployVault(
