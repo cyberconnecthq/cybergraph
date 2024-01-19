@@ -37,6 +37,7 @@ contract DeploySetting {
     uint256 internal constant BNBT = 97;
     uint256 internal constant OPBNB_TESTNET = 5611;
     uint256 internal constant MANTLE_TESTENT = 5001;
+    uint256 internal constant BLAST_SEPOLIA = 168587773;
 
     function _setDeployParams() internal {
         if (
@@ -50,7 +51,8 @@ contract DeploySetting {
             block.chainid == SCROLL_SEPOLIA ||
             block.chainid == GOERLI ||
             block.chainid == SEPOLIA ||
-            block.chainid == MANTLE_TESTENT
+            block.chainid == MANTLE_TESTENT ||
+            block.chainid == BLAST_SEPOLIA
         ) {
             deployParams.deployerContract = address(
                 0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
