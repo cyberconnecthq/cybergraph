@@ -131,6 +131,7 @@
     "set_state:arbitrum_goerli": "source .env.arbitrum_goerli.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --etherscan-api-key $API_KEY -vvv",
     "set_state:mantle_testnet": "source .env.mantle_testnet.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --legacy --broadcast --slow --private-key $PRIVATE_KEY -vvv",
     "set_state:mantle": "source .env.mantle.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --legacy --broadcast --slow --private-key $PRIVATE_KEY -vvv",
+    "set_state:blast_sepolia": "source .env.blast_sepolia.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --broadcast --slow --private-key $PRIVATE_KEY -vvv",
     "set_state:sepolia": "source .env.sepolia.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv"
   },
   "devDependencies": {
