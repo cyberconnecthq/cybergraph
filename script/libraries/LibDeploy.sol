@@ -72,6 +72,8 @@ library LibDeploy {
         else if (chainId == 5000) chainName = "mantle";
         else if (chainId == 5001) chainName = "mantle_testnet";
         else if (chainId == 168587773) chainName = "blast_sepolia";
+        else if (chainId == 11155420) chainName = "op_sepolia";
+        else if (chainId == 84532) chainName = "base_sepolia";
         else chainName = "unknown";
         return
             string(
@@ -290,6 +292,7 @@ library LibDeploy {
         );
         deployReceiver(vm, _dc, protocolOwner, writeFile);
         deployMultiSend();
+        deployPaymaster(vm, _dc, entryPoint, protocolOwner, backendSigner);
     }
 
     function setInitialState(

@@ -13,7 +13,8 @@ contract DeployMw is Script, DeploySetting {
 
         if (
             block.chainid == DeploySetting.OPTIMISM ||
-            block.chainid == DeploySetting.OP_GOERLI
+            block.chainid == DeploySetting.OP_GOERLI ||
+            block.chainid == DeploySetting.OP_SEPOLIA
         ) {
             LibDeploy.deployLimitedOnlyOnceMw(
                 vm,

@@ -12,7 +12,8 @@ contract DeployVault is Script, DeploySetting {
         vm.startBroadcast();
         if (
             block.chainid == DeploySetting.OPTIMISM ||
-            block.chainid == DeploySetting.OP_GOERLI
+            block.chainid == DeploySetting.OP_GOERLI ||
+            block.chainid == DeploySetting.OP_SEPOLIA
         ) {
             LibDeploy.deployVault(
                 vm,

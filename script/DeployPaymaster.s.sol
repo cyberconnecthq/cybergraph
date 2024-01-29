@@ -28,7 +28,10 @@ contract DeployPaymaster is Script, DeploySetting {
             block.chainid == DeploySetting.SCROLL ||
             block.chainid == DeploySetting.ETH ||
             block.chainid == DeploySetting.BNB ||
-            block.chainid == DeploySetting.MANTLE
+            block.chainid == DeploySetting.MANTLE ||
+            block.chainid == DeploySetting.BLAST_SEPOLIA ||
+            block.chainid == DeploySetting.OP_SEPOLIA ||
+            block.chainid == DeploySetting.BASE_SEPOLIA
         ) {
             LibDeploy.deployPaymaster(
                 vm,

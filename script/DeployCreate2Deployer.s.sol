@@ -34,7 +34,9 @@ contract DeployerCreate2Deployer is Script, DeploySetting {
             block.chainid == DeploySetting.SEPOLIA ||
             block.chainid == DeploySetting.MANTLE_TESTENT ||
             block.chainid == DeploySetting.MANTLE ||
-            block.chainid == DeploySetting.BLAST_SEPOLIA
+            block.chainid == DeploySetting.BLAST_SEPOLIA ||
+            block.chainid == DeploySetting.OP_SEPOLIA ||
+            block.chainid == DeploySetting.BASE_SEPOLIA
         ) {
             require(
                 msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,
@@ -45,7 +47,11 @@ contract DeployerCreate2Deployer is Script, DeploySetting {
         }
 
         vm.startBroadcast();
-        new Create2Deployer();
+        address deployer = address(new Create2Deployer());
+        require(
+            deployer == 0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f,
+            "wrong address"
+        );
         vm.stopBroadcast();
     }
 }

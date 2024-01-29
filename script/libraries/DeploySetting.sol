@@ -30,7 +30,9 @@ contract DeploySetting {
     uint256 internal constant GOERLI = 5;
     uint256 internal constant MUMBAI = 80001;
     uint256 internal constant OP_GOERLI = 420;
+    uint256 internal constant OP_SEPOLIA = 11155420;
     uint256 internal constant BASE_GOERLI = 84531;
+    uint256 internal constant BASE_SEPOLIA = 84532;
     uint256 internal constant LINEA_GOERLI = 59140;
     uint256 internal constant SCROLL_SEPOLIA = 534351;
     uint256 internal constant ARBITRUM_GOERLI = 421613;
@@ -52,7 +54,9 @@ contract DeploySetting {
             block.chainid == GOERLI ||
             block.chainid == SEPOLIA ||
             block.chainid == MANTLE_TESTENT ||
-            block.chainid == BLAST_SEPOLIA
+            block.chainid == BLAST_SEPOLIA ||
+            block.chainid == BASE_SEPOLIA ||
+            block.chainid == OP_SEPOLIA
         ) {
             deployParams.deployerContract = address(
                 0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f

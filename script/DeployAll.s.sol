@@ -21,7 +21,9 @@ contract DeployAll is Script, DeploySetting {
             block.chainid == DeploySetting.BNB ||
             block.chainid == DeploySetting.OPTIMISM ||
             block.chainid == DeploySetting.OP_GOERLI ||
+            block.chainid == DeploySetting.OP_SEPOLIA ||
             block.chainid == DeploySetting.BASE ||
+            block.chainid == DeploySetting.BASE_SEPOLIA ||
             block.chainid == DeploySetting.ARBITRUM ||
             block.chainid == DeploySetting.ARBITRUM_GOERLI ||
             block.chainid == DeploySetting.OPBNB_TESTNET ||
