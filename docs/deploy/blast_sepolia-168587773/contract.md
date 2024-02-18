@@ -15,3 +15,4 @@
 | ECDSAValidator       | 0x417f5a41305ddc99d18b5e176521b468b2a31b86 |
 | CyberAccount Factory | 0xaee9762ce625e0a8f7b184670fb57c37bfe1d0f1 |
 | TokenReceiver        | 0xcd97405fb58e94954e825e46db192b916a45d412 |
+| BlastProxy           | 0x04bf756e031c5a21fc896bbfd8c38d63819e6734 |

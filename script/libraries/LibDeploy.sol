@@ -36,6 +36,7 @@ import { LimitedOnlyOnceMw } from "../../src/middlewares/LimitedOnlyOnceMw.sol";
 import { SpecialReward } from "../../src/periphery/SpecialReward.sol";
 import { CyberVault } from "../../src/periphery/CyberVault.sol";
 import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
+import { BlastProxy } from "../../src/periphery/BlastProxy.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -309,6 +310,15 @@ library LibDeploy {
         setSoulMinter(vm, soul, factory, true);
         setSoulMinter(vm, soul, backendSigner, true);
         // CyberAccountFactory(factory).addStake{ value: 0.1 ether }(1 days);
+    }
+
+    function deployBlastProxy(Vm vm, address _dc) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address blastProxy = dc.deploy(
+            abi.encodePacked(type(BlastProxy).creationCode),
+            SALT
+        );
+        _write(vm, "BlastProxy", blastProxy);
     }
 
     function deployPaymaster(
