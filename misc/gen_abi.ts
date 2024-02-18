@@ -15,6 +15,7 @@ const writeAbi = async () => {
     "TokenReceiver.sol/TokenReceiver.json",
     "CyberVault.sol/CyberVault.json",
     "ECDSAValidator.sol/ECDSAValidator.json",
+    "BlastProxy.sol/BlastProxy.json",
   ];
   const ps = folders.map(async (file) => {
     const f = await fs.readFile(path.join("./out", file), "utf8");
