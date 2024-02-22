@@ -27,24 +27,9 @@ contract CyberVaultV2 is
     //////////////////////////////////////////////////////////////*/
     event Deposit(address to, uint256 amount);
     event Withdraw(address to, uint256 amount);
-    event Consume(
-        address consumer,
-        address receiver,
-        uint256 amount,
-        uint256 fee
-    );
 
     event DepositERC20(address to, address currency, uint256 amount);
     event WithdrawERC20(address to, address currency, uint256 amount);
-    event ConsumeERC20(
-        address consumer,
-        address receiver,
-        address currency,
-        uint256 amount,
-        uint256 fee
-    );
-
-    event ReceipientChanged(address receipient);
 
     /*//////////////////////////////////////////////////////////////
                             STORAGE
