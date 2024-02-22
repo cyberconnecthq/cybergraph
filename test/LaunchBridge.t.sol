@@ -107,6 +107,5 @@ contract LaunchBridgeTest is Test {
         vm.expectRevert("Ownable: caller is not the owner");
         lb.unpause();
     }
-
     /* solhint-disable func-name-mixedcase */
 }
