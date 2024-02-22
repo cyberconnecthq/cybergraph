@@ -35,6 +35,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 import { LimitedOnlyOnceMw } from "../../src/middlewares/LimitedOnlyOnceMw.sol";
 import { SpecialReward } from "../../src/periphery/SpecialReward.sol";
 import { CyberVault } from "../../src/periphery/CyberVault.sol";
+import { LaunchBridge } from "../../src/periphery/LaunchBridge.sol";
 import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
 
 library LibDeploy {
@@ -330,6 +331,38 @@ library LibDeploy {
 
         CyberPaymaster(payable(paymaster)).setVerifyingSigner(signer);
         // CyberPaymaster(payable(paymaster)).addStake{ value: 10 ether }(1 days);
+    }
+
+    function deployLaunchBridge(
+        Vm vm,
+        address _dc,
+        address owner,
+        address cyber
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address launchBridgeImpl = dc.deploy(
+            abi.encodePacked(type(LaunchBridge).creationCode),
+            SALT
+        );
+
+        _write(vm, "LaunchBridge(Impl)", launchBridgeImpl);
+
+        address launchBridgeProxy = dc.deploy(
+            abi.encodePacked(
+                type(ERC1967Proxy).creationCode,
+                abi.encode(
+                    launchBridgeImpl,
+                    abi.encodeWithSelector(
+                        LaunchBridge.initialize.selector,
+                        owner,
+                        cyber
+                    )
+                )
+            ),
+            SALT
+        );
+
+        _write(vm, "LaunchBridge(Proxy)", launchBridgeProxy);
     }
 
     function deployVault(
