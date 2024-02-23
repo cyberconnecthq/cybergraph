@@ -4,23 +4,15 @@ pragma solidity 0.8.14;
 
 import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
-import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Initializable.sol";
-import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
 import { Pausable } from "openzeppelin-contracts/contracts/security/Pausable.sol";
 import { ReentrancyGuard } from "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
 
 /**
- * @title LaunchBridge
+ * @title LaunchTokenPool
  * @author CyberConnect
  */
-contract LaunchBridge is
-    Initializable,
-    UUPSUpgradeable,
-    Ownable,
-    Pausable,
-    ReentrancyGuard
-{
+contract LaunchTokenPool is Ownable, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     /*//////////////////////////////////////////////////////////////
@@ -28,7 +20,8 @@ contract LaunchBridge is
     //////////////////////////////////////////////////////////////*/
 
     event Deposit(address to, uint256 amount);
-    event Withdraw(address to, uint256 amount);
+    event WithdrawCyber(address to, uint256 amount);
+    event WithdrawERC20(address currency, address to, uint256 amount);
 
     /*//////////////////////////////////////////////////////////////
                             STORAGE
@@ -39,14 +32,10 @@ contract LaunchBridge is
     IERC20 public cyber;
 
     /*//////////////////////////////////////////////////////////////
-                        CONSTRUCTOR & INITIALIZER
+                        CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor() {
-        _disableInitializers();
-    }
-
-    function initialize(address _owner, address _cyber) external initializer {
+    constructor(address _owner, address _cyber) {
         _transferOwnership(_owner);
         cyber = IERC20(_cyber);
     }
@@ -72,7 +61,16 @@ contract LaunchBridge is
 
     function withdraw(address to, uint256 amount) external onlyOwner {
         cyber.safeTransfer(to, amount);
-        emit Withdraw(to, amount);
+        emit WithdrawCyber(to, amount);
+    }
+
+    function withdrawERC20(
+        address currency,
+        address to,
+        uint256 amount
+    ) external onlyOwner {
+        IERC20(currency).safeTransfer(to, amount);
+        emit WithdrawERC20(currency, to, amount);
     }
 
     function pause() external onlyOwner {
@@ -82,6 +80,4 @@ contract LaunchBridge is
     function unpause() external onlyOwner {
         _unpause();
     }
-
-    function _authorizeUpgrade(address) internal view override onlyOwner {}
 }

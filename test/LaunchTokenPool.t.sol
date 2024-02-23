@@ -2,9 +2,7 @@
 
 pragma solidity 0.8.14;
 
-import { ERC1967Proxy } from "openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-
-import { LaunchBridge } from "../src/periphery/LaunchBridge.sol";
+import { LaunchTokenPool } from "../src/periphery/LaunchTokenPool.sol";
 import { Create2Deployer } from "../src/deployer/Create2Deployer.sol";
 
 import { MockERC20 } from "./utils/MockERC20.sol";
@@ -12,42 +10,31 @@ import { MockERC20 } from "./utils/MockERC20.sol";
 import "forge-std/console.sol";
 import "forge-std/Test.sol";
 
-contract LaunchBridgeTest is Test {
+contract LaunchTokenPoolTest is Test {
     bytes32 constant SALT = keccak256(bytes("CCV3"));
 
     address public owner = address(0x1);
     address public alice = address(0x2);
     address public bob = address(0x3);
 
-    LaunchBridge public lb;
+    LaunchTokenPool public lb;
     MockERC20 public mockToken;
 
     event Deposit(address to, uint256 amount);
-    event Withdraw(address to, uint256 amount);
+    event WithdrawCyber(address to, uint256 amount);
+    event WithdrawERC20(address currency, address to, uint256 amount);
 
     function setUp() public {
         mockToken = new MockERC20();
         Create2Deployer dc = new Create2Deployer();
-        address launchBridgeImpl = dc.deploy(
-            abi.encodePacked(type(LaunchBridge).creationCode),
-            SALT
-        );
-
-        address launchBridgeProxy = dc.deploy(
+        address launchTokenPool = dc.deploy(
             abi.encodePacked(
-                type(ERC1967Proxy).creationCode,
-                abi.encode(
-                    launchBridgeImpl,
-                    abi.encodeWithSelector(
-                        LaunchBridge.initialize.selector,
-                        owner,
-                        mockToken
-                    )
-                )
+                type(LaunchTokenPool).creationCode,
+                abi.encode(owner, mockToken)
             ),
             SALT
         );
-        lb = LaunchBridge(launchBridgeProxy);
+        lb = LaunchTokenPool(launchTokenPool);
     }
 
     /* solhint-disable func-name-mixedcase */
@@ -67,7 +54,7 @@ contract LaunchBridgeTest is Test {
         require(lb.totalDeposits() == 1 ether, "WRONG_DEPOSIT");
     }
 
-    function testWithdraw() public {
+    function testWithdrawCyber() public {
         mockToken.mint(alice, 1 ether);
         vm.startPrank(alice);
         mockToken.approve(address(lb), 1 ether);
@@ -75,8 +62,21 @@ contract LaunchBridgeTest is Test {
 
         vm.startPrank(owner);
         vm.expectEmit(true, true, true, true);
-        emit Withdraw(owner, 1 ether);
+        emit WithdrawCyber(owner, 1 ether);
         lb.withdraw(owner, 1 ether);
+        require(mockToken.balanceOf(owner) == 1 ether, "WRONG_BAL");
+    }
+
+    function testWithdrawERC20() public {
+        mockToken.mint(alice, 1 ether);
+        vm.startPrank(alice);
+        mockToken.approve(address(lb), 1 ether);
+        lb.deposit(bob, 1 ether);
+
+        vm.startPrank(owner);
+        vm.expectEmit(true, true, true, true);
+        emit WithdrawERC20(address(mockToken), owner, 1 ether);
+        lb.withdrawERC20(address(mockToken), owner, 1 ether);
         require(mockToken.balanceOf(owner) == 1 ether, "WRONG_BAL");
     }
 
@@ -90,12 +90,6 @@ contract LaunchBridgeTest is Test {
         lb.withdraw(bob, 1 ether);
     }
 
-    function testUpgradeNotOwner() public {
-        vm.startPrank(alice);
-        vm.expectRevert("Ownable: caller is not the owner");
-        lb.upgradeTo(bob);
-    }
-
     function testPauseNotOwner() public {
         vm.startPrank(alice);
         vm.expectRevert("Ownable: caller is not the owner");
@@ -107,5 +101,13 @@ contract LaunchBridgeTest is Test {
         vm.expectRevert("Ownable: caller is not the owner");
         lb.unpause();
     }
+
+    function testTransferNativeTokenFail() public {
+        vm.startPrank(owner);
+        vm.deal(owner, 1 ether);
+        (bool success, ) = address(lb).call{ value: 1 ether }("");
+        require(!success, "SEND_NATIVE_TOKEN_SHOULD_FAIL");
+    }
+
     /* solhint-disable func-name-mixedcase */
 }

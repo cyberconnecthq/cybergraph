@@ -6,13 +6,13 @@ import "forge-std/Script.sol";
 import { DeploySetting } from "./libraries/DeploySetting.sol";
 import { LibDeploy } from "./libraries/LibDeploy.sol";
 
-contract DeployLaunchBridge is Script, DeploySetting {
+contract DeployLaunchTokenPool is Script, DeploySetting {
     function run() external {
         _setDeployParams();
         vm.startBroadcast();
 
         if (block.chainid == DeploySetting.BNBT) {
-            LibDeploy.deployLaunchBridge(
+            LibDeploy.deployLaunchTokenPool(
                 vm,
                 deployParams.deployerContract,
                 deployParams.protocolOwner,
