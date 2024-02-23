@@ -35,6 +35,9 @@ contract CyberVaultV2 is
                             STORAGE
     //////////////////////////////////////////////////////////////*/
 
+    /*//////////////////////////////////////////////////////////////
+                            V1 STORAGE
+    //////////////////////////////////////////////////////////////*/
     address public receipient;
     mapping(address => uint256) public balances;
     mapping(address => mapping(address => uint256)) public balancesByCurrency;
@@ -42,19 +45,19 @@ contract CyberVaultV2 is
     bytes32 internal constant _OPERATOR_ROLE =
         keccak256(bytes("OPERATOR_ROLE"));
 
+    /*//////////////////////////////////////////////////////////////
+                            V2 STORAGE
+    //////////////////////////////////////////////////////////////*/
+
     uint256 public balance;
     mapping(address => uint256) public erc20balances;
 
     /*//////////////////////////////////////////////////////////////
-                        CONSTRUCTOR & INITIALIZER
+                        CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
     constructor() {
         _disableInitializers();
-    }
-
-    function initialize(address _owner) external initializer {
-        _grantRole(DEFAULT_ADMIN_ROLE, _owner);
     }
 
     /*//////////////////////////////////////////////////////////////

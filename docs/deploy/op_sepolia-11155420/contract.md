@@ -19,3 +19,4 @@
 | CyberVault(Impl)     | 0xafdab1f2df771fc1657e02a149f58fcb92c3535f |
 | CyberVault(Proxy)    | 0x5254857780901d6cc80e42946a7d101fe8667ea8 |
 | CyberPaymaster       | 0x672cf56a66b6f6a0a97f188abe57249fb7eef909 |
+| CyberVaultV2(Impl)   | 0x251f21e67bd5dcfcf7278fcc5540cd406a2ccc8f |
