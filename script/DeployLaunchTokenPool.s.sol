@@ -16,7 +16,14 @@ contract DeployLaunchTokenPool is Script, DeploySetting {
                 vm,
                 deployParams.deployerContract,
                 deployParams.protocolOwner,
-                0x0000000000000000000000000000000000000000 // token address
+                0xdb359A83ff0B91551161f12e9C5454CC04FA2fCc
+            );
+        } else if (block.chainid == DeploySetting.OP_SEPOLIA) {
+            LibDeploy.deployLaunchTokenPool(
+                vm,
+                deployParams.deployerContract,
+                deployParams.protocolOwner,
+                0x1F765DC8b75D46786171A7967b99f1184D91b67B
             );
         }
         vm.stopBroadcast();
