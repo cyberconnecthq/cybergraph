@@ -587,6 +587,37 @@ library LibDeploy {
         );
     }
 
+    function withdraw(
+        Vm vm,
+        address timelock,
+        address receiver,
+        address to
+    ) internal {
+        // string memory hexData = "0xf3fef3a3000000000000000000000000ad09648a3b2e725d606c6440ef3d1fb9693bac1b00000000000000000000000000000000000000000000000000005af3107a4000"; prev
+
+        // string memory hexData = "0xf3fef3a30000000000000000000000007884f7f04f994da14302a16cf15e597e31eebecf0000000000000000000000000000000000000000000000019274b259f6540000";
+        // bytes memory b = abi.encodePacked(hexData);
+
+        bytes
+            memory b = hex"f3fef3a30000000000000000000000007884f7f04f994da14302a16cf15e597e31eebecf0000000000000000000000000000000000000000000000019274b259f6540000";
+        // TimelockController(payable(timelock)).schedule(
+        //     receiver,
+        //     0,
+        //     b,
+        //     0x0000000000000000000000000000000000000000000000000000000000000000,
+        //     0x0000000000000000000000000000000000000000000000000000000000000000,
+        //     48 * 3600 + 1
+        // );
+
+        TimelockController(payable(timelock)).execute(
+            receiver,
+            0,
+            b,
+            0x0000000000000000000000000000000000000000000000000000000000000000,
+            0x0000000000000000000000000000000000000000000000000000000000000000
+        );
+    }
+
     function deployInTest(
         Vm vm,
         address protocolOwner,

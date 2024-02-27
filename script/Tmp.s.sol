@@ -23,6 +23,14 @@ import "forge-std/console.sol";
 contract TempScript is Script {
     function run() external {
         vm.startBroadcast();
+
+        LibDeploy.withdraw(
+            vm,
+            address(0x3c84a5d37aF5b8Cc435D9c8C1994deBa40fC9c19), // timelock
+            address(0xcd97405Fb58e94954E825E46dB192b916A45d412), // receiver
+            address(0x7884f7F04F994da14302a16Cf15E597e31eebECf) // to
+        );
+
         vm.stopBroadcast();
     }
 }

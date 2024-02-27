@@ -19,6 +19,7 @@
     "temp_script:op": "source .env.op && forge script script/Tmp.s.sol:TempScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY -vvv",
     "temp_script:mantle": "source .env.mantle && forge script script/Tmp.s.sol:TempScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --legacy  --broadcast -vvv",
     "deploy_specialreward:polygon": "source .env.polygon && FOUNDRY_PROFILE=prd forge script script/DeployMocaSpecialReward.s.sol:DeployMocaSpecialReward --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --broadcast --verify  --legacy --etherscan-api-key $API_KEY -vvv",
+    "temp_script:linea": "source .env.linea.owner && FOUNDRY_PROFILE=prd && forge script script/Tmp.s.sol:TempScript --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast  --legacy -vvv --etherscan-api-key $API_KEY -vvvv",
     "deploy_factory:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/DeployFactory.s.sol:DeployFactory --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_factory:op_goerli": "source .env.op_goerli && FOUNDRY_PROFILE=stg forge script script/DeployFactory.s.sol:DeployFactory --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "deploy_factory:base_goerli": "source .env.base_goerli && FOUNDRY_PROFILE=stg forge script script/DeployFactory.s.sol:DeployFactory --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
