@@ -14,6 +14,7 @@ const writeAbi = async () => {
     "PermissionMw.sol/PermissionMw.json",
     "TokenReceiver.sol/TokenReceiver.json",
     "CyberVault.sol/CyberVault.json",
+    "CyberVaultV2.sol/CyberVaultV2.json",
     "ECDSAValidator.sol/ECDSAValidator.json",
     "LaunchTokenPool.sol/LaunchTokenPool.json",
   ];

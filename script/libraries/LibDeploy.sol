@@ -36,7 +36,9 @@ import { LimitedOnlyOnceMw } from "../../src/middlewares/LimitedOnlyOnceMw.sol";
 import { SpecialReward } from "../../src/periphery/SpecialReward.sol";
 import { CyberVault } from "../../src/periphery/CyberVault.sol";
 import { LaunchTokenPool } from "../../src/periphery/LaunchTokenPool.sol";
+import { CyberVaultV2 } from "../../src/periphery/CyberVaultV2.sol";
 import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
+import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -349,6 +351,17 @@ library LibDeploy {
         );
 
         _write(vm, "LaunchTokenPool", launchTokenPool);
+    }
+
+    function upgradeVault(Vm vm, address _dc, address vaultProxy) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address cyberVaultV2Impl = dc.deploy(
+            type(CyberVaultV2).creationCode,
+            SALT
+        );
+        _write(vm, "CyberVaultV2(Impl)", cyberVaultV2Impl);
+
+        UUPSUpgradeable(vaultProxy).upgradeTo(cyberVaultV2Impl);
     }
 
     function deployVault(
