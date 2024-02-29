@@ -35,6 +35,7 @@ import { PermissionMw } from "../../src/middlewares/PermissionMw.sol";
 import { LimitedOnlyOnceMw } from "../../src/middlewares/LimitedOnlyOnceMw.sol";
 import { SpecialReward } from "../../src/periphery/SpecialReward.sol";
 import { CyberVault } from "../../src/periphery/CyberVault.sol";
+import { LaunchTokenPool } from "../../src/periphery/LaunchTokenPool.sol";
 import { CyberVaultV2 } from "../../src/periphery/CyberVaultV2.sol";
 import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
 import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
@@ -332,6 +333,24 @@ library LibDeploy {
 
         CyberPaymaster(payable(paymaster)).setVerifyingSigner(signer);
         // CyberPaymaster(payable(paymaster)).addStake{ value: 10 ether }(1 days);
+    }
+
+    function deployLaunchTokenPool(
+        Vm vm,
+        address _dc,
+        address owner,
+        address cyber
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address launchTokenPool = dc.deploy(
+            abi.encodePacked(
+                type(LaunchTokenPool).creationCode,
+                abi.encode(owner, cyber)
+            ),
+            SALT
+        );
+
+        _write(vm, "LaunchTokenPool", launchTokenPool);
     }
 
     function upgradeVault(Vm vm, address _dc, address vaultProxy) internal {
