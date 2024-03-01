@@ -77,6 +77,7 @@ library LibDeploy {
         else if (chainId == 168587773) chainName = "blast_sepolia";
         else if (chainId == 11155420) chainName = "op_sepolia";
         else if (chainId == 84532) chainName = "base_sepolia";
+        else if (chainId == 81457) chainName = "blast";
         else chainName = "unknown";
         return
             string(
@@ -305,6 +306,7 @@ library LibDeploy {
         address permissionMw,
         address soul,
         address factory,
+        address cyberpaymaster,
         address backendSigner
     ) internal {
         // sending from protocol owner
@@ -312,6 +314,10 @@ library LibDeploy {
         setSoulMinter(vm, soul, factory, true);
         setSoulMinter(vm, soul, backendSigner, true);
         // CyberAccountFactory(factory).addStake{ value: 0.1 ether }(1 days);
+        CyberPaymaster(payable(cyberpaymaster)).setVerifyingSigner(
+            backendSigner
+        );
+        // CyberPaymaster(payable(paymaster)).addStake{ value: 10 ether }(1 days);
     }
 
     function deployPaymaster(
@@ -330,9 +336,6 @@ library LibDeploy {
             SALT
         );
         _write(vm, "CyberPaymaster", paymaster);
-
-        CyberPaymaster(payable(paymaster)).setVerifyingSigner(signer);
-        // CyberPaymaster(payable(paymaster)).addStake{ value: 10 ether }(1 days);
     }
 
     function deployLaunchTokenPool(

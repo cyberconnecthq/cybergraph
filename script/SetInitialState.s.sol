@@ -34,7 +34,8 @@ contract SetInitialState is Script, DeploySetting {
             block.chainid == DeploySetting.MANTLE ||
             block.chainid == DeploySetting.BLAST_SEPOLIA ||
             block.chainid == DeploySetting.OP_SEPOLIA ||
-            block.chainid == DeploySetting.BASE_SEPOLIA
+            block.chainid == DeploySetting.BASE_SEPOLIA ||
+            block.chainid == DeploySetting.BLAST
         ) {
             LibDeploy.setInitialState(
                 vm,
@@ -43,6 +44,7 @@ contract SetInitialState is Script, DeploySetting {
                 address(0x414CB5822CA5141aeDaEa9D64A12f511071F7613), // permissionMw
                 address(0x14A725839184F879f3C09cE3d707e5a3E4C5869d), // soul
                 address(0xAEE9762ce625E0a8F7b184670fB57C37BFE1d0f1), // factory
+                address(0x672Cf56a66b6f6A0A97F188abE57249fB7EeF909), // cyberpaymaster
                 deployParams.backendSigner
             );
         }
