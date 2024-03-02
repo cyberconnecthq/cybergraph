@@ -21,3 +21,4 @@
 | CyberVault(Proxy)    | 0x5b3a81f9b29e51518316b4e2b8fd5986a3785ca4 |
 | CyberPaymaster       | 0x672cf56a66b6f6a0a97f188abe57249fb7eef909 |
 | CyberVaultV2(Impl)   | 0x041300287e6760196d798be6ce9bd3b485028950 |
+| LaunchTokenPool      | 0x007cfda94940c9a241cc5904e2f15706b77b5848 |
