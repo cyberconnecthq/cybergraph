@@ -26,7 +26,7 @@ contract DeployTimeLock is Script, DeploySetting {
             );
             address timelock = LibDeploy.deployTimeLock(
                 vm,
-                deployParams.protocolSafe,
+                deployParams.protocolSafeV2,
                 48 * 3600,
                 true
             );

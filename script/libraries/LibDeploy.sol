@@ -586,7 +586,7 @@ library LibDeploy {
             new TimelockController(minDeplay, proposers, executors, ownerSafe)
         );
         if (writeFile) {
-            _write(vm, "Timelock", lock);
+            _write(vm, "Timelock(V2)", lock);
         }
     }
 

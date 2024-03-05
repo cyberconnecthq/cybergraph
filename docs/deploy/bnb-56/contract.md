@@ -17,4 +17,5 @@
 | TokenReceiver        | 0xcd97405fb58e94954e825e46db192b916a45d412 |
 | Timelock             | 0x3c84a5d37af5b8cc435d9c8c1994deba40fc9c19 |
 | CyberPaymaster       | 0x672cf56a66b6f6a0a97f188abe57249fb7eef909 |
-| LaunchTokenPool      | 0x01391375fe720899a36ec757d46daf90165e4ab1 |
+| Timelock(V2)         | 0xffc391f0018269d4758aea1a144772e8fb99545e |
+| LaunchTokenPool      | 0xf2aaf02d76e1004cd1101427c64083f81b94dd8a |

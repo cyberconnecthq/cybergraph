@@ -29,21 +29,21 @@ contract DeployLaunchTokenPool is Script, DeploySetting {
             LibDeploy.deployLaunchTokenPool(
                 vm,
                 deployParams.deployerContract,
-                deployParams.timeLock,
+                0xffc391F0018269d4758AEA1a144772E8FB99545E,
                 0x14778860E937f509e651192a90589dE711Fb88a9
             );
         } else if (block.chainid == DeploySetting.OPTIMISM) {
             LibDeploy.deployLaunchTokenPool(
                 vm,
                 deployParams.deployerContract,
-                deployParams.timeLock,
+                0x640dc26699c95a085086650a18028AB3f1454C81,
                 0x14778860E937f509e651192a90589dE711Fb88a9
             );
         } else if (block.chainid == DeploySetting.ETH) {
             LibDeploy.deployLaunchTokenPool(
                 vm,
                 deployParams.deployerContract,
-                deployParams.timeLock,
+                0xFE98bA9D562F8359981269c9E22fDBf02717b723,
                 0x14778860E937f509e651192a90589dE711Fb88a9
             );
         }

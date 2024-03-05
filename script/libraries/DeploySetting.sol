@@ -11,6 +11,7 @@ contract DeploySetting {
         address backendSigner;
         address protocolSafe;
         address timeLock;
+        address protocolSafeV2;
     }
 
     DeployParameters internal deployParams;
@@ -135,6 +136,9 @@ contract DeploySetting {
             deployParams.timeLock = address(
                 0x3c84a5d37aF5b8Cc435D9c8C1994deBa40fC9c19
             );
+            deployParams.protocolSafeV2 = address(
+                0x4729A8F1FEc3b1353a751ce0143Fb16d119f706a
+            );
         } else if (block.chainid == OPTIMISM) {
             deployParams.deployerContract = address(
                 0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
@@ -156,6 +160,9 @@ contract DeploySetting {
             );
             deployParams.timeLock = address(
                 0xCd78e2AB0F5363A5c3835C0423fa4055baCf91D6
+            );
+            deployParams.protocolSafeV2 = address(
+                0x2f199646760aE75d423F4E98bb5249207ED1DC15
             );
         } else if (block.chainid == NOVA) {
             deployParams.deployerContract = address(
@@ -182,6 +189,9 @@ contract DeploySetting {
             );
             deployParams.timeLock = address(
                 0x81759AdbF5520aD94da10991DfA29Ff147d3337b
+            );
+            deployParams.protocolSafeV2 = address(
+                0x455DB34c99A866489F3ac63fa2F068c726BC286b
             );
         } else if (block.chainid == BASE) {
             deployParams.deployerContract = address(
