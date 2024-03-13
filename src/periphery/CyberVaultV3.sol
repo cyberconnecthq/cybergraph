@@ -56,36 +56,20 @@ contract CyberVaultV3 is
     // Represents native token of a chain (e.g. ETH or MATIC)
     address private immutable _NATIVE_CURRENCY = address(0);
     // Canonical wrapped token for this chain. e.g. (wETH or wMATIC).
-    address private immutable _wrappedNativeCurrency;
+    address private _wrappedNativeCurrency;
     // Uniswap on-chain contract
-    IUniversalRouter private immutable _uniswap;
+    IUniversalRouter private _uniswap;
     // The swap tokenIn whitelist
-    mapping(address => bool) public tokenInWhitelist;
+    mapping(address => bool) private _tokenInWhitelist;
     // The currency that the recipient wants to receive (e.g. USDT)
-    address public recipientCurrency;
+    address private _tokenOut;
 
     /*//////////////////////////////////////////////////////////////
                         CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    // @param recipientCurrency The currency that the recipient wants to receive
-    // @param uniswap The address of the Uniswap V3 swap router
-    // @param wrappedNativeCurrency The address of the wrapped token for this chain
-    constructor(
-        address recipientCurrency,
-        IUniversalRouter uniswap,
-        address wrappedNativeCurrency
-    ) {
-        require(
-            address(recipientCurrency) != address(0) &&
-                address(uniswap) != address(0) &&
-                address(wrappedNativeCurrency) != address(0),
-            "invalid constructor parameters"
-        );
-        recipientCurrency = recipientCurrency;
-        _uniswap = uniswap;
-        _wrappedNativeCurrency = wrappedNativeCurrency;
-        // _disableInitializers();
+    constructor() {
+        _disableInitializers();
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -96,18 +80,12 @@ contract CyberVaultV3 is
         address depositTo,
         uint256 amount
     ) external nonReentrant {
-        IERC20 token = IERC20(recipientCurrency);
-        // Make sure the payer has enough of the payment token
-        uint256 payerBalance = token.balanceOf(msg.sender);
-        if (payerBalance < amount) {
-            revert InsufficientBalance(amount - payerBalance);
-        }
-
-        // Make sure the payer has approved this contract for a sufficient transfer
-        uint256 allowance = token.allowance(msg.sender, address(this));
-        if (allowance < amount) {
-            revert InsufficientAllowance(amount - allowance);
-        }
+        IERC20 token = IERC20(_tokenOut);
+        require(token.balanceOf(msg.sender) >= amount, "INSUFFICIENT_BALANCE");
+        require(
+            token.allowance(msg.sender, address(this)) >= amount,
+            "INSUFFICIENT_ALLOWANCE"
+        );
 
         // Perform and complete the deposit
         token.safeTransferFrom(msg.sender, address(this), amount);
@@ -118,17 +96,15 @@ contract CyberVaultV3 is
         address depositTo,
         ERC20PermitData calldata _permit
     ) external nonReentrant {
-        require(_permit.currency == recipientCurrency, "INVALID_CURRENCY");
-
-        // Make sure the payer has enough of the payment token
-        uint256 payerBalance = IERC20(recipientCurrency).balanceOf(msg.sender);
-        if (payerBalance < _permit.amount) {
-            revert InsufficientBalance(_permit.amount - payerBalance);
-        }
+        require(_permit.currency == _tokenOut, "INVALID_CURRENCY");
+        require(
+            IERC20(_tokenOut).balanceOf(msg.sender) >= _permit.amount,
+            "INSUFFICIENT_BALANCE"
+        );
 
         // Permit the token transfer
         try
-            IERC20Permit(recipientCurrency).permit(
+            IERC20Permit(_tokenOut).permit(
                 msg.sender,
                 address(this),
                 _permit.amount,
@@ -142,7 +118,7 @@ contract CyberVaultV3 is
         }
 
         // Perform and complete the deposit
-        IERC20(recipientCurrency).safeTransferFrom(
+        IERC20(_tokenOut).safeTransferFrom(
             msg.sender,
             address(this),
             _permit.amount
@@ -169,17 +145,15 @@ contract CyberVaultV3 is
         SwapIntent calldata _intent
     ) external nonReentrant validSwapIntent(_intent) {
         IERC20 tokenIn = IERC20(_intent.tokenIn);
-        // Make sure the payer has enough of the payment token
-        uint256 payerBalance = tokenIn.balanceOf(msg.sender);
-        if (payerBalance < _intent.tokenInAmount) {
-            revert InsufficientBalance(_intent.tokenInAmount - payerBalance);
-        }
-
-        // Make sure the payer has approved this contract for a sufficient transfer
-        uint256 allowance = tokenIn.allowance(msg.sender, address(this));
-        if (allowance < _intent.tokenInAmount) {
-            revert InsufficientAllowance(_intent.tokenInAmount - allowance);
-        }
+        require(
+            tokenIn.balanceOf(msg.sender) >= _intent.tokenInAmount,
+            "INSUFFICIENT_BALANCE"
+        );
+        require(
+            tokenIn.allowance(msg.sender, address(this)) >=
+                _intent.tokenInAmount,
+            "INSUFFICIENT_ALLOWANCE"
+        );
 
         // Transfer the payment token to this contract
         tokenIn.safeTransferFrom(
@@ -202,12 +176,11 @@ contract CyberVaultV3 is
     ) external nonReentrant validSwapIntent(_intent) {
         require(_intent.tokenInAmount == _permit.amount, "AMOUNT_MISMATCH");
         require(_intent.tokenIn == _permit.currency, "INVALID_TOKEN_IN");
-
-        // Make sure the payer has enough of the payment token
-        uint256 payerBalance = IERC20(_intent.tokenIn).balanceOf(msg.sender);
-        if (payerBalance < _intent.tokenInAmount) {
-            revert InsufficientBalance(_intent.tokenInAmount - payerBalance);
-        }
+        require(
+            IERC20(_intent.tokenIn).balanceOf(msg.sender) >=
+                _intent.tokenInAmount,
+            "INSUFFICIENT_BALANCE"
+        );
 
         uint256 amountSwapped = 0;
         // Permit the token transfer
@@ -269,19 +242,28 @@ contract CyberVaultV3 is
         erc20balances[currency] = amount;
     }
 
-    function modifyRecipientCurrency(
-        address currency
+    function setV3Variables(
+        IUniversalRouter uniswap,
+        address wrappedNativeCurrency,
+        address tokenOut,
+        address[] calldata tokenInList,
+        bool[] calldata tokenInApproved
     ) external onlyRole(_OPERATOR_ROLE) {
-        recipientCurrency = currency;
-    }
-
-    function setTokenInApprovals(
-        address[] calldata currency,
-        bool[] calldata approved
-    ) external onlyRole(_OPERATOR_ROLE) {
-        require(currency.length == approved.length, "INVALID_LENGTH");
-        for (uint i = 0; i < currency.length; i++) {
-            tokenInWhitelist[currency[uint(i)]] = approved[uint(i)];
+        require(
+            address(tokenOut) != address(0) &&
+                address(uniswap) != address(0) &&
+                address(wrappedNativeCurrency) != address(0),
+            "INVALID_ADDRESS"
+        );
+        require(
+            tokenInList.length == tokenInApproved.length,
+            "INVALID_ARRAY_LENGTH"
+        );
+        _tokenOut = tokenOut;
+        _uniswap = uniswap;
+        _wrappedNativeCurrency = wrappedNativeCurrency;
+        for (uint i = 0; i < tokenInList.length; i++) {
+            _tokenInWhitelist[tokenInList[uint(i)]] = tokenInApproved[uint(i)];
         }
     }
 
@@ -299,7 +281,7 @@ contract CyberVaultV3 is
 
     function _succeedDeposit(address depositTo, uint256 amount) internal {
         if (amount > 0) {
-            erc20balances[recipientCurrency] += amount;
+            erc20balances[_tokenOut] += amount;
             emit Deposit(depositTo, amount);
         }
     }
@@ -328,8 +310,6 @@ contract CyberVaultV3 is
             _intent.recipient,
             _intent.tokenOutAmount
         );
-        IERC20 _tokenIn = IERC20(_intent.tokenIn);
-        IERC20 _tokenOut = IERC20(_intent.tokenOut);
 
         // The payer's and router's balances before this transaction, used to calculate the amount consumed by the swap
         uint256 payerBalanceBefore;
@@ -343,7 +323,9 @@ contract CyberVaultV3 is
             routerBalanceBefore =
                 address(_uniswap).balance +
                 IERC20(_wrappedNativeCurrency).balanceOf(address(_uniswap));
-            recipientBalanceBefore = _tokenOut.balanceOf(_intent.recipient);
+            recipientBalanceBefore = IERC20(_intent.tokenOut).balanceOf(
+                _intent.recipient
+            );
 
             // Paying with ETH, wrapping it to WETH, then swapping it for the output token
             uniswapCommands = abi.encodePacked(
@@ -361,13 +343,15 @@ contract CyberVaultV3 is
             uniswapInputs[4] = abi.encode(UniswapConstants.ETH, msg.sender, 0);
         } else {
             // Paying with tokenIn (ERC20)
-            // No need to check recipient balance of the output token before,
-            // since we know WETH and ETH are not fee-on-transfer
             payerBalanceBefore =
-                _tokenIn.balanceOf(msg.sender) +
+                IERC20(_intent.tokenIn).balanceOf(msg.sender) +
                 _intent.tokenInAmount;
-            routerBalanceBefore = _tokenIn.balanceOf(address(_uniswap));
-            recipientBalanceBefore = _tokenOut.balanceOf(_intent.recipient);
+            routerBalanceBefore = IERC20(_intent.tokenIn).balanceOf(
+                address(_uniswap)
+            );
+            recipientBalanceBefore = IERC20(_intent.tokenOut).balanceOf(
+                _intent.recipient
+            );
 
             // Paying with tokenIn, recipient wants tokenOut
             uniswapCommands = abi.encodePacked(
@@ -381,7 +365,10 @@ contract CyberVaultV3 is
             uniswapInputs[2] = abi.encode(_intent.tokenIn, msg.sender, 0);
 
             // Send the input tokens to Uniswap for the swap
-            _tokenIn.safeTransfer(address(_uniswap), _intent.tokenInAmount);
+            IERC20(_intent.tokenIn).safeTransfer(
+                address(_uniswap),
+                _intent.tokenInAmount
+            );
         }
 
         // Perform the swap
@@ -404,8 +391,12 @@ contract CyberVaultV3 is
                     address(_uniswap).balance +
                     IERC20(_wrappedNativeCurrency).balanceOf(address(_uniswap));
             } else {
-                payerBalanceAfter = _tokenIn.balanceOf(msg.sender);
-                routerBalanceAfter = _tokenIn.balanceOf(address(_uniswap));
+                payerBalanceAfter = IERC20(_intent.tokenIn).balanceOf(
+                    msg.sender
+                );
+                routerBalanceAfter = IERC20(_intent.tokenIn).balanceOf(
+                    address(_uniswap)
+                );
             }
             return
                 (payerBalanceBefore + routerBalanceBefore) -
@@ -430,40 +421,20 @@ contract CyberVaultV3 is
         }
     }
 
-    function _revertIfInexactTransfer(
-        uint256 expectedDiff,
-        uint256 balanceBefore,
-        IERC20 token,
-        address target
-    ) internal view {
-        uint256 balanceAfter = token.balanceOf(target);
-        if (balanceAfter - balanceBefore != expectedDiff) {
-            revert InexactTransfer();
-        }
-    }
-
     // @dev Raises errors if the SwapIntent is invalid
     modifier validSwapIntent(SwapIntent calldata _intent) {
-        if (_intent.deadline < block.timestamp) {
-            revert ExpiredIntent();
-        }
+        require(_intent.deadline >= block.timestamp, "EXPIRED_INTENT");
 
-        if (_intent.recipient != address(this)) {
-            // only support the recipient is this contract
-            revert InvalidRecipient();
-        }
+        require(_intent.recipient == address(this), "INVALID_RECIPIENT");
 
-        if (!tokenInWhitelist[_intent.tokenIn]) {
-            revert InvalidTokenIn();
-        }
+        require(_tokenInWhitelist[_intent.tokenIn], "INVALID_TOKEN_IN");
 
-        if (_intent.tokenOut != recipientCurrency) {
-            revert InvalidTokenOut(recipientCurrency);
-        }
+        require(_intent.tokenOut == _tokenOut, "INVALID_TOKEN_OUT");
 
-        if (_intent.tokenInAmount == 0 || _intent.tokenOutAmount == 0) {
-            revert InvalidAmount();
-        }
+        require(
+            _intent.tokenInAmount != 0 && _intent.tokenOutAmount != 0,
+            "INVALID_AMOUNT"
+        );
 
         _;
     }

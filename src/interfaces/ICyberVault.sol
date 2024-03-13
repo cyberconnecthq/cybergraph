@@ -45,34 +45,6 @@ interface ICyberVault {
     /*//////////////////////////////////////////////////////////////
                             ERROR
     //////////////////////////////////////////////////////////////*/
-    // @notice Raised when an intent is paid past its deadline
-    error ExpiredIntent();
-
-    // @notice Raised when an intent's recipient is not this contract
-    error InvalidRecipient();
-
-    // @notice Raised when the tokenInAmount or tokenOutAmount is zero
-    error InvalidAmount();
-
-    // @notice Raised when the tokenIn is not in the whitelist
-    error InvalidTokenIn();
-
-    // @notice Raised when the tokenOut is not in the whitelist
-    // @param attemptedCurrency The currency the recipient attempted to receive
-    error InvalidTokenOut(address attemptedCurrency);
-
-    // @notice Raised when a transfer does not result in the correct balance increase,
-    // such as with fee-on-transfer tokens
-    error InexactTransfer();
-
-    // @notice Raised when the payer does not have enough of the payment token
-    // @param difference The balance deficit
-    error InsufficientBalance(uint256 difference);
-
-    // @notice Raised when the payer has not approved enough of the payment token
-    // @param difference The allowance deficit
-    error InsufficientAllowance(uint256 difference);
-
     // @notice Raised when the permit signature is invalid
     error InvalidPermitSignature();
 
