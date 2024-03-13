@@ -275,11 +275,14 @@ contract CyberVaultV3 is
         recipientCurrency = currency;
     }
 
-    function setTokenInApproval(
-        address currency,
-        bool approved
+    function setTokenInApprovals(
+        address[] calldata currency,
+        bool[] calldata approved
     ) external onlyRole(_OPERATOR_ROLE) {
-        tokenInWhitelist[currency] = approved;
+        require(currency.length == approved.length, "INVALID_LENGTH");
+        for (uint i = 0; i < currency.length; i++) {
+            tokenInWhitelist[currency[uint(i)]] = approved[uint(i)];
+        }
     }
 
     /*//////////////////////////////////////////////////////////////
