@@ -56,13 +56,13 @@ contract CyberVaultV3 is
     // Represents native token of a chain (e.g. ETH or MATIC)
     address private immutable _NATIVE_CURRENCY = address(0);
     // Canonical wrapped token for this chain. e.g. (wETH or wMATIC).
-    address private _wrappedNativeCurrency;
+    address public _wrappedNativeCurrency;
     // Uniswap on-chain contract
-    IUniversalRouter private _uniswap;
+    IUniversalRouter public _uniswap;
     // The swap tokenIn whitelist
-    mapping(address => bool) private _tokenInWhitelist;
+    mapping(address => bool) public _tokenInWhitelist;
     // The currency that the recipient wants to receive (e.g. USDT)
-    address private _tokenOut;
+    address public _tokenOut;
 
     /*//////////////////////////////////////////////////////////////
                         CONSTRUCTOR
