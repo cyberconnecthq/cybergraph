@@ -4,4 +4,4 @@ openzeppelin-contracts/=lib/openzeppelin-contracts/
 solmate/=lib/solmate/
 kernel/=lib/kernel/
 account-abstraction/=lib/account-abstraction/contracts/
-universal-router/=lib/universal-router/
+universal-router/=lib/uniswap/

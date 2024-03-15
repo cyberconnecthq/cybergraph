@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-pragma solidity 0.8.17;
+pragma solidity 0.8.14;
 
 // Uniswap error selectors, used to surface information when swaps fail
 // Pulled from @uniswap/universal-router/out/V3SwapRouter.sol/V3SwapRouter.json after compiling with forge
