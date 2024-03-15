@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.14;
 
+import "../interfaces/ICyberVault.sol";
+
 import { AccessControl } from "openzeppelin-contracts/contracts/access/AccessControl.sol";
 import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -12,7 +14,6 @@ import { ReentrancyGuard } from "openzeppelin-contracts/contracts/security/Reent
 import "universal-router/contracts/interfaces/IUniversalRouter.sol";
 import { Commands as UniswapCommands } from "universal-router/contracts/libraries/Commands.sol";
 import { Constants as UniswapConstants } from "universal-router/contracts/libraries/Constants.sol";
-import "../interfaces/ICyberVault.sol";
 
 /**
  * @title CyberVaultV3
@@ -242,37 +243,31 @@ contract CyberVaultV3 is
         erc20balances[currency] = amount;
     }
 
-    function setV3Variables(
-        IUniversalRouter uniswap,
-        address wrappedNativeCurrency,
-        address tokenOut,
-        address[] calldata tokenInList,
-        bool[] calldata tokenInApproved
-    ) external onlyRole(_OPERATOR_ROLE) {
-        require(
-            address(tokenOut) != address(0) &&
-                address(uniswap) != address(0) &&
-                address(wrappedNativeCurrency) != address(0),
-            "INVALID_ADDRESS"
-        );
-        require(
-            tokenInList.length == tokenInApproved.length,
-            "INVALID_ARRAY_LENGTH"
-        );
-        _tokenOut = tokenOut;
-        _uniswap = uniswap;
-        _wrappedNativeCurrency = wrappedNativeCurrency;
-        for (uint i = 0; i < tokenInList.length; i++) {
-            _tokenInWhitelist[tokenInList[uint(i)]] = tokenInApproved[uint(i)];
-        }
-    }
-
     /*//////////////////////////////////////////////////////////////
                             ONLY OWNER
     //////////////////////////////////////////////////////////////*/
 
     function _authorizeUpgrade(address) internal view override {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "ONLY_ADMIN");
+    }
+
+    function setV3Variables(
+        address uniswap,
+        address wrappedNativeCurrency,
+        address tokenOut,
+        address[] calldata tokenInList,
+        bool[] calldata tokenInApproved
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(
+            tokenInList.length == tokenInApproved.length,
+            "INVALID_ARRAY_LENGTH"
+        );
+        _tokenOut = tokenOut;
+        _uniswap = IUniversalRouter(uniswap);
+        _wrappedNativeCurrency = wrappedNativeCurrency;
+        for (uint i = 0; i < tokenInList.length; i++) {
+            _tokenInWhitelist[tokenInList[uint(i)]] = tokenInApproved[uint(i)];
+        }
     }
 
     /*//////////////////////////////////////////////////////////////
