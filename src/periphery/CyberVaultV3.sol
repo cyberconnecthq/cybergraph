@@ -277,7 +277,7 @@ contract CyberVaultV3 is
     function _succeedDeposit(address depositTo, uint256 amount) internal {
         if (amount > 0) {
             erc20balances[_tokenOut] += amount;
-            emit Deposit(depositTo, amount);
+            emit DepositERC20(depositTo, _tokenOut, amount);
         }
     }
 
