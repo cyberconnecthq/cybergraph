@@ -375,7 +375,7 @@ library LibDeploy {
         CyberVaultV3(vaultProxy).setV3Variables(
             address(0),
             address(0x74A4A85C611679B73F402B36c0F84A7D2CcdFDa3),
-            address(0xebca682b6C15d539284432eDc5b960771F0009e8),
+            address(0x5fd84259d66Cd46123540766Be93DFE6D43130D7),
             wl,
             wlStatus
         );
