@@ -367,15 +367,17 @@ library LibDeploy {
 
         UUPSUpgradeable(vaultProxy).upgradeTo(cyberVaultV3Impl);
 
-        address[] memory wl = new address[](1);
-        wl[0] = address(0x87350147a24099Bf1e7E677576f01C1415857C75);
-        bool[] memory wlStatus = new bool[](1);
+        address[] memory wl = new address[](2);
+        wl[0] = address(0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85);
+        wl[1] = address(0x4200000000000000000000000000000000000006);
+        bool[] memory wlStatus = new bool[](2);
         wlStatus[0] = true;
+        wlStatus[1] = true;
 
         CyberVaultV3(vaultProxy).setV3Variables(
-            address(0),
-            address(0x74A4A85C611679B73F402B36c0F84A7D2CcdFDa3),
-            address(0x5fd84259d66Cd46123540766Be93DFE6D43130D7),
+            address(0xCb1355ff08Ab38bBCE60111F1bb2B784bE25D7e8),
+            address(0x4200000000000000000000000000000000000006),
+            address(0x94b008aA00579c1307B0EF2c499aD98a8ce58e58),
             wl,
             wlStatus
         );
