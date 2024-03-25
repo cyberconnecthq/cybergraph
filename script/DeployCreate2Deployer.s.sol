@@ -37,7 +37,8 @@ contract DeployerCreate2Deployer is Script, DeploySetting {
             block.chainid == DeploySetting.BLAST_SEPOLIA ||
             block.chainid == DeploySetting.OP_SEPOLIA ||
             block.chainid == DeploySetting.BASE_SEPOLIA ||
-            block.chainid == DeploySetting.BLAST
+            block.chainid == DeploySetting.BLAST ||
+            block.chainid == DeploySetting.CYBER_TESTNET
         ) {
             require(
                 msg.sender == 0x0e0bE581B17684f849AF6964D731FCe0F7d366BD,

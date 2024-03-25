@@ -78,6 +78,7 @@ library LibDeploy {
         else if (chainId == 11155420) chainName = "op_sepolia";
         else if (chainId == 84532) chainName = "base_sepolia";
         else if (chainId == 81457) chainName = "blast";
+        else if (chainId == 111557560) chainName = "cyber_testnet";
         else chainName = "unknown";
         return
             string(
