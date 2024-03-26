@@ -21,3 +21,4 @@
 | CyberPaymaster       | 0x672cf56a66b6f6a0a97f188abe57249fb7eef909 |
 | LaunchTokenPool      | 0xd30e1c72742803de428799c34729168fe70534b2 |
 | CyberVaultV2(Impl)   | 0x251f21e67bd5dcfcf7278fcc5540cd406a2ccc8f |
+| CyberVaultV3(Impl)   | 0xbf63825b8706ab8999940bf82d660cd9815a89f4 |

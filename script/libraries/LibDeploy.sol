@@ -37,6 +37,7 @@ import { SpecialReward } from "../../src/periphery/SpecialReward.sol";
 import { CyberVault } from "../../src/periphery/CyberVault.sol";
 import { LaunchTokenPool } from "../../src/periphery/LaunchTokenPool.sol";
 import { CyberVaultV2 } from "../../src/periphery/CyberVaultV2.sol";
+import { CyberVaultV3 } from "../../src/periphery/CyberVaultV3.sol";
 import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
 import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 
@@ -359,13 +360,28 @@ library LibDeploy {
 
     function upgradeVault(Vm vm, address _dc, address vaultProxy) internal {
         Create2Deployer dc = Create2Deployer(_dc);
-        address cyberVaultV2Impl = dc.deploy(
-            type(CyberVaultV2).creationCode,
+        address cyberVaultV3Impl = dc.deploy(
+            type(CyberVaultV3).creationCode,
             SALT
         );
-        _write(vm, "CyberVaultV2(Impl)", cyberVaultV2Impl);
+        _write(vm, "CyberVaultV3(Impl)", cyberVaultV3Impl);
 
-        UUPSUpgradeable(vaultProxy).upgradeTo(cyberVaultV2Impl);
+        UUPSUpgradeable(vaultProxy).upgradeTo(cyberVaultV3Impl);
+
+        address[] memory wl = new address[](2);
+        wl[0] = address(0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85);
+        wl[1] = address(0x4200000000000000000000000000000000000006);
+        bool[] memory wlStatus = new bool[](2);
+        wlStatus[0] = true;
+        wlStatus[1] = true;
+
+        CyberVaultV3(vaultProxy).setV3Variables(
+            address(0xCb1355ff08Ab38bBCE60111F1bb2B784bE25D7e8),
+            address(0x4200000000000000000000000000000000000006),
+            address(0x94b008aA00579c1307B0EF2c499aD98a8ce58e58),
+            wl,
+            wlStatus
+        );
     }
 
     function deployVault(
