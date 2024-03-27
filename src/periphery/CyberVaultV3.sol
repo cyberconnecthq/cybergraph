@@ -135,10 +135,9 @@ contract CyberVaultV3 is
         require(_intent.tokenIn == _wrappedNativeCurrency, "INVALID_TOKEN_IN");
 
         // Perform the swap
-        uint256 amountSwapped = _swapTokens(_intent);
-
+        _swapTokens(_intent);
         // Complete the deposit
-        _succeedDeposit(depositTo, amountSwapped);
+        _succeedDeposit(depositTo, _intent.tokenOutAmount);
     }
 
     function swapERC20PreApproveAndDeposit(
@@ -164,10 +163,9 @@ contract CyberVaultV3 is
         );
 
         // Perform the swap
-        uint256 amountSwapped = _swapTokens(_intent);
-
+        _swapTokens(_intent);
         // Complete the deposit
-        _succeedDeposit(depositTo, amountSwapped);
+        _succeedDeposit(depositTo, _intent.tokenOutAmount);
     }
 
     function swapERC20WithPermitAndDeposit(
@@ -183,7 +181,6 @@ contract CyberVaultV3 is
             "INSUFFICIENT_BALANCE"
         );
 
-        uint256 amountSwapped = 0;
         // Permit the token transfer
         try
             IERC20Permit(_intent.tokenIn).permit(
@@ -205,9 +202,9 @@ contract CyberVaultV3 is
             _permit.amount
         );
         // Perform the swap
-        amountSwapped = _swapTokens(_intent);
+        _swapTokens(_intent);
         // Complete the deposit
-        _succeedDeposit(depositTo, amountSwapped);
+        _succeedDeposit(depositTo, _intent.tokenOutAmount);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -281,9 +278,7 @@ contract CyberVaultV3 is
         }
     }
 
-    function _swapTokens(
-        SwapIntent calldata _intent
-    ) internal returns (uint256) {
+    function _swapTokens(SwapIntent calldata _intent) internal {
         // Parameters and shared inputs for the universal router
         bytes memory uniswapCommands;
         bytes[] memory uniswapInputs;
@@ -306,22 +301,13 @@ contract CyberVaultV3 is
             _intent.tokenOutAmount
         );
 
-        // The payer's and router's balances before this transaction, used to calculate the amount consumed by the swap
-        uint256 payerBalanceBefore;
-        uint256 routerBalanceBefore;
-        uint256 recipientBalanceBefore;
+        // The contract's tokenOut balance before this transaction, used to calculate the amount received
+        uint256 recipientBalanceBefore = IERC20(_intent.tokenOut).balanceOf(
+            _intent.recipient
+        );
 
         // Populate the commands and inputs for the universal router
         if (msg.value > 0) {
-            // Paying with ETH
-            payerBalanceBefore = msg.sender.balance + msg.value;
-            routerBalanceBefore =
-                address(_uniswap).balance +
-                IERC20(_wrappedNativeCurrency).balanceOf(address(_uniswap));
-            recipientBalanceBefore = IERC20(_intent.tokenOut).balanceOf(
-                _intent.recipient
-            );
-
             // Paying with ETH, wrapping it to WETH, then swapping it for the output token
             uniswapCommands = abi.encodePacked(
                 bytes1(uint8(UniswapCommands.WRAP_ETH)), // wrap ETH to WETH
@@ -338,17 +324,6 @@ contract CyberVaultV3 is
             uniswapInputs[4] = abi.encode(UniswapConstants.ETH, msg.sender, 0);
         } else {
             // Paying with tokenIn (ERC20)
-            payerBalanceBefore =
-                IERC20(_intent.tokenIn).balanceOf(msg.sender) +
-                _intent.tokenInAmount;
-            routerBalanceBefore = IERC20(_intent.tokenIn).balanceOf(
-                address(_uniswap)
-            );
-            recipientBalanceBefore = IERC20(_intent.tokenOut).balanceOf(
-                _intent.recipient
-            );
-
-            // Paying with tokenIn, recipient wants tokenOut
             uniswapCommands = abi.encodePacked(
                 bytes1(uint8(UniswapCommands.V3_SWAP_EXACT_OUT)), // swap tokenIn for tokenOut
                 bytes1(uint8(UniswapCommands.TRANSFER)), // transfer tokenOut to recipient
@@ -374,28 +349,14 @@ contract CyberVaultV3 is
                 deadline
             )
         {
-            // Calculate and return how much of the input token was consumed by the swap. The router
-            // could have had a balance of the input token prior to this transaction, which would have
-            // been swept to the payer. This amount, if any, must be accounted for so we don't underflow
-            // and assume that negative amount of the input token was consumed by the swap.
-            uint256 payerBalanceAfter;
-            uint256 routerBalanceAfter;
-            if (msg.value > 0) {
-                payerBalanceAfter = msg.sender.balance;
-                routerBalanceAfter =
-                    address(_uniswap).balance +
-                    IERC20(_wrappedNativeCurrency).balanceOf(address(_uniswap));
-            } else {
-                payerBalanceAfter = IERC20(_intent.tokenIn).balanceOf(
-                    msg.sender
-                );
-                routerBalanceAfter = IERC20(_intent.tokenIn).balanceOf(
-                    address(_uniswap)
-                );
-            }
-            return
-                (payerBalanceBefore + routerBalanceBefore) -
-                (payerBalanceAfter + routerBalanceAfter);
+            uint256 recipientBalanceAfter = IERC20(_intent.tokenOut).balanceOf(
+                _intent.recipient
+            );
+            require(
+                recipientBalanceAfter - recipientBalanceBefore ==
+                    _intent.tokenOutAmount,
+                "INVALID_SWAP_AMOUNT"
+            );
         } catch Error(string memory reason) {
             revert SwapFailedString(reason);
         } catch (bytes memory reason) {
