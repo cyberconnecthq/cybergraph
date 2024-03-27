@@ -23,4 +23,4 @@
 | CyberVaultV2(Impl)   | 0x041300287e6760196d798be6ce9bd3b485028950 |
 | Timelock(V2)         | 0x640dc26699c95a085086650a18028ab3f1454c81 |
 | LaunchTokenPool      | 0x454ba74c599340b1d868c693ccdb1a55feb8965d |
-| CyberVaultV3(Impl)   | 0xbf63825b8706ab8999940bf82d660cd9815a89f4 |
+| CyberVaultV3(Impl)   | 0x2bd76f186d9c160b79beae8c02ec8f9bc50eae10 |
