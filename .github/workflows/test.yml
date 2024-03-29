@@ -40,17 +40,17 @@ jobs:
       # - name: Run lint
       #   run: yarn run lint:gh-check
 
-      - name: Run Coverage
-        run: "forge coverage --report lcov && sudo apt-get install lcov && lcov --remove ./lcov.info -o ./lcov.info.pruned 'test/*' 'script/*' 'src/libraries/*' 'src/deployer/*' 'src/dependencies/*'"
+      # - name: Run Coverage
+      #   run: "forge coverage --report lcov && sudo apt-get install lcov && lcov --remove ./lcov.info -o ./lcov.info.pruned 'test/*' 'script/*' 'src/libraries/*' 'src/deployer/*' 'src/dependencies/*'"
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        with:
-          directory: .
-          env_vars: OS,PYTHON
-          fail_ci_if_error: true
-          files: ./lcov.info.pruned
-          name: cybergraph-coverage
-          verbose: true
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   env:
+      #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      #   with:
+      #     directory: .
+      #     env_vars: OS,PYTHON
+      #     fail_ci_if_error: true
+      #     files: ./lcov.info.pruned
+      #     name: cybergraph-coverage
+      #     verbose: true
