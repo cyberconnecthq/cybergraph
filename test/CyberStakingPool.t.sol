@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.14;
 
-import { CyberStakingPool } from "../src/periphery/CyberStakingPool.sol";
+import "../src/periphery/CyberStakingPool.sol";
 
 import { MockERC20 } from "./utils/MockERC20.sol";
 import { MockBridge } from "./utils/MockBridge.sol";
@@ -25,24 +25,28 @@ contract CyberStakingPoolTest is Test {
 
     bytes32 private constant BRIDGE_TYPEHASH =
         keccak256(
-            "bridge(address bridge,address assetOwner,address receipient,address asset,uint256 amount,uint256 deadline,uint256 nonce)"
+            "bridge(address bridge,address recipient,address[] assets,uint256[] amounts,uint256 deadline,uint256 nonce)"
         );
 
-    event Deposit(uint256 logId, address to, address asset, uint256 amount);
+    event Deposit(
+        uint256 logId,
+        address assetOwner,
+        address asset,
+        uint256 amount
+    );
     event Withdraw(
         uint256 logId,
         address assetOwner,
-        address recipient,
-        address asset,
-        uint256 amount
+        address[] assets,
+        uint256[] amounts
     );
     event Bridge(
         uint256 logId,
         address bridge,
         address assetOwner,
         address recipient,
-        address asset,
-        uint256 amount
+        address[] assets,
+        uint256[] amounts
     );
     event SetAssetWhitelist(address asset, bool isWhitelisted);
     event SetBridgeWhitelist(address bridge, bool isWhitelisted);
@@ -72,15 +76,6 @@ contract CyberStakingPoolTest is Test {
         assertEq(mockToken.balanceOf(address(pool)), 1 ether);
         assertEq(pool.balance(address(mockToken), alice), 1 ether);
         assertEq(pool.totalBalance(address(mockToken)), 1 ether);
-
-        vm.expectEmit(true, true, true, true);
-        emit Deposit(1, bob, address(mockToken), 1 ether);
-        pool.depositFor(bob, address(mockToken), 1 ether);
-
-        assertEq(mockToken.balanceOf(alice), 0);
-        assertEq(mockToken.balanceOf(address(pool)), 2 ether);
-        assertEq(pool.balance(address(mockToken), bob), 1 ether);
-        assertEq(pool.totalBalance(address(mockToken)), 2 ether);
     }
 
     function testPaused() public {
@@ -90,11 +85,9 @@ contract CyberStakingPoolTest is Test {
         vm.expectRevert("Pausable: paused");
         pool.deposit(address(mockToken), 1 ether);
         vm.expectRevert("Pausable: paused");
-        pool.depositFor(bob, address(mockToken), 1 ether);
-        vm.expectRevert("Pausable: paused");
         pool.depositETH{ value: 1 ether }();
         vm.expectRevert("Pausable: paused");
-        pool.depositETHFor{ value: 1 ether }(owner);
+        (bool success, ) = payable(pool).call{ value: 1 ether }("");
     }
 
     function testDepositETH() public {
@@ -113,13 +106,13 @@ contract CyberStakingPoolTest is Test {
         assertEq(pool.totalBalance(address(weth)), 1 ether);
 
         vm.expectEmit(true, true, true, true);
-        emit Deposit(1, bob, address(weth), 1 ether);
-        pool.depositETHFor{ value: 1 ether }(bob);
+        emit Deposit(1, alice, address(weth), 1 ether);
+        (bool success, ) = payable(pool).call{ value: 1 ether }("");
 
         assertEq(alice.balance, 0);
         assertEq(address(pool).balance, 0);
         assertEq(weth.balanceOf(address(pool)), 2 ether);
-        assertEq(pool.balance(address(weth), bob), 1 ether);
+        assertEq(pool.balance(address(weth), alice), 2 ether);
         assertEq(pool.totalBalance(address(weth)), 2 ether);
     }
 
@@ -131,27 +124,21 @@ contract CyberStakingPoolTest is Test {
         pool.deposit(address(mockToken), 2 ether);
 
         vm.expectEmit(true, true, true, true);
-        emit Withdraw(1, alice, bob, address(mockToken), 1 ether);
-        pool.withdraw(bob, address(mockToken), 1 ether);
+        address[] memory assets = new address[](1);
+        assets[0] = address(mockToken);
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1 ether;
+        emit Withdraw(1, alice, assets, amounts);
+        pool.withdraw(assets, amounts);
 
-        assertEq(mockToken.balanceOf(alice), 0 ether);
+        assertEq(mockToken.balanceOf(alice), 1 ether);
         assertEq(mockToken.balanceOf(address(pool)), 1 ether);
-        assertEq(mockToken.balanceOf(address(bob)), 1 ether);
         assertEq(pool.balance(address(mockToken), alice), 1 ether);
         assertEq(pool.totalBalance(address(mockToken)), 1 ether);
 
+        amounts[0] = 2 ether;
         vm.expectRevert("INSUFFICIENT_BALANCE");
-        pool.withdraw(bob, address(mockToken), 2 ether);
-
-        vm.expectEmit(true, true, true, true);
-        emit Withdraw(2, alice, alice, address(mockToken), 1 ether);
-        pool.withdraw(alice, address(mockToken), 1 ether);
-
-        assertEq(mockToken.balanceOf(alice), 1 ether);
-        assertEq(mockToken.balanceOf(address(pool)), 0 ether);
-        assertEq(mockToken.balanceOf(address(bob)), 1 ether);
-        assertEq(pool.balance(address(mockToken), alice), 0 ether);
-        assertEq(pool.totalBalance(address(mockToken)), 0 ether);
+        pool.withdraw(assets, amounts);
     }
 
     function testBridge() public {
@@ -161,23 +148,28 @@ contract CyberStakingPoolTest is Test {
         mockToken.approve(address(pool), 2 ether);
         pool.deposit(address(mockToken), 2 ether);
 
+        address[] memory assets = new address[](1);
+        assets[0] = address(mockToken);
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1 ether;
+        BridgeParams memory params = BridgeParams(
+            address(mockBridge),
+            alice,
+            assets,
+            amounts
+        );
+
         vm.expectRevert("BRIDGE_NOT_WHITELISTED");
-        pool.bridge(address(mockBridge), alice, address(mockToken), 1 ether);
+        pool.bridge(params);
 
         vm.startPrank(owner);
         pool.setBridgeWhitelist(address(mockBridge), true);
 
         vm.startPrank(alice);
         vm.expectEmit(true, true, true, true);
-        emit Bridge(
-            1,
-            address(mockBridge),
-            alice,
-            alice,
-            address(mockToken),
-            1 ether
-        );
-        pool.bridge(address(mockBridge), alice, address(mockToken), 1 ether);
+        emit Bridge(1, address(mockBridge), alice, alice, assets, amounts);
+
+        pool.bridge(params);
         assertEq(mockToken.balanceOf(alice), 1 ether);
         assertEq(mockToken.balanceOf(address(pool)), 1 ether);
         assertEq(mockToken.balanceOf(address(bob)), 0 ether);
@@ -185,15 +177,9 @@ contract CyberStakingPoolTest is Test {
         assertEq(pool.totalBalance(address(mockToken)), 1 ether);
 
         vm.expectEmit(true, true, true, true);
-        emit Bridge(
-            2,
-            address(mockBridge),
-            alice,
-            bob,
-            address(mockToken),
-            1 ether
-        );
-        pool.bridge(address(mockBridge), bob, address(mockToken), 1 ether);
+        emit Bridge(2, address(mockBridge), alice, bob, assets, amounts);
+        params.recipient = bob;
+        pool.bridge(params);
         assertEq(mockToken.balanceOf(alice), 1 ether);
         assertEq(mockToken.balanceOf(address(pool)), 0 ether);
         assertEq(mockToken.balanceOf(address(bob)), 1 ether);
@@ -208,78 +194,58 @@ contract CyberStakingPoolTest is Test {
         mockToken.approve(address(pool), 2 ether);
         pool.deposit(address(mockToken), 2 ether);
 
+        address[] memory assets = new address[](1);
+        assets[0] = address(mockToken);
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 1 ether;
+
         bytes memory sig = _generateSig(
             aliceSk,
             address(mockBridge),
             alice,
             alice,
-            address(mockToken),
-            1 ether,
+            assets,
+            amounts,
             block.timestamp + 100
         );
         vm.startPrank(bob);
         vm.expectEmit(true, true, true, true);
-        emit Bridge(
-            1,
+        emit Bridge(1, address(mockBridge), alice, alice, assets, amounts);
+        BridgeParams memory bridgeParams = BridgeParams(
             address(mockBridge),
             alice,
-            alice,
-            address(mockToken),
-            1 ether
+            assets,
+            amounts
         );
-        pool.bridgeWithSig(
-            address(mockBridge),
-            alice,
-            alice,
-            address(mockToken),
-            1 ether,
+        EIP712Signature memory signature = EIP712Signature(
             block.timestamp + 100,
             sig
         );
+        pool.bridgeWithSig(alice, bridgeParams, signature);
         assertEq(mockToken.balanceOf(alice), 1 ether);
         assertEq(mockToken.balanceOf(address(pool)), 1 ether);
         assertEq(mockToken.balanceOf(address(bob)), 0 ether);
         assertEq(pool.balance(address(mockToken), alice), 1 ether);
         assertEq(pool.totalBalance(address(mockToken)), 1 ether);
 
+        // test nonce ++
         vm.expectRevert("INVALID_SIGNATURE");
-        pool.bridgeWithSig(
-            address(mockBridge),
-            alice,
-            alice,
-            address(mockToken),
-            1 ether,
-            block.timestamp + 100,
-            sig
-        );
+        pool.bridgeWithSig(alice, bridgeParams, signature);
 
         sig = _generateSig(
             aliceSk,
             address(mockBridge),
             alice,
             bob,
-            address(mockToken),
-            1 ether,
+            assets,
+            amounts,
             block.timestamp + 100
         );
+        signature.signature = sig;
+        bridgeParams.recipient = bob;
         vm.expectEmit(true, true, true, true);
-        emit Bridge(
-            2,
-            address(mockBridge),
-            alice,
-            bob,
-            address(mockToken),
-            1 ether
-        );
-        pool.bridgeWithSig(
-            address(mockBridge),
-            alice,
-            bob,
-            address(mockToken),
-            1 ether,
-            block.timestamp + 100,
-            sig
-        );
+        emit Bridge(2, address(mockBridge), alice, bob, assets, amounts);
+        pool.bridgeWithSig(alice, bridgeParams, signature);
         assertEq(mockToken.balanceOf(alice), 1 ether);
         assertEq(mockToken.balanceOf(address(pool)), 0 ether);
         assertEq(mockToken.balanceOf(address(bob)), 1 ether);
@@ -296,29 +262,23 @@ contract CyberStakingPoolTest is Test {
             address(mockBridge),
             alice,
             bob,
-            address(mockToken),
-            1 ether,
+            assets,
+            amounts,
             block.timestamp - 100
         );
         vm.expectRevert("SIGNATURE_EXPIRED");
-        pool.bridgeWithSig(
-            address(mockBridge),
-            alice,
-            bob,
-            address(mockToken),
-            1 ether,
-            block.timestamp - 100,
-            sig
-        );
+        signature.deadline = block.timestamp - 100;
+        signature.signature = sig;
+        pool.bridgeWithSig(alice, bridgeParams, signature);
     }
 
     function _generateSig(
         uint256 signerPk,
         address bridgeAddress,
         address assetOwner,
-        address receipient,
-        address asset,
-        uint256 amount,
+        address recipient,
+        address[] memory assets,
+        uint256[] memory amounts,
         uint256 deadline
     ) internal view returns (bytes memory) {
         uint256 nonce = pool.nonces(assetOwner);
@@ -328,10 +288,9 @@ contract CyberStakingPoolTest is Test {
                 abi.encode(
                     BRIDGE_TYPEHASH,
                     bridgeAddress,
-                    assetOwner,
-                    receipient,
-                    asset,
-                    amount,
+                    recipient,
+                    keccak256(abi.encodePacked(assets)),
+                    keccak256(abi.encodePacked(amounts)),
                     deadline,
                     nonce
                 )

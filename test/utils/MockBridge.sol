@@ -18,9 +18,11 @@ contract MockBridge is IBridge {
     function bridge(
         address,
         address recipient,
-        address asset,
-        uint256 amount
+        address[] calldata assets,
+        uint256[] calldata amounts
     ) external {
-        IERC20(asset).safeTransferFrom(pool, recipient, amount);
+        for (uint256 i = 0; i < assets.length; i++) {
+            IERC20(assets[i]).safeTransferFrom(pool, recipient, amounts[i]);
+        }
     }
 }

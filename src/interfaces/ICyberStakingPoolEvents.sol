@@ -11,27 +11,30 @@ interface ICyberStakingPoolEvents {
      * @notice Emitted when a deposit has been made.
      *
      * @param logId The log id which helps to deduplicate logs.
-     * @param to The address deposit to.
+     * @param assetOwner The address deposit to.
      * @param asset The asset address.
      * @param amount The deposit amount.
      */
-    event Deposit(uint256 logId, address to, address asset, uint256 amount);
+    event Deposit(
+        uint256 logId,
+        address assetOwner,
+        address asset,
+        uint256 amount
+    );
 
     /**
      * @notice Emitted when a withdraw has been made.
      *
      * @param logId The log id which helps to deduplicate logs.
      * @param assetOwner The address withdraw from.
-     * @param recipient The address withdraw to.
-     * @param asset The asset addresse.
-     * @param amount The withdraw amount.
+     * @param assets The asset addresses.
+     * @param amounts The withdraw amounts.
      */
     event Withdraw(
         uint256 logId,
         address assetOwner,
-        address recipient,
-        address asset,
-        uint256 amount
+        address[] assets,
+        uint256[] amounts
     );
 
     /**
@@ -41,16 +44,16 @@ interface ICyberStakingPoolEvents {
      * @param bridge The bridge address.
      * @param assetOwner The address bridge from.
      * @param recipient The address bridge to.
-     * @param asset The asset address.
-     * @param amount The bridge amount.
+     * @param assets The asset addresses.
+     * @param amounts The bridge amounts.
      */
     event Bridge(
         uint256 logId,
         address bridge,
         address assetOwner,
         address recipient,
-        address asset,
-        uint256 amount
+        address[] assets,
+        uint256[] amounts
     );
 
     /**

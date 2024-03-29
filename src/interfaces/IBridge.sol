@@ -12,13 +12,13 @@ interface IBridge {
      *
      * @param assetOwner The owner of the asset.
      * @param recipient The recipient of the asset.
-     * @param asset The asset to bridge.
-     * @param amount The amount to bridge.
+     * @param assets The assets to bridge.
+     * @param amounts The amounts to bridge.
      */
     function bridge(
         address assetOwner,
         address recipient,
-        address asset,
-        uint256 amount
+        address[] calldata assets,
+        uint256[] calldata amounts
     ) external;
 }

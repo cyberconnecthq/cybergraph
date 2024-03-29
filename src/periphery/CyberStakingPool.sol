@@ -8,6 +8,8 @@ import { AccessControl } from "openzeppelin-contracts/contracts/access/AccessCon
 import { Pausable } from "openzeppelin-contracts/contracts/security/Pausable.sol";
 import { EIP712 } from "openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol";
 import { SignatureChecker } from "openzeppelin-contracts/contracts/utils/cryptography/SignatureChecker.sol";
+import { EIP712Signature } from "../interfaces/ICyberStakingPool.sol";
+import { BridgeParams } from "../interfaces/ICyberStakingPool.sol";
 
 import { IWETH } from "../interfaces/IWETH.sol";
 import { IBridge } from "../interfaces/IBridge.sol";
@@ -48,7 +50,7 @@ contract CyberStakingPool is
 
     bytes32 private constant BRIDGE_TYPEHASH =
         keccak256(
-            "bridge(address bridge,address assetOwner,address receipient,address asset,uint256 amount,uint256 deadline,uint256 nonce)"
+            "bridge(address bridge,address recipient,address[] assets,uint256[] amounts,uint256 deadline,uint256 nonce)"
         );
 
     /*//////////////////////////////////////////////////////////////
@@ -65,16 +67,7 @@ contract CyberStakingPool is
     //////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ICyberStakingPool
-    function deposit(address asset, uint256 amount) external {
-        depositFor(msg.sender, asset, amount);
-    }
-
-    /// @inheritdoc ICyberStakingPool
-    function depositFor(
-        address to,
-        address asset,
-        uint256 amount
-    ) public whenNotPaused {
+    function deposit(address asset, uint256 amount) external whenNotPaused {
         require(amount != 0, "ZERO_AMOUNT");
         require(assetWhitelist[asset], "ASSET_NOT_WHITELISTED");
 
@@ -83,101 +76,118 @@ contract CyberStakingPool is
         uint256 afterTransfer = IERC20(asset).balanceOf(address(this));
         uint256 actualAmount = afterTransfer - beforeTransfer;
 
-        balance[asset][to] += actualAmount;
+        balance[asset][msg.sender] += actualAmount;
         totalBalance[asset] += actualAmount;
 
-        emit Deposit(_logId++, to, asset, actualAmount);
+        emit Deposit(_logId++, msg.sender, asset, actualAmount);
     }
 
     receive() external payable {
-        depositETHFor(msg.sender);
+        depositETH();
     }
 
     /// @inheritdoc ICyberStakingPool
-    function depositETH() external payable {
-        depositETHFor(msg.sender);
-    }
-
-    /// @inheritdoc ICyberStakingPool
-    function depositETHFor(address to) public payable whenNotPaused {
+    function depositETH() public payable whenNotPaused {
         require(msg.value != 0, "ZERO_AMOUNT");
 
-        balance[weth][to] += msg.value;
+        balance[weth][msg.sender] += msg.value;
         totalBalance[weth] += msg.value;
         IWETH(weth).deposit{ value: msg.value }();
 
-        emit Deposit(_logId++, to, weth, msg.value);
+        emit Deposit(_logId++, msg.sender, weth, msg.value);
     }
 
     /// @inheritdoc ICyberStakingPool
     function withdraw(
-        address receipient,
-        address asset,
-        uint256 amount
+        address[] calldata assets,
+        uint256[] calldata amounts
     ) external {
-        require(amount != 0, "ZERO_AMOUNT");
-        require(balance[asset][msg.sender] >= amount, "INSUFFICIENT_BALANCE");
+        require(assets.length == amounts.length, "INVALID_LENGTH");
+        for (uint256 i = 0; i < assets.length; i++) {
+            address asset = assets[i];
+            uint256 amount = amounts[i];
+            require(amount != 0, "ZERO_AMOUNT");
+            require(
+                balance[asset][msg.sender] >= amount,
+                "INSUFFICIENT_BALANCE"
+            );
 
-        balance[asset][msg.sender] -= amount;
-        totalBalance[asset] -= amount;
+            balance[asset][msg.sender] -= amount;
+            totalBalance[asset] -= amount;
 
-        IERC20(asset).safeTransfer(receipient, amount);
-        emit Withdraw(_logId++, msg.sender, receipient, asset, amount);
+            uint256 beforeTransfer = IERC20(asset).balanceOf(address(this));
+            IERC20(asset).safeTransfer(msg.sender, amount);
+            uint256 afterTransfer = IERC20(asset).balanceOf(address(this));
+            require(
+                beforeTransfer - afterTransfer == amount,
+                "TRANSFER_FAILED"
+            );
+        }
+
+        emit Withdraw(_logId++, msg.sender, assets, amounts);
     }
 
     /// @inheritdoc ICyberStakingPool
-    function bridge(
-        address bridgeAddress,
-        address receipient,
-        address asset,
-        uint256 amount
-    ) external {
-        require(amount != 0, "ZERO_AMOUNT");
-        require(bridgeWhitelist[bridgeAddress], "BRIDGE_NOT_WHITELISTED");
-        require(balance[asset][msg.sender] >= amount, "INSUFFICIENT_BALANCE");
+    function bridge(BridgeParams calldata params) external {
+        require(
+            params.assets.length == params.amounts.length,
+            "INVALID_LENGTH"
+        );
+        require(
+            bridgeWhitelist[params.bridgeAddress],
+            "BRIDGE_NOT_WHITELISTED"
+        );
 
-        _bridge(bridgeAddress, msg.sender, receipient, asset, amount);
+        _bridge(
+            params.bridgeAddress,
+            msg.sender,
+            params.recipient,
+            params.assets,
+            params.amounts
+        );
     }
 
     /// @inheritdoc ICyberStakingPool
     function bridgeWithSig(
-        address bridgeAddress,
         address assetOwner,
-        address receipient,
-        address asset,
-        uint256 amount,
-        uint256 deadline,
-        bytes memory signature
+        BridgeParams calldata params,
+        EIP712Signature calldata signature
     ) external {
-        require(amount != 0, "ZERO_AMOUNT");
-        require(bridgeWhitelist[bridgeAddress], "BRIDGE_NOT_WHITELISTED");
-        require(balance[asset][assetOwner] >= amount, "INSUFFICIENT_BALANCE");
-
+        require(
+            bridgeWhitelist[params.bridgeAddress],
+            "BRIDGE_NOT_WHITELISTED"
+        );
+        require(signature.deadline >= block.timestamp, "SIGNATURE_EXPIRED");
         {
-            require(deadline >= block.timestamp, "SIGNATURE_EXPIRED");
-            bytes32 structHash = keccak256(
-                abi.encode(
-                    BRIDGE_TYPEHASH,
-                    bridgeAddress,
+            require(
+                SignatureChecker.isValidSignatureNow(
                     assetOwner,
-                    receipient,
-                    asset,
-                    amount,
-                    deadline,
-                    nonces[assetOwner]++
-                )
+                    _hashTypedDataV4(
+                        keccak256(
+                            abi.encode(
+                                BRIDGE_TYPEHASH,
+                                params.bridgeAddress,
+                                params.recipient,
+                                keccak256(abi.encodePacked(params.assets)),
+                                keccak256(abi.encodePacked(params.amounts)),
+                                signature.deadline,
+                                nonces[assetOwner]++
+                            )
+                        )
+                    ),
+                    signature.signature
+                ),
+                "INVALID_SIGNATURE"
             );
-            bytes32 constructedHash = _hashTypedDataV4(structHash);
-
-            bool valid = SignatureChecker.isValidSignatureNow(
-                assetOwner,
-                constructedHash,
-                signature
-            );
-            require(valid, "INVALID_SIGNATURE");
         }
 
-        _bridge(bridgeAddress, assetOwner, receipient, asset, amount);
+        _bridge(
+            params.bridgeAddress,
+            assetOwner,
+            params.recipient,
+            params.assets,
+            params.amounts
+        );
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -192,6 +202,20 @@ contract CyberStakingPool is
         require(assetWhitelist[asset] != isWhitelisted, "SAME_VALUE");
         assetWhitelist[asset] = isWhitelisted;
         emit SetAssetWhitelist(asset, isWhitelisted);
+    }
+
+    /**
+     * @notice Pauses deposit.
+     */
+    function pause() external onlyRole(_OPERATOR_ROLE) {
+        _pause();
+    }
+
+    /**
+     * @notice Unpauses deposit.
+     */
+    function unpause() external onlyRole(_OPERATOR_ROLE) {
+        _unpause();
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -214,20 +238,6 @@ contract CyberStakingPool is
         emit SetBridgeWhitelist(bridgeAddress, isWhitelisted);
     }
 
-    /**
-     * @notice Pauses deposit.
-     */
-    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _pause();
-    }
-
-    /**
-     * @notice Unpauses deposit.
-     */
-    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _unpause();
-    }
-
     /*//////////////////////////////////////////////////////////////
                                 PRIVATE
     //////////////////////////////////////////////////////////////*/
@@ -235,23 +245,44 @@ contract CyberStakingPool is
     function _bridge(
         address bridgeAddress,
         address assetOwner,
-        address receipient,
-        address asset,
-        uint256 amount
+        address recipient,
+        address[] calldata assets,
+        uint256[] calldata amounts
     ) private {
-        balance[asset][assetOwner] -= amount;
-        totalBalance[asset] -= amount;
+        uint256[] memory beforeAmounts = new uint256[](assets.length);
+        for (uint256 i = 0; i < assets.length; i++) {
+            address asset = assets[i];
+            uint256 amount = amounts[i];
+            require(amount != 0, "ZERO_AMOUNT");
+            require(
+                balance[asset][assetOwner] >= amount,
+                "INSUFFICIENT_BALANCE"
+            );
 
-        IERC20(asset).approve(bridgeAddress, amount);
-        IBridge(bridgeAddress).bridge(assetOwner, receipient, asset, amount);
+            balance[asset][assetOwner] -= amount;
+            totalBalance[asset] -= amount;
+
+            IERC20(asset).approve(bridgeAddress, amount);
+            beforeAmounts[i] = IERC20(asset).balanceOf(address(this));
+        }
+
+        IBridge(bridgeAddress).bridge(assetOwner, recipient, assets, amounts);
+
+        for (uint256 i = 0; i < assets.length; i++) {
+            uint256 afterAmount = IERC20(assets[i]).balanceOf(address(this));
+            require(
+                beforeAmounts[i] - afterAmount == amounts[i],
+                "BRIDGE_FAILED"
+            );
+        }
 
         emit Bridge(
             _logId++,
             bridgeAddress,
             assetOwner,
-            receipient,
-            asset,
-            amount
+            recipient,
+            assets,
+            amounts
         );
     }
 }
