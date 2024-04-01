@@ -66,9 +66,12 @@ contract WorkInCryptoNFT is
     constructor(
         string memory name,
         string memory symbol,
-        address owner
+        string memory uri,
+        address owner,
+        address signer
     ) ERC721(name, symbol) {
-        _signer = owner;
+        _signer = signer;
+        baseTokenURI = uri;
         _grantRole(DEFAULT_ADMIN_ROLE, owner);
         _grantRole(_OPERATOR_ROLE, owner);
         _grantRole(_MINTER_ROLE, owner);
@@ -109,6 +112,10 @@ contract WorkInCryptoNFT is
         _mint(to, tokenId);
     }
 
+    function getNonce(address account) external view returns (uint256) {
+        return _nonces[account];
+    }
+
     /*//////////////////////////////////////////////////////////////
                             DEFAULT_ADMIN ONLY
     //////////////////////////////////////////////////////////////*/
@@ -119,6 +126,13 @@ contract WorkInCryptoNFT is
     function setSigner(address signer) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _signer = signer;
         _grantRole(_MINTER_ROLE, signer);
+    }
+
+    /**
+     * @notice Returns the signer address.
+     */
+    function getSinger() external view returns (address) {
+        return _signer;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -178,6 +192,10 @@ contract WorkInCryptoNFT is
 
     function _burn(uint256 tokenId) internal override(ERC721) {
         super._burn(tokenId);
+    }
+
+    function _baseURI() internal view override returns (string memory) {
+        return baseTokenURI;
     }
 
     /*//////////////////////////////////////////////////////////////
