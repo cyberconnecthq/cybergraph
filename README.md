@@ -4,23 +4,26 @@
 
 # Set Up
 
-0. Upgrade your foundry
+0. Install foundry:
+   `curl -L https://foundry.paradigm.xyz | bash`
+
+1. Upgrade your foundry
    `foundryup`
 
-1. To enable husky pre-commit
+2. To enable husky pre-commit
    `yarn && yarn prepare`
 
-2. To install contract dependencies
+3. To install contract dependencies
    `forge install`
 
-3. To build
+4. To build
    `forge build`
 
-4. To test
+5. To test
    `forge test -vvv`
 
-5. (optional) To run static analysis
+6. (optional) To run static analysis
    `slither src/`
 
-6. To see contract sizes
+7. To see contract sizes
    `yarn size`
