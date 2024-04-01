@@ -78,9 +78,12 @@ contract WorkInCryptoNFT is
     }
 
     /*//////////////////////////////////////////////////////////////
-                            PUBLIC VIEW
+                                MINT LOGIC
     //////////////////////////////////////////////////////////////*/
 
+    /**
+     * @notice Mint a token to the given address. Only minter can call this function.
+     */
     function mint(
         address to,
         uint256 tokenId
@@ -88,6 +91,9 @@ contract WorkInCryptoNFT is
         _mint(to, tokenId);
     }
 
+    /**
+     * @notice Mint a token to the given address with a EIP-712 signature.
+     */
     function mintWithSig(
         address to,
         uint256 tokenId,
@@ -112,14 +118,6 @@ contract WorkInCryptoNFT is
         _mint(to, tokenId);
     }
 
-    function getNonce(address account) external view returns (uint256) {
-        return _nonces[account];
-    }
-
-    /*//////////////////////////////////////////////////////////////
-                            DEFAULT_ADMIN ONLY
-    //////////////////////////////////////////////////////////////*/
-
     /**
      * @notice Set the signer address.
      */
@@ -127,17 +125,6 @@ contract WorkInCryptoNFT is
         _signer = signer;
         _grantRole(_MINTER_ROLE, signer);
     }
-
-    /**
-     * @notice Returns the signer address.
-     */
-    function getSinger() external view returns (address) {
-        return _signer;
-    }
-
-    /*//////////////////////////////////////////////////////////////
-                            OPERATOR ONLY
-    //////////////////////////////////////////////////////////////*/
 
     /**
      * @notice Pauses all token transfers.
@@ -161,6 +148,20 @@ contract WorkInCryptoNFT is
     ) external onlyRole(_OPERATOR_ROLE) {
         baseTokenURI = uri;
         emit BaseTokenURISet(uri);
+    }
+
+    /**
+     * @notice Returns the nonce for the given account.
+     */
+    function getNonce(address account) external view returns (uint256) {
+        return _nonces[account];
+    }
+
+    /**
+     * @notice Returns the signer address.
+     */
+    function getSinger() external view returns (address) {
+        return _signer;
     }
 
     /*//////////////////////////////////////////////////////////////
