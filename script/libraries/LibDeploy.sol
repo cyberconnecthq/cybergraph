@@ -38,6 +38,7 @@ import { CyberVault } from "../../src/periphery/CyberVault.sol";
 import { LaunchTokenPool } from "../../src/periphery/LaunchTokenPool.sol";
 import { CyberVaultV2 } from "../../src/periphery/CyberVaultV2.sol";
 import { CyberVaultV3 } from "../../src/periphery/CyberVaultV3.sol";
+import { WorkInCryptoNFT } from "../../src/periphery/WorkInCryptoNFT.sol";
 import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
 import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 
@@ -418,6 +419,26 @@ library LibDeploy {
             keccak256(bytes("OPERATOR_ROLE")),
             operator
         );
+    }
+
+    function deployWorkInCryptoNFT(
+        Vm vm,
+        address _dc,
+        address protocolOwner,
+        bool writeFile
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address tr = dc.deploy(
+            abi.encodePacked(
+                type(WorkInCryptoNFT).creationCode,
+                abi.encode(protocolOwner)
+            ),
+            SALT
+        );
+
+        if (writeFile) {
+            _write(vm, "WorkInCryptoNFT", tr);
+        }
     }
 
     function deployGraph(
