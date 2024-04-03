@@ -144,6 +144,7 @@ contract CyberStakingPool is
             bridgeWhitelist[params.bridgeAddress],
             "BRIDGE_NOT_WHITELISTED"
         );
+        require(params.recipient != address(0), "RECIPIENT_ZERO_ADDRESS");
 
         _bridge(
             params.bridgeAddress,
@@ -161,9 +162,14 @@ contract CyberStakingPool is
         EIP712Signature calldata signature
     ) external nonReentrant {
         require(
+            params.assets.length == params.amounts.length,
+            "INVALID_LENGTH"
+        );
+        require(
             bridgeWhitelist[params.bridgeAddress],
             "BRIDGE_NOT_WHITELISTED"
         );
+        require(params.recipient != address(0), "RECIPIENT_ZERO_ADDRESS");
         require(signature.deadline >= block.timestamp, "SIGNATURE_EXPIRED");
         {
             require(

@@ -57,7 +57,9 @@ contract CyberStakingPoolTest is Test {
         pool = new CyberStakingPool(address(weth), owner);
         mockBridge = new MockBridge(address(pool));
         vm.startPrank(owner);
-        pool.grantRole(keccak256(bytes("OPERATOR_ROLE")), owner);
+        bytes32 role = keccak256(bytes("OPERATOR_ROLE"));
+        console.logBytes32(role);
+        pool.grantRole(role, owner);
         pool.setAssetWhitelist(address(mockToken), true);
     }
 
@@ -269,6 +271,43 @@ contract CyberStakingPoolTest is Test {
         vm.expectRevert("SIGNATURE_EXPIRED");
         signature.deadline = block.timestamp - 100;
         signature.signature = sig;
+        pool.bridgeWithSig(alice, bridgeParams, signature);
+    }
+
+    function testInvalidInputs() public {
+        pool.setBridgeWhitelist(address(mockBridge), true);
+
+        address[] memory assets = new address[](1);
+        assets[0] = address(mockToken);
+        uint256[] memory amounts = new uint256[](2);
+        amounts[0] = 1 ether;
+        amounts[1] = 1 ether;
+
+        BridgeParams memory bridgeParams = BridgeParams(
+            address(mockBridge),
+            alice,
+            assets,
+            amounts
+        );
+        bytes memory mockSig = new bytes(0);
+        EIP712Signature memory signature = EIP712Signature(
+            block.timestamp + 100,
+            mockSig
+        );
+        vm.expectRevert("INVALID_LENGTH");
+        pool.bridgeWithSig(alice, bridgeParams, signature);
+
+        vm.expectRevert("INVALID_LENGTH");
+        pool.bridge(bridgeParams);
+
+        amounts = new uint256[](1);
+        amounts[0] = 1 ether;
+        bridgeParams.amounts = amounts;
+        bridgeParams.recipient = address(0);
+        vm.expectRevert("RECIPIENT_ZERO_ADDRESS");
+        pool.bridge(bridgeParams);
+
+        vm.expectRevert("RECIPIENT_ZERO_ADDRESS");
         pool.bridgeWithSig(alice, bridgeParams, signature);
     }
 

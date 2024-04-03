@@ -19,3 +19,4 @@
 | Timelock             | 0x81759adbf5520ad94da10991dfa29ff147d3337b |
 | Timelock(V2)         | 0xfe98ba9d562f8359981269c9e22fdbf02717b723 |
 | LaunchTokenPool      | 0x59dc1ade4f40a41e225ec03242bd41651521f943 |
+| CyberStakingPool     | 0x18eed20f71bef84b605253c89a7576e3634134c0 |
