@@ -407,12 +407,20 @@ library LibDeploy {
         Vm vm,
         address _dc,
         address owner,
-        address receipient,
-        address operator
+        address recipient,
+        address operator,
+        address uniswap,
+        address wrappedNativeCurrency,
+        address tokenOut,
+        address[] memory tokenInList,
+        bool[] memory tokenInApproved
     ) internal {
         Create2Deployer dc = Create2Deployer(_dc);
 
-        address cyberVaultImpl = dc.deploy(type(CyberVault).creationCode, SALT);
+        address cyberVaultImpl = dc.deploy(
+            type(CyberVaultV3).creationCode,
+            SALT
+        );
 
         _write(vm, "CyberVault(Impl)", cyberVaultImpl);
 
@@ -424,7 +432,7 @@ library LibDeploy {
                     abi.encodeWithSelector(
                         CyberVault.initialize.selector,
                         owner,
-                        receipient
+                        recipient
                     )
                 )
             ),
@@ -433,9 +441,17 @@ library LibDeploy {
 
         _write(vm, "CyberVault(Proxy)", cyberVaultProxy);
 
-        CyberVault(cyberVaultProxy).grantRole(
+        CyberVaultV3(cyberVaultProxy).grantRole(
             keccak256(bytes("OPERATOR_ROLE")),
             operator
+        );
+
+        CyberVaultV3(cyberVaultProxy).setV3Variables(
+            uniswap,
+            wrappedNativeCurrency,
+            tokenOut,
+            tokenInList,
+            tokenInApproved
         );
     }
 

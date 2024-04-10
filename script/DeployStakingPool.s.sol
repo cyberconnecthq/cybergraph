@@ -48,7 +48,27 @@ contract SetStakingPool is Script, DeploySetting {
                 0xF616904ac19f5bE8206A923E92bFf8953a16c7Fc,
                 true
             );
-        } else if (block.chainid == DeploySetting.ETH) {}
+        } else if (block.chainid == DeploySetting.ETH) {
+            CyberStakingPool pool = CyberStakingPool(
+                payable(0x18eeD20f71BEf84B605253C89A7576E3634134C0)
+            );
+            pool.setAssetWhitelist(
+                0xD9A442856C234a39a81a089C06451EBAa4306a72,
+                true
+            );
+            pool.setAssetWhitelist(
+                0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee,
+                true
+            );
+            pool.setAssetWhitelist(
+                0x4d831e22F062b5327dFdB15f0b6a5dF20E2E3dD0,
+                true
+            );
+            pool.setAssetWhitelist(
+                0xbf5495Efe5DB9ce00f80364C8B423567e58d2110,
+                true
+            );
+        }
         vm.stopBroadcast();
     }
 }

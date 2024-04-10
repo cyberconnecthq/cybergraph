@@ -36,7 +36,7 @@ contract CyberVaultV3 is
     /*//////////////////////////////////////////////////////////////
                             V1 STORAGE
     //////////////////////////////////////////////////////////////*/
-    address public receipient;
+    address public recipient;
     mapping(address => uint256) public balances;
     mapping(address => mapping(address => uint256)) public balancesByCurrency;
 
@@ -71,6 +71,14 @@ contract CyberVaultV3 is
 
     constructor() {
         _disableInitializers();
+    }
+
+    function initialize(
+        address _owner,
+        address _recipient
+    ) external initializer {
+        _grantRole(DEFAULT_ADMIN_ROLE, _owner);
+        recipient = _recipient;
     }
 
     /*//////////////////////////////////////////////////////////////
