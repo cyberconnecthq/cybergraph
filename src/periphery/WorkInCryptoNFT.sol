@@ -36,6 +36,11 @@ contract WorkInCryptoNFT is
     string public baseTokenURI;
 
     /**
+     * @notice The current index of the token.
+     */
+    uint256 internal _currentIndex;
+
+    /**
      * @notice The address of the signer.
      */
     address internal _signer;
@@ -84,11 +89,8 @@ contract WorkInCryptoNFT is
     /**
      * @notice Mint a token to the given address. Only minter can call this function.
      */
-    function mint(
-        address to,
-        uint256 tokenId
-    ) public virtual onlyRole(_MINTER_ROLE) {
-        _mint(to, tokenId);
+    function mint(address to) public virtual onlyRole(_MINTER_ROLE) {
+        _mint(to);
     }
 
     /**
@@ -96,26 +98,19 @@ contract WorkInCryptoNFT is
      */
     function mintWithSig(
         address to,
-        uint256 tokenId,
         DataTypes.EIP712Signature calldata sig
     ) public {
         _requiresExpectedSigner(
             _hashTypedDataV4(
                 keccak256(
-                    abi.encode(
-                        _MINT_TYPEHASH,
-                        to,
-                        tokenId,
-                        _nonces[to]++,
-                        sig.deadline
-                    )
+                    abi.encode(_MINT_TYPEHASH, to, _nonces[to]++, sig.deadline)
                 )
             ),
             _signer,
             sig
         );
 
-        _mint(to, tokenId);
+        _mint(to);
     }
 
     /**
@@ -165,7 +160,7 @@ contract WorkInCryptoNFT is
     }
 
     /*//////////////////////////////////////////////////////////////
-                            EIP-712 OVERRIDES
+                                EIP-712
     //////////////////////////////////////////////////////////////*/
 
     function _domainSeparatorName()
@@ -176,6 +171,11 @@ contract WorkInCryptoNFT is
         returns (string memory)
     {
         return "WorkInCryptoNFT";
+    }
+
+    function _mint(address _to) internal virtual returns (uint256) {
+        super._safeMint(_to, ++_currentIndex);
+        return _currentIndex;
     }
 
     /*//////////////////////////////////////////////////////////////

@@ -52,7 +52,7 @@ contract WorkInCryptoNFTTest is Test {
 
     function testMint() public {
         vm.prank(owner);
-        nft.mint(alice, 1);
+        nft.mint(alice);
         assertEq(nft.ownerOf(1), alice);
     }
 
@@ -66,7 +66,7 @@ contract WorkInCryptoNFTTest is Test {
             )
         );
         vm.prank(alice);
-        nft.mint(alice, 1);
+        nft.mint(alice);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -78,11 +78,10 @@ contract WorkInCryptoNFTTest is Test {
         DataTypes.EIP712Signature memory sig = _generateSig(
             signerSk,
             alice,
-            1,
             nonce,
             block.timestamp
         );
-        nft.mintWithSig(alice, 1, sig);
+        nft.mintWithSig(alice, sig);
         assertEq(nft.ownerOf(1), alice);
     }
 
@@ -91,12 +90,11 @@ contract WorkInCryptoNFTTest is Test {
         DataTypes.EIP712Signature memory sig = _generateSig(
             ownerSk,
             alice,
-            1,
             nonce,
             block.timestamp
         );
         vm.expectRevert("INVALID_SIGNATURE");
-        nft.mintWithSig(alice, 1, sig);
+        nft.mintWithSig(alice, sig);
     }
 
     function testMintWithSigErrorAccount() public {
@@ -104,25 +102,11 @@ contract WorkInCryptoNFTTest is Test {
         DataTypes.EIP712Signature memory sig = _generateSig(
             signerSk,
             bob,
-            1,
             nonce,
             block.timestamp
         );
         vm.expectRevert("INVALID_SIGNATURE");
-        nft.mintWithSig(alice, 1, sig);
-    }
-
-    function testMintWithSigErrorTokenId() public {
-        uint256 nonce = nft.getNonce(alice);
-        DataTypes.EIP712Signature memory sig = _generateSig(
-            signerSk,
-            alice,
-            2,
-            nonce,
-            block.timestamp
-        );
-        vm.expectRevert("INVALID_SIGNATURE");
-        nft.mintWithSig(alice, 1, sig);
+        nft.mintWithSig(alice, sig);
     }
 
     function testMintWithSigErrorNonce() public {
@@ -130,12 +114,11 @@ contract WorkInCryptoNFTTest is Test {
         DataTypes.EIP712Signature memory sig = _generateSig(
             signerSk,
             alice,
-            1,
             nonce + 1,
             block.timestamp
         );
         vm.expectRevert("INVALID_SIGNATURE");
-        nft.mintWithSig(alice, 1, sig);
+        nft.mintWithSig(alice, sig);
     }
 
     function testMintWithSigWithExpiredDeadline() public {
@@ -143,24 +126,22 @@ contract WorkInCryptoNFTTest is Test {
         DataTypes.EIP712Signature memory sig = _generateSig(
             signerSk,
             alice,
-            1,
             nonce,
             block.timestamp - 1
         );
         vm.expectRevert("DEADLINE_EXCEEDED");
-        nft.mintWithSig(alice, 1, sig);
+        nft.mintWithSig(alice, sig);
     }
 
     function _generateSig(
         uint256 _signerSk,
         address to,
-        uint256 tokenId,
         uint256 nonce,
         uint256 deadline
     ) internal view returns (DataTypes.EIP712Signature memory sig) {
         bytes32 digest = TestLib712.hashTypedDataV4(
             address(nft),
-            keccak256(abi.encode(_MINT_TYPEHASH, to, tokenId, nonce, deadline)),
+            keccak256(abi.encode(_MINT_TYPEHASH, to, nonce, deadline)),
             "WorkInCryptoNFT",
             "1"
         );
@@ -200,11 +181,10 @@ contract WorkInCryptoNFTTest is Test {
         DataTypes.EIP712Signature memory sig = _generateSig(
             signer2Sk,
             alice,
-            1,
             nonce,
             block.timestamp
         );
-        nft.mintWithSig(alice, 1, sig);
+        nft.mintWithSig(alice, sig);
         assertEq(nft.ownerOf(1), alice);
     }
 
@@ -264,7 +244,7 @@ contract WorkInCryptoNFTTest is Test {
         string memory expectedURI = "https://newuri.com/1";
 
         vm.prank(owner);
-        nft.mint(alice, tokenId);
+        nft.mint(alice);
 
         vm.expectEmit(true, true, true, true);
         emit BaseTokenURISet(uri);
@@ -279,7 +259,7 @@ contract WorkInCryptoNFTTest is Test {
         uint256 tokenId = 1;
 
         vm.prank(owner);
-        nft.mint(alice, tokenId);
+        nft.mint(alice);
 
         vm.expectRevert(
             abi.encodePacked(
