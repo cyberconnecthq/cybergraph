@@ -36,7 +36,9 @@ contract DeployAll is Script, DeploySetting {
             block.chainid == DeploySetting.MANTLE ||
             block.chainid == DeploySetting.BLAST_SEPOLIA ||
             block.chainid == DeploySetting.BLAST ||
-            block.chainid == DeploySetting.CYBER_TESTNET
+            block.chainid == DeploySetting.CYBER_TESTNET ||
+            block.chainid == DeploySetting.AMOY ||
+            block.chainid == DeploySetting.IMX_TESTNET
         ) {
             LibDeploy.deployAll(
                 vm,
