@@ -424,14 +424,18 @@ library LibDeploy {
     function deployWorkInCryptoNFT(
         Vm vm,
         address _dc,
+        string memory name,
+        string memory symbol,
+        string memory uri,
         address protocolOwner,
+        address signer,
         bool writeFile
     ) internal {
         Create2Deployer dc = Create2Deployer(_dc);
         address tr = dc.deploy(
             abi.encodePacked(
                 type(WorkInCryptoNFT).creationCode,
-                abi.encode(protocolOwner)
+                abi.encode(name, symbol, uri, protocolOwner, signer)
             ),
             SALT
         );

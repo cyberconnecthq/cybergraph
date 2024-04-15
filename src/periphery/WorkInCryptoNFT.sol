@@ -80,6 +80,7 @@ contract WorkInCryptoNFT is
         _grantRole(DEFAULT_ADMIN_ROLE, owner);
         _grantRole(_OPERATOR_ROLE, owner);
         _grantRole(_MINTER_ROLE, owner);
+        _grantRole(_MINTER_ROLE, signer);
     }
 
     /*//////////////////////////////////////////////////////////////
