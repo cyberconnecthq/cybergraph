@@ -206,6 +206,8 @@ contract WorkInCryptoNFT is
         override(ERC721, AccessControl, ERC721Enumerable)
         returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return
+            ERC721Enumerable.supportsInterface(interfaceId) ||
+            AccessControl.supportsInterface(interfaceId);
     }
 }
