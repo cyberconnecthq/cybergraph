@@ -6,7 +6,7 @@ import { AccessControl } from "openzeppelin-contracts/contracts/access/AccessCon
 import { ERC721 } from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import { ERC721Enumerable } from "openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import { ERC721Burnable } from "openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import { ERC721Pausable } from "openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Pausable.sol";
+import { Pausable } from "openzeppelin-contracts/contracts/security/Pausable.sol";
 
 import { EIP712 } from "../base/EIP712.sol";
 import { IWorkInCryptoNFT } from "../interfaces/IWorkInCryptoNFT.sol";
@@ -23,7 +23,7 @@ contract WorkInCryptoNFT is
     ERC721,
     ERC721Enumerable,
     ERC721Burnable,
-    ERC721Pausable,
+    Pausable,
     IWorkInCryptoNFT
 {
     /*//////////////////////////////////////////////////////////////
@@ -182,7 +182,7 @@ contract WorkInCryptoNFT is
         address to,
         uint256 firstTokenId,
         uint256 batchSize
-    ) internal override(ERC721, ERC721Enumerable, ERC721Pausable) {
+    ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
         super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
     }
 
