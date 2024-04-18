@@ -186,10 +186,6 @@ contract WorkInCryptoNFT is
         super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
     }
 
-    function _burn(uint256 tokenId) internal override(ERC721) {
-        super._burn(tokenId);
-    }
-
     function _baseURI() internal view override returns (string memory) {
         return baseTokenURI;
     }

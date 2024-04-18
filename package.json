@@ -157,7 +157,8 @@
     "set_state:blast_sepolia": "source .env.blast_sepolia.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --broadcast --slow --private-key $PRIVATE_KEY -vvv",
     "set_state:sepolia": "source .env.sepolia.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv",
     "set_state:blast": "source .env.blast.owner && FOUNDRY_PROFILE=prd forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv",
-    "set_state:cyber_testent": "source .env.cyber_testnet.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --slow -vvv"
+    "set_state:cyber_testent": "source .env.cyber_testnet.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --slow -vvv",
+    "deploy_work_in_crypto_nft:op": "source .env.op.owner && FOUNDRY_PROFILE=prd forge script script/DeployWorkInCryptoNFT.s.sol:DeployWorkInCryptoNFT --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --slow --broadcast --verify --etherscan-api-key $API_KEY -vvv"
   },
   "devDependencies": {
     "husky": "^8.0.1",
