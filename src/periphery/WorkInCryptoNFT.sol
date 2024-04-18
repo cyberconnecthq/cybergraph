@@ -54,15 +54,10 @@ contract WorkInCryptoNFT is
                                 CONSTANTS
     //////////////////////////////////////////////////////////////*/
 
-    bytes32 internal constant _OPERATOR_ROLE =
-        keccak256(bytes("OPERATOR_ROLE"));
-
     bytes32 internal constant _MINTER_ROLE = keccak256(bytes("MINTER_ROLE"));
 
     bytes32 internal constant _MINT_TYPEHASH =
-        keccak256(
-            "mint(address to,uint256 tokenId,uint256 nonce,uint256 deadline)"
-        );
+        keccak256("mint(address to,uint256 nonce,uint256 deadline)");
 
     /*//////////////////////////////////////////////////////////////
                                 CONSTRUCTORS 
@@ -78,7 +73,6 @@ contract WorkInCryptoNFT is
         _signer = signer;
         baseTokenURI = uri;
         _grantRole(DEFAULT_ADMIN_ROLE, owner);
-        _grantRole(_OPERATOR_ROLE, owner);
         _grantRole(_MINTER_ROLE, owner);
         _grantRole(_MINTER_ROLE, signer);
     }
@@ -90,7 +84,7 @@ contract WorkInCryptoNFT is
     /**
      * @notice Mint a token to the given address. Only minter can call this function.
      */
-    function mint(address to) public virtual onlyRole(_MINTER_ROLE) {
+    function mint(address to) external virtual onlyRole(_MINTER_ROLE) {
         _mint(to);
     }
 
@@ -100,7 +94,7 @@ contract WorkInCryptoNFT is
     function mintWithSig(
         address to,
         DataTypes.EIP712Signature calldata sig
-    ) public {
+    ) external {
         _requiresExpectedSigner(
             _hashTypedDataV4(
                 keccak256(
@@ -125,14 +119,14 @@ contract WorkInCryptoNFT is
     /**
      * @notice Pauses all token transfers.
      */
-    function pause() external onlyRole(_OPERATOR_ROLE) {
+    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _pause();
     }
 
     /**
      * @notice Unpauses all token transfers.
      */
-    function unpause() external onlyRole(_OPERATOR_ROLE) {
+    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause();
     }
 
@@ -141,7 +135,7 @@ contract WorkInCryptoNFT is
      */
     function setBaseTokenURI(
         string calldata uri
-    ) external onlyRole(_OPERATOR_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         baseTokenURI = uri;
         emit BaseTokenURISet(uri);
     }

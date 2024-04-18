@@ -22,15 +22,10 @@ contract WorkInCryptoNFTTest is Test {
 
     WorkInCryptoNFT nft;
 
-    bytes32 internal constant _OPERATOR_ROLE =
-        keccak256(bytes("OPERATOR_ROLE"));
-
     bytes32 internal constant _MINTER_ROLE = keccak256(bytes("MINTER_ROLE"));
 
     bytes32 internal constant _MINT_TYPEHASH =
-        keccak256(
-            "mint(address to,uint256 tokenId,uint256 nonce,uint256 deadline)"
-        );
+        keccak256("mint(address to,uint256 nonce,uint256 deadline)");
 
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
 
@@ -198,13 +193,13 @@ contract WorkInCryptoNFTTest is Test {
         assertTrue(nft.paused());
     }
 
-    function testPauseNotOperator() public {
+    function testPauseNotAdmin() public {
         vm.expectRevert(
             abi.encodePacked(
                 "AccessControl: account ",
                 LibString.toHexString(alice),
                 " is missing role ",
-                LibString.toHexString(uint256(_OPERATOR_ROLE), 32)
+                LibString.toHexString(uint256(DEFAULT_ADMIN_ROLE), 32)
             )
         );
         vm.prank(alice);
@@ -221,13 +216,13 @@ contract WorkInCryptoNFTTest is Test {
         assertFalse(nft.paused());
     }
 
-    function testUnpauseNotOperator() public {
+    function testUnpauseNotAdmin() public {
         vm.expectRevert(
             abi.encodePacked(
                 "AccessControl: account ",
                 LibString.toHexString(alice),
                 " is missing role ",
-                LibString.toHexString(uint256(_OPERATOR_ROLE), 32)
+                LibString.toHexString(uint256(DEFAULT_ADMIN_ROLE), 32)
             )
         );
         vm.prank(alice);
@@ -254,9 +249,8 @@ contract WorkInCryptoNFTTest is Test {
         assertEq(nft.tokenURI(tokenId), expectedURI);
     }
 
-    function testSetBaseURINotOperator() public {
+    function testSetBaseURINotAdmin() public {
         string memory uri = "https://newuri.com/";
-        uint256 tokenId = 1;
 
         vm.prank(owner);
         nft.mint(alice);
@@ -266,7 +260,7 @@ contract WorkInCryptoNFTTest is Test {
                 "AccessControl: account ",
                 LibString.toHexString(alice),
                 " is missing role ",
-                LibString.toHexString(uint256(_OPERATOR_ROLE), 32)
+                LibString.toHexString(uint256(DEFAULT_ADMIN_ROLE), 32)
             )
         );
         vm.prank(alice);
