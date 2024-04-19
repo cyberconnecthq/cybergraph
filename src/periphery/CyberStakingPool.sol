@@ -8,6 +8,7 @@ import { AccessControl } from "openzeppelin-contracts/contracts/access/AccessCon
 import { Pausable } from "openzeppelin-contracts/contracts/security/Pausable.sol";
 import { EIP712 } from "openzeppelin-contracts/contracts/utils/cryptography/EIP712.sol";
 import { SignatureChecker } from "openzeppelin-contracts/contracts/utils/cryptography/SignatureChecker.sol";
+import { ReentrancyGuard } from "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
 import { EIP712Signature } from "../interfaces/ICyberStakingPool.sol";
 import { BridgeParams } from "../interfaces/ICyberStakingPool.sol";
 
@@ -21,6 +22,7 @@ import { ICyberStakingPool } from "../interfaces/ICyberStakingPool.sol";
  */
 contract CyberStakingPool is
     ICyberStakingPool,
+    ReentrancyGuard,
     AccessControl,
     Pausable,
     EIP712
@@ -58,6 +60,8 @@ contract CyberStakingPool is
     //////////////////////////////////////////////////////////////*/
 
     constructor(address _weth, address owner) EIP712("CyberStakingPool", "1") {
+        require(_weth != address(0), "ZERO_ADDRESS");
+        require(owner != address(0), "ZERO_ADDRESS");
         weth = _weth;
         _grantRole(DEFAULT_ADMIN_ROLE, owner);
     }
@@ -67,7 +71,10 @@ contract CyberStakingPool is
     //////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc ICyberStakingPool
-    function deposit(address asset, uint256 amount) external whenNotPaused {
+    function deposit(
+        address asset,
+        uint256 amount
+    ) external whenNotPaused nonReentrant {
         require(amount != 0, "ZERO_AMOUNT");
         require(assetWhitelist[asset], "ASSET_NOT_WHITELISTED");
 
@@ -87,7 +94,7 @@ contract CyberStakingPool is
     }
 
     /// @inheritdoc ICyberStakingPool
-    function depositETH() public payable whenNotPaused {
+    function depositETH() public payable whenNotPaused nonReentrant {
         require(msg.value != 0, "ZERO_AMOUNT");
 
         balance[weth][msg.sender] += msg.value;
@@ -101,7 +108,7 @@ contract CyberStakingPool is
     function withdraw(
         address[] calldata assets,
         uint256[] calldata amounts
-    ) external {
+    ) external nonReentrant {
         require(assets.length == amounts.length, "INVALID_LENGTH");
         for (uint256 i = 0; i < assets.length; i++) {
             address asset = assets[i];
@@ -128,7 +135,7 @@ contract CyberStakingPool is
     }
 
     /// @inheritdoc ICyberStakingPool
-    function bridge(BridgeParams calldata params) external {
+    function bridge(BridgeParams calldata params) external nonReentrant {
         require(
             params.assets.length == params.amounts.length,
             "INVALID_LENGTH"
@@ -137,6 +144,7 @@ contract CyberStakingPool is
             bridgeWhitelist[params.bridgeAddress],
             "BRIDGE_NOT_WHITELISTED"
         );
+        require(params.recipient != address(0), "RECIPIENT_ZERO_ADDRESS");
 
         _bridge(
             params.bridgeAddress,
@@ -152,11 +160,16 @@ contract CyberStakingPool is
         address assetOwner,
         BridgeParams calldata params,
         EIP712Signature calldata signature
-    ) external {
+    ) external nonReentrant {
+        require(
+            params.assets.length == params.amounts.length,
+            "INVALID_LENGTH"
+        );
         require(
             bridgeWhitelist[params.bridgeAddress],
             "BRIDGE_NOT_WHITELISTED"
         );
+        require(params.recipient != address(0), "RECIPIENT_ZERO_ADDRESS");
         require(signature.deadline >= block.timestamp, "SIGNATURE_EXPIRED");
         {
             require(
@@ -249,6 +262,7 @@ contract CyberStakingPool is
         address[] calldata assets,
         uint256[] calldata amounts
     ) private {
+        require(assetOwner != address(0), "ZERO_ADDRESS");
         uint256[] memory beforeAmounts = new uint256[](assets.length);
         for (uint256 i = 0; i < assets.length; i++) {
             address asset = assets[i];
@@ -262,7 +276,8 @@ contract CyberStakingPool is
             balance[asset][assetOwner] -= amount;
             totalBalance[asset] -= amount;
 
-            IERC20(asset).approve(bridgeAddress, amount);
+            bool success = IERC20(asset).approve(bridgeAddress, amount);
+            require(success, "APPROVE_FAILED");
             beforeAmounts[i] = IERC20(asset).balanceOf(address(this));
         }
 

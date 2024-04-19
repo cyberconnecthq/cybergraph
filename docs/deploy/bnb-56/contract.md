@@ -19,3 +19,5 @@
 | CyberPaymaster       | 0x672cf56a66b6f6a0a97f188abe57249fb7eef909 |
 | Timelock(V2)         | 0xffc391f0018269d4758aea1a144772e8fb99545e |
 | LaunchTokenPool      | 0xf2aaf02d76e1004cd1101427c64083f81b94dd8a |
+| CyberVault(Impl)     | 0xd88704d12b5a8ed03760dc4fda02caae1dff99a3 |
+| CyberVault(Proxy)    | 0xc3a246b82f3497d3cb1dc7b82a025b3f1f96ff17 |

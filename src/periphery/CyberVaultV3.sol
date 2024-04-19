@@ -11,9 +11,9 @@ import { IERC20Permit } from "openzeppelin-contracts/contracts/token/ERC20/exten
 import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Initializable.sol";
 import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 import { ReentrancyGuard } from "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
-import "universal-router/contracts/interfaces/IUniversalRouter.sol";
-import { Commands as UniswapCommands } from "universal-router/contracts/libraries/Commands.sol";
-import { Constants as UniswapConstants } from "universal-router/contracts/libraries/Constants.sol";
+import "../dependencies/uniswap/interfaces/IUniversalRouter.sol";
+import { Commands as UniswapCommands } from "../dependencies/uniswap/libraries/Commands.sol";
+import { Constants as UniswapConstants } from "../dependencies/uniswap/libraries/Constants.sol";
 
 /**
  * @title CyberVaultV3
@@ -36,7 +36,7 @@ contract CyberVaultV3 is
     /*//////////////////////////////////////////////////////////////
                             V1 STORAGE
     //////////////////////////////////////////////////////////////*/
-    address public receipient;
+    address public recipient;
     mapping(address => uint256) public balances;
     mapping(address => mapping(address => uint256)) public balancesByCurrency;
 
@@ -71,6 +71,14 @@ contract CyberVaultV3 is
 
     constructor() {
         _disableInitializers();
+    }
+
+    function initialize(
+        address _owner,
+        address _recipient
+    ) external initializer {
+        _grantRole(DEFAULT_ADMIN_ROLE, _owner);
+        recipient = _recipient;
     }
 
     /*//////////////////////////////////////////////////////////////

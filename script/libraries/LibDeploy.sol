@@ -36,6 +36,7 @@ import { LimitedOnlyOnceMw } from "../../src/middlewares/LimitedOnlyOnceMw.sol";
 import { SpecialReward } from "../../src/periphery/SpecialReward.sol";
 import { CyberVault } from "../../src/periphery/CyberVault.sol";
 import { LaunchTokenPool } from "../../src/periphery/LaunchTokenPool.sol";
+import { CyberStakingPool } from "../../src/periphery/CyberStakingPool.sol";
 import { CyberVaultV2 } from "../../src/periphery/CyberVaultV2.sol";
 import { CyberVaultV3 } from "../../src/periphery/CyberVaultV3.sol";
 import { WorkInCryptoNFT } from "../../src/periphery/WorkInCryptoNFT.sol";
@@ -81,6 +82,8 @@ library LibDeploy {
         else if (chainId == 84532) chainName = "base_sepolia";
         else if (chainId == 81457) chainName = "blast";
         else if (chainId == 111557560) chainName = "cyber_testnet";
+        else if (chainId == 80002) chainName = "amoy";
+        else if (chainId == 13473) chainName = "imx_testnet";
         else chainName = "unknown";
         return
             string(
@@ -359,6 +362,24 @@ library LibDeploy {
         _write(vm, "LaunchTokenPool", launchTokenPool);
     }
 
+    function deployStakingPool(
+        Vm vm,
+        address _dc,
+        address weth,
+        address owner
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address stakingPool = dc.deploy(
+            abi.encodePacked(
+                type(CyberStakingPool).creationCode,
+                abi.encode(weth, owner)
+            ),
+            SALT
+        );
+
+        _write(vm, "CyberStakingPool", stakingPool);
+    }
+
     function upgradeVault(Vm vm, address _dc, address vaultProxy) internal {
         Create2Deployer dc = Create2Deployer(_dc);
         address cyberVaultV3Impl = dc.deploy(
@@ -389,12 +410,20 @@ library LibDeploy {
         Vm vm,
         address _dc,
         address owner,
-        address receipient,
-        address operator
+        address recipient,
+        address operator,
+        address uniswap,
+        address wrappedNativeCurrency,
+        address tokenOut,
+        address[] memory tokenInList,
+        bool[] memory tokenInApproved
     ) internal {
         Create2Deployer dc = Create2Deployer(_dc);
 
-        address cyberVaultImpl = dc.deploy(type(CyberVault).creationCode, SALT);
+        address cyberVaultImpl = dc.deploy(
+            type(CyberVaultV3).creationCode,
+            SALT
+        );
 
         _write(vm, "CyberVault(Impl)", cyberVaultImpl);
 
@@ -406,7 +435,7 @@ library LibDeploy {
                     abi.encodeWithSelector(
                         CyberVault.initialize.selector,
                         owner,
-                        receipient
+                        recipient
                     )
                 )
             ),
@@ -415,9 +444,17 @@ library LibDeploy {
 
         _write(vm, "CyberVault(Proxy)", cyberVaultProxy);
 
-        CyberVault(cyberVaultProxy).grantRole(
+        CyberVaultV3(cyberVaultProxy).grantRole(
             keccak256(bytes("OPERATOR_ROLE")),
             operator
+        );
+
+        CyberVaultV3(cyberVaultProxy).setV3Variables(
+            uniswap,
+            wrappedNativeCurrency,
+            tokenOut,
+            tokenInList,
+            tokenInApproved
         );
     }
 

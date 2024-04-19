@@ -6,7 +6,8 @@ pragma solidity 0.8.14;
 library Constants {
     /// @dev Used for identifying cases when this contract's balance of a token is to be used as an input
     /// This value is equivalent to 1<<255, i.e. a singular 1 in the most significant bit.
-    uint256 internal constant CONTRACT_BALANCE = 0x8000000000000000000000000000000000000000000000000000000000000000;
+    uint256 internal constant CONTRACT_BALANCE =
+        0x8000000000000000000000000000000000000000000000000000000000000000;
 
     /// @dev Used for identifying cases when a v2 pair has already received input tokens
     uint256 internal constant ALREADY_PAID = 0;
@@ -34,5 +35,6 @@ library Constants {
     uint256 internal constant V3_POP_OFFSET = NEXT_V3_POOL_OFFSET + ADDR_SIZE;
 
     /// @dev The minimum length of an encoding that contains 2 or more pools
-    uint256 internal constant MULTIPLE_V3_POOLS_MIN_LENGTH = V3_POP_OFFSET + NEXT_V3_POOL_OFFSET;
+    uint256 internal constant MULTIPLE_V3_POOLS_MIN_LENGTH =
+        V3_POP_OFFSET + NEXT_V3_POOL_OFFSET;
 }

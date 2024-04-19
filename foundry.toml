@@ -4,6 +4,7 @@ out = 'out'
 libs = ['lib']
 gas_reports = ["*"]
 fs_permissions = [{ access = "read-write", path = "./"}]
+solc-version = "0.8.14"
 
 [profile.stg]
 src = 'src'
@@ -11,6 +12,7 @@ out = 'out'
 libs = ['lib']
 gas_reports = ["*"]
 fs_permissions = [{ access = "read-write", path = "./"}]
+solc-version = "0.8.14"
 
 [profile.prd]
 src = 'src'
@@ -18,5 +20,6 @@ out = 'out'
 libs = ['lib']
 gas_reports = ["*"]
 fs_permissions = [{ access = "read-write", path = "./"}]
+solc-version = "0.8.14"
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
