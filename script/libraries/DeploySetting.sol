@@ -28,6 +28,7 @@ contract DeploySetting {
     uint256 internal constant SCROLL = 534352;
     uint256 internal constant MANTLE = 5000;
     uint256 internal constant BLAST = 81457;
+    uint256 internal constant CYBER = 7560;
 
     uint256 internal constant SEPOLIA = 11155111;
     uint256 internal constant GOERLI = 5;
@@ -286,6 +287,22 @@ contract DeploySetting {
                 0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
             );
         } else if (block.chainid == BLAST) {
+            deployParams.deployerContract = address(
+                0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
+            );
+            deployParams.entryPoint = address(
+                0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
+            );
+            deployParams.protocolOwner = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+            deployParams.treasuryReceiver = address(
+                0x7884f7F04F994da14302a16Cf15E597e31eebECf
+            );
+            deployParams.backendSigner = address(
+                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+            );
+        } else if (block.chainid == CYBER) {
             deployParams.deployerContract = address(
                 0x8eD1282a1aCE084De1E99E9Ce5ed68896C49d65f
             );

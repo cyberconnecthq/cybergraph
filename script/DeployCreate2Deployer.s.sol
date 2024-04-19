@@ -39,6 +39,7 @@ contract DeployerCreate2Deployer is Script, DeploySetting {
             block.chainid == DeploySetting.BASE_SEPOLIA ||
             block.chainid == DeploySetting.BLAST ||
             block.chainid == DeploySetting.CYBER_TESTNET ||
+            block.chainid == DeploySetting.CYBER ||
             block.chainid == DeploySetting.AMOY ||
             block.chainid == DeploySetting.IMX_TESTNET
         ) {

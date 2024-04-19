@@ -61,6 +61,7 @@
     "deploy_deployer:blast_sepolia": "source .env.blast_sepolia && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --broadcast --slow  -vvv",
     "deploy_deployer:blast": "source .env.blast && FOUNDRY_PROFILE=prd forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --broadcast --slow  -vvv",
     "deploy_deployer:cyber_testnet": "source .env.cyber_testnet && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --broadcast --slow  -vvv",
+    "deploy_deployer:cyber": "source .env.cyber && FOUNDRY_PROFILE=prd forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY   --broadcast --slow  -vvv",
     "deploy_deployer:amoy": "source .env.amoy && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --broadcast --slow  -vvv",
     "deploy_deployer:imx_testnet": "source .env.imx_testnet && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer  --with-gas-price 11gwei --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --broadcast --slow  -vvv",
     "deploy_all:arbitrum_goerli": "source .env.arbitrum_goerli && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --etherscan-api-key $API_KEY -vvv",
@@ -87,6 +88,7 @@
     "deploy_all:mantle": "source .env.mantle && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast  --legacy --slow  -vvv",
     "deploy_all:blast_sepolia": "source .env.blast_sepolia && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --slow -vvv",
     "deploy_all:blast": "source .env.blast && FOUNDRY_PROFILE=prd forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY   --broadcast --slow -vvv",
+    "deploy_all:cyber": "source .env.cyber && FOUNDRY_PROFILE=prd forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY   --broadcast --verify --verifier blockscout --verifier-url https://cyber-explorer.alt.technology/api --chain-id 7560 --slow -vvv",
     "deploy_all:cyber_testnet": "source .env.cyber_testnet && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --broadcast --slow -vvv",
     "deploy_all:amoy": "source .env.amoy && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --with-gas-price 5gwei  --broadcast --slow -vvv",
     "deploy_all:imx_testnet": "source .env.imx_testnet && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --with-gas-price 11gwei --private-key $PRIVATE_KEY   --broadcast --slow -vvv",
@@ -174,6 +176,7 @@
     "set_state:sepolia": "source .env.sepolia.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv",
     "set_state:blast": "source .env.blast.owner && FOUNDRY_PROFILE=prd forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv",
     "set_state:cyber_testent": "source .env.cyber_testnet.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --slow -vvv",
+    "set_state:cyber": "source .env.cyber.owner && FOUNDRY_PROFILE=prd forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --slow -vvv",
     "deploy_work_in_crypto_nft:op": "source .env.op.owner && FOUNDRY_PROFILE=prd forge script script/DeployWorkInCryptoNFT.s.sol:DeployWorkInCryptoNFT --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --slow --broadcast --verify --etherscan-api-key $API_KEY -vvv",
     "set_state:amoy": "source .env.amoy.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --with-gas-price 5gwei --broadcast --slow -vvv",
     "set_state:imx_testnet": "source .env.imx_testnet.owner && FOUNDRY_PROFILE=stg forge script script/SetInitialState.s.sol:SetInitialState --rpc-url $RPC_URL --private-key $PRIVATE_KEY --with-gas-price 11gwei --legacy --broadcast --slow -vvv"

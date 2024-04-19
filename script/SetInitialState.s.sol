@@ -38,7 +38,8 @@ contract SetInitialState is Script, DeploySetting {
             block.chainid == DeploySetting.BLAST ||
             block.chainid == DeploySetting.CYBER_TESTNET ||
             block.chainid == DeploySetting.AMOY ||
-            block.chainid == DeploySetting.IMX_TESTNET
+            block.chainid == DeploySetting.IMX_TESTNET ||
+            block.chainid == DeploySetting.CYBER
         ) {
             LibDeploy.setInitialState(
                 vm,
