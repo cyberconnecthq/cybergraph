@@ -42,6 +42,7 @@ import { CyberVaultV3 } from "../../src/periphery/CyberVaultV3.sol";
 import { WorkInCryptoNFT } from "../../src/periphery/WorkInCryptoNFT.sol";
 import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
 import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
+import { CyberFrog } from "../../src/periphery/CyberFrog.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -668,6 +669,14 @@ library LibDeploy {
         if (writeFile) {
             _write(vm, "Timelock(V2)", lock);
         }
+    }
+
+    function deployFrog(Vm vm) internal returns (address frog) {
+        // frog = address(
+        //     new CyberFrog("https://remote-image.decentralized-content.com/image?url=https%3A%2F%2Fmagic.decentralized-content.com%2Fipfs%2Fbafkreihs6j3o5g7rab7yt5ml2xukkfsl2f2yeopyoskebozw7u5fiuuoiq&w=1920&q=75")
+        // );
+        // CyberFrog(address(0xFE98bA9D562F8359981269c9E22fDBf02717b723)).mint(address(0x8ddD03b89116ba89E28Ef703fe037fF77451e38E), 1, 1, "");
+        //_write(vm, "CyberFrog", frog);
     }
 
     function changeOwnership(

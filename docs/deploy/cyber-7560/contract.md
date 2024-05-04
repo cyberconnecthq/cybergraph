@@ -16,3 +16,4 @@
 | CyberAccount Factory | 0xaee9762ce625e0a8f7b184670fb57c37bfe1d0f1 |
 | TokenReceiver        | 0xcd97405fb58e94954e825e46db192b916a45d412 |
 | CyberPaymaster       | 0x672cf56a66b6f6a0a97f188abe57249fb7eef909 |
+| CyberFrog            | 0xfe98ba9d562f8359981269c9e22fdbf02717b723 |
