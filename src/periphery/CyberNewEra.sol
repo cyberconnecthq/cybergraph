@@ -25,6 +25,8 @@ contract CyberNewEra is
     //////////////////////////////////////////////////////////////*/
 
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    string public name = "Cyber: The New Era";
+    string public symbol = "CYBERNEWERA";
     uint256 private _logId;
 
     /*//////////////////////////////////////////////////////////////

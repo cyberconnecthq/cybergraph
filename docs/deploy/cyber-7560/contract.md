@@ -17,3 +17,4 @@
 | TokenReceiver        | 0xcd97405fb58e94954e825e46db192b916a45d412 |
 | CyberPaymaster       | 0x672cf56a66b6f6a0a97f188abe57249fb7eef909 |
 | CyberFrog            | 0xfe98ba9d562f8359981269c9e22fdbf02717b723 |
+| CyberNewEra          | 0x4d5a1bf279aa7371e230df48a89fab822e4ad30e |

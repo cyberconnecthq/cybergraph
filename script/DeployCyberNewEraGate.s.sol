@@ -11,7 +11,14 @@ contract DeployCyberNewEraGate is Script, DeploySetting {
         _setDeployParams();
         vm.startBroadcast();
 
-        if (block.chainid == DeploySetting.SEPOLIA) {
+        if (
+            block.chainid == DeploySetting.SEPOLIA ||
+            block.chainid == DeploySetting.ARBITRUM ||
+            block.chainid == DeploySetting.BASE ||
+            block.chainid == DeploySetting.BLAST ||
+            block.chainid == DeploySetting.OPTIMISM ||
+            block.chainid == DeploySetting.ETH
+        ) {
             LibDeploy.deployCyberNewEraGate(
                 vm,
                 deployParams.deployerContract,

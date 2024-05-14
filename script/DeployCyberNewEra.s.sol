@@ -17,7 +17,15 @@ contract DeployCyberNewEra is Script, DeploySetting {
                 deployParams.deployerContract,
                 deployParams.protocolOwner,
                 deployParams.backendSigner,
-                "https://metadata.stg.cyberconnect.dev/new_era/"
+                "https://metadata.stg.cyberconnect.dev/new_era/1.json"
+            );
+        } else if (block.chainid == DeploySetting.CYBER) {
+            LibDeploy.deployCyberNewEra(
+                vm,
+                deployParams.deployerContract,
+                deployParams.protocolOwner,
+                deployParams.backendSigner,
+                "https://metadata.cyberconnect.dev/new_era/1.json"
             );
         } else {
             revert("UNSUPPORTED_CHAIN");
