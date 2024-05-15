@@ -40,6 +40,9 @@ import { CyberStakingPool } from "../../src/periphery/CyberStakingPool.sol";
 import { CyberVaultV2 } from "../../src/periphery/CyberVaultV2.sol";
 import { CyberVaultV3 } from "../../src/periphery/CyberVaultV3.sol";
 import { WorkInCryptoNFT } from "../../src/periphery/WorkInCryptoNFT.sol";
+import { GasBridge } from "../../src/periphery/GasBridge.sol";
+import { CyberNewEraGate } from "../../src/periphery/CyberNewEraGate.sol";
+import { CyberNewEra } from "../../src/periphery/CyberNewEra.sol";
 import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
 import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 import { CyberFrog } from "../../src/periphery/CyberFrog.sol";
@@ -380,6 +383,53 @@ library LibDeploy {
         );
 
         _write(vm, "CyberStakingPool", stakingPool);
+    }
+
+    function deployGasBridge(Vm vm, address _dc, address owner) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address gasBridge = dc.deploy(
+            abi.encodePacked(type(GasBridge).creationCode, abi.encode(owner)),
+            SALT
+        );
+
+        _write(vm, "GasBridge", gasBridge);
+    }
+
+    function deployCyberNewEraGate(
+        Vm vm,
+        address _dc,
+        address owner,
+        uint256 mintFee
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address CyberNewEraGate = dc.deploy(
+            abi.encodePacked(
+                type(CyberNewEraGate).creationCode,
+                abi.encode(owner, mintFee)
+            ),
+            SALT
+        );
+
+        _write(vm, "CyberNewEraGate", CyberNewEraGate);
+    }
+
+    function deployCyberNewEra(
+        Vm vm,
+        address _dc,
+        address owner,
+        address signer,
+        string memory baseUri
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address CyberNewEra = dc.deploy(
+            abi.encodePacked(
+                type(CyberNewEra).creationCode,
+                abi.encode(baseUri, owner, signer)
+            ),
+            SALT
+        );
+
+        _write(vm, "CyberNewEra", CyberNewEra);
     }
 
     function upgradeVault(Vm vm, address _dc, address vaultProxy) internal {
