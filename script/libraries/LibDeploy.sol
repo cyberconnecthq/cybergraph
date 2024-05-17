@@ -43,6 +43,7 @@ import { WorkInCryptoNFT } from "../../src/periphery/WorkInCryptoNFT.sol";
 import { GasBridge } from "../../src/periphery/GasBridge.sol";
 import { CyberNewEraGate } from "../../src/periphery/CyberNewEraGate.sol";
 import { CyberNewEra } from "../../src/periphery/CyberNewEra.sol";
+import { CyberRelayer } from "../../src/periphery/CyberRelayer.sol";
 import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
 import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 import { CyberFrog } from "../../src/periphery/CyberFrog.sol";
@@ -430,6 +431,26 @@ library LibDeploy {
         );
 
         _write(vm, "CyberNewEra", CyberNewEra);
+    }
+
+    function deployCyberRelayer(
+        Vm vm,
+        address _dc,
+        address owner,
+        address signer
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address cyberRelayer = dc.deploy(
+            abi.encodePacked(
+                type(CyberRelayer).creationCode,
+                abi.encode(owner)
+            ),
+            SALT
+        );
+
+        CyberRelayer(cyberRelayer).grantRole(keccak256("RELAYER_ROLE"), signer);
+
+        _write(vm, "CyberRelayer", cyberRelayer);
     }
 
     function upgradeVault(Vm vm, address _dc, address vaultProxy) internal {

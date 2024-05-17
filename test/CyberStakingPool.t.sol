@@ -58,7 +58,6 @@ contract CyberStakingPoolTest is Test {
         mockBridge = new MockBridge(address(pool));
         vm.startPrank(owner);
         bytes32 role = keccak256(bytes("OPERATOR_ROLE"));
-        console.logBytes32(role);
         pool.grantRole(role, owner);
         pool.setAssetWhitelist(address(mockToken), true);
     }
