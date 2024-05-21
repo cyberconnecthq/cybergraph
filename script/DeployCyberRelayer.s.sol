@@ -6,19 +6,20 @@ import "forge-std/Script.sol";
 import { DeploySetting } from "./libraries/DeploySetting.sol";
 import { LibDeploy } from "./libraries/LibDeploy.sol";
 
-contract DeployGasBridge is Script, DeploySetting {
+contract DeployCyberRelayer is Script, DeploySetting {
     function run() external {
         _setDeployParams();
         vm.startBroadcast();
 
         if (
-            block.chainid == DeploySetting.SEPOLIA ||
-            block.chainid == DeploySetting.OPTIMISM
+            block.chainid == DeploySetting.CYBER_TESTNET ||
+            block.chainid == DeploySetting.CYBER
         ) {
-            LibDeploy.deployGasBridge(
+            LibDeploy.deployCyberRelayer(
                 vm,
                 deployParams.deployerContract,
-                deployParams.protocolOwner
+                deployParams.protocolOwner,
+                deployParams.backendSigner
             );
         } else {
             revert("UNSUPPORTED_CHAIN");

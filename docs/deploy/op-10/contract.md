@@ -26,3 +26,4 @@
 | CyberVaultV3(Impl)   | 0x2bd76f186d9c160b79beae8c02ec8f9bc50eae10 |
 | WorkInCryptoNFT      | 0xb76d6fb6fabf0b1b6d08878e95f9bae630033b16 |
 | CyberNewEraGate      | 0x23e235ae376f08a9c2e6d08a8bfa8f171306a112 |
+| GasBridge            | 0xfdf7c22ca4704dfef46e7e5ef53dca1d5a9f8e12 |
