@@ -44,15 +44,10 @@ contract CyberRelayer is AccessControlEnumerable {
         bool success;
         bytes memory ret;
 
-        if (data.length == 0) {
-            // explicitly call transfer to limit gas to 2300
-            payable(to).transfer(value);
-        } else {
-            (success, ret) = _call(to, value, data);
-            if (!success) {
-                assembly {
-                    revert(add(ret, 32), mload(ret))
-                }
+        (success, ret) = _call(to, value, data);
+        if (!success) {
+            assembly {
+                revert(add(ret, 32), mload(ret))
             }
         }
 
