@@ -13,7 +13,11 @@ contract DeployGasBridge is Script, DeploySetting {
 
         if (
             block.chainid == DeploySetting.SEPOLIA ||
-            block.chainid == DeploySetting.OPTIMISM
+            block.chainid == DeploySetting.OPTIMISM ||
+            block.chainid == DeploySetting.ARBITRUM ||
+            block.chainid == DeploySetting.BASE ||
+            block.chainid == DeploySetting.BLAST ||
+            block.chainid == DeploySetting.ETH
         ) {
             LibDeploy.deployGasBridge(
                 vm,

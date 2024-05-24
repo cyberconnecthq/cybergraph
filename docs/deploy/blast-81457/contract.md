@@ -17,3 +17,4 @@
 | TokenReceiver        | 0xcd97405fb58e94954e825e46db192b916a45d412 |
 | CyberPaymaster       | 0x672cf56a66b6f6a0a97f188abe57249fb7eef909 |
 | CyberNewEraGate      | 0x23e235ae376f08a9c2e6d08a8bfa8f171306a112 |
+| GasBridge            | 0xfdf7c22ca4704dfef46e7e5ef53dca1d5a9f8e12 |
