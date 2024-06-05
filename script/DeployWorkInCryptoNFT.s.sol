@@ -14,12 +14,17 @@ contract DeployWorkInCryptoNFT is Script, DeploySetting {
         string memory name = "WorkInCryptoNFT";
         string memory symbol = "WICNFT";
         string memory uri = "https://metadata.cyberconnect.dev/workincrypto/";
-        if (block.chainid == DeploySetting.OP_SEPOLIA) {
+        if (
+            block.chainid == DeploySetting.OP_SEPOLIA ||
+            block.chainid == DeploySetting.CYBER_TESTNET
+        ) {
             uri = "https://metadata.stg.cyberconnect.dev/workincrypto/";
         }
         if (
             block.chainid == DeploySetting.OPTIMISM ||
-            block.chainid == DeploySetting.OP_SEPOLIA
+            block.chainid == DeploySetting.OP_SEPOLIA ||
+            block.chainid == DeploySetting.CYBER ||
+            block.chainid == DeploySetting.CYBER_TESTNET
         ) {
             LibDeploy.deployWorkInCryptoNFT(
                 vm,
