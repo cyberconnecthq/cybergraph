@@ -19,3 +19,4 @@
 | CyberFrog            | 0xfe98ba9d562f8359981269c9e22fdbf02717b723 |
 | CyberNewEra          | 0x4d5a1bf279aa7371e230df48a89fab822e4ad30e |
 | CyberRelayer         | 0x0e3ba6be9b3aaf4c6de0c9aee2b2c565e29437ae |
+| WorkInCryptoNFT      | 0x28cd7b0e0e927a8b627e96a0ba598d7101d87b2d |
