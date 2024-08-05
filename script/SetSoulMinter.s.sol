@@ -11,11 +11,14 @@ contract SetSoulMinter is Script, DeploySetting {
         _setDeployParams();
         vm.startBroadcast();
 
-        if (block.chainid == DeploySetting.MUMBAI) {
+        if (
+            block.chainid == DeploySetting.CYBER_TESTNET ||
+            block.chainid == DeploySetting.CYBER
+        ) {
             LibDeploy.setSoulMinter(
                 vm,
-                address(0xf0BEbC0708b758ebfc329833a6063cC2195Fc725), // soul
-                address(0x5755B524Cd9433677508a98507dA469B625D003b), // factory
+                address(0x14A725839184F879f3C09cE3d707e5a3E4C5869d), // soul
+                address(0xf320Ebd311C2650f574f98f3318A1CD204d873ee), // factory
                 true
             );
         }

@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+pragma solidity 0.8.14;
+
+import "forge-std/Script.sol";
+import { DeploySetting } from "./libraries/DeploySetting.sol";
+import { LibDeploy } from "./libraries/LibDeploy.sol";
+
+contract WithdrawGasBridge is Script, DeploySetting {
+    function run() external {
+        _setDeployParams();
+        vm.startBroadcast();
+
+        if (
+            block.chainid == DeploySetting.ETH ||
+            block.chainid == DeploySetting.OPTIMISM ||
+            block.chainid == DeploySetting.ARBITRUM ||
+            block.chainid == DeploySetting.BASE ||
+            block.chainid == DeploySetting.BLAST
+        ) {
+            LibDeploy.withdrawGasBridge(
+                vm,
+                address(0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12)
+            );
+        }
+        vm.stopBroadcast();
+    }
+}

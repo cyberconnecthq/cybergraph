@@ -229,6 +229,10 @@ library LibDeploy {
         require(ISoul(soul).isMinter(target) == isMinter, "NOT_CORRECT_MINTER");
     }
 
+    function withdrawGasBridge(Vm, address gasBridge) internal {
+        GasBridge(gasBridge).withdraw(address(0), gasBridge.balance);
+    }
+
     function deployFactory(
         Vm vm,
         address _dc,
