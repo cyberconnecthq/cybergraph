@@ -40,6 +40,8 @@ import { CyberStakingPool } from "../../src/periphery/CyberStakingPool.sol";
 import { CyberVaultV2 } from "../../src/periphery/CyberVaultV2.sol";
 import { CyberVaultV3 } from "../../src/periphery/CyberVaultV3.sol";
 import { WorkInCryptoNFT } from "../../src/periphery/WorkInCryptoNFT.sol";
+import { CyberNFTGate } from "../../src/periphery/CyberNFTGate.sol";
+import { CyberProjectNFTV2 } from "../../src/periphery/CyberProjectNFTV2.sol";
 import { GasBridge } from "../../src/periphery/GasBridge.sol";
 import { CyberNewEraGate } from "../../src/periphery/CyberNewEraGate.sol";
 import { CyberNewEra } from "../../src/periphery/CyberNewEra.sol";
@@ -755,6 +757,43 @@ library LibDeploy {
         // );
         // CyberFrog(address(0xFE98bA9D562F8359981269c9E22fDBf02717b723)).mint(address(0x8ddD03b89116ba89E28Ef703fe037fF77451e38E), 1, 1, "");
         //_write(vm, "CyberFrog", frog);
+    }
+
+    function deployCyberNFTGate(Vm vm, address _dc, address owner) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address cyberNFTGate = dc.deploy(
+            abi.encodePacked(
+                type(CyberNFTGate).creationCode,
+                abi.encode(owner)
+            ),
+            SALT
+        );
+
+        CyberNFTGate(cyberNFTGate).setNFTConfig(
+            0x4E5aCD20E8e1B19D1E34ff96e7E0f00fb2E0531A,
+            true,
+            0.00003 ether
+        );
+
+        _write(vm, "CyberNFTGate", cyberNFTGate);
+    }
+
+    function deployCyberProjectNFTV2(
+        Vm vm,
+        address _dc,
+        address owner,
+        address phi
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address cyberProjectNFTV2 = dc.deploy(
+            abi.encodePacked(
+                type(CyberProjectNFTV2).creationCode,
+                abi.encode(owner, phi, owner)
+            ),
+            SALT
+        );
+
+        _write(vm, "CyberProjectNFTV2", cyberProjectNFTV2);
     }
 
     function changeOwnership(

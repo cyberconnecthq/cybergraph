@@ -24,3 +24,4 @@
 | CyberVault(Proxy)    | 0xc3a246b82f3497d3cb1dc7b82a025b3f1f96ff17 |
 | CyberNewEraGate      | 0x23e235ae376f08a9c2e6d08a8bfa8f171306a112 |
 | GasBridge            | 0xfdf7c22ca4704dfef46e7e5ef53dca1d5a9f8e12 |
+| CyberNFTGate         | 0xda801609f04c3f230f558bbd0f545804c83f238c |

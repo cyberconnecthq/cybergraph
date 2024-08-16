@@ -22,6 +22,8 @@ const writeAbi = async () => {
     "GasBridge.sol/GasBridge.json",
     "CyberNewEraGate.sol/CyberNewEraGate.json",
     "CyberNewEra.sol/CyberNewEra.json",
+    "CyberNFTGate.sol/CyberNFTGate.json",
+    "CyberProjectNFTV2.sol/CyberProjectNFTV2.json",
   ];
   const ps = folders.map(async (file) => {
     const f = await fs.readFile(path.join("./out", file), "utf8");

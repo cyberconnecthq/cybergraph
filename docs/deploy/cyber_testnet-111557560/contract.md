@@ -19,3 +19,4 @@
 | CyberNewEra          | 0xa621ba705b4f6e5afad33839ed2fbd79a181992b |
 | CyberRelayer         | 0x0e3ba6be9b3aaf4c6de0c9aee2b2c565e29437ae |
 | WorkInCryptoNFT      | 0x7edb358e871ff2aa79239d408aa53ce3d73b6fb1 |
+| CyberProjectNFTV2    | 0xf78df34502fe8553512f83c56f3e0b8878512706 |
