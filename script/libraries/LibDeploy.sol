@@ -770,7 +770,7 @@ library LibDeploy {
         );
 
         CyberNFTGate(cyberNFTGate).setNFTConfig(
-            0x4E5aCD20E8e1B19D1E34ff96e7E0f00fb2E0531A,
+            0x5239edBdAFEdDD6A6659E74A99Bf99eD32717184,
             true,
             0.00003 ether
         );

@@ -60,6 +60,10 @@ contract CyberNFTGate is Ownable, Pausable {
         uint256 tokenId,
         uint256 amount
     ) external payable whenNotPaused {
+        require(to != address(0), "INVALID_ADDRESS_ZERO");
+        require(requestId != bytes32(0), "INVALID_REQUEST_ID");
+        require(amount > 0, "INVALID_AMOUNT");
+
         NFTConfig memory nftConfig = nftConfigs[nft];
         require(nftConfig.isWhitelist, "NFT_NOT_WHITELISTED");
         require(msg.value == requiredFee(nft, amount), "WRONG_MINT_FEE");
@@ -73,7 +77,9 @@ contract CyberNFTGate is Ownable, Pausable {
         address nft,
         uint256 amount
     ) public view returns (uint256) {
+        require(amount > 0, "INVALID_AMOUNT");
         NFTConfig memory nftConfig = nftConfigs[nft];
+        require(nftConfig.isWhitelist, "NFT_NOT_WHITELISTED");
         return amount * nftConfig.mintFee + fixedFee;
     }
 

@@ -27,4 +27,4 @@
 | WorkInCryptoNFT      | 0xb76d6fb6fabf0b1b6d08878e95f9bae630033b16 |
 | CyberNewEraGate      | 0x23e235ae376f08a9c2e6d08a8bfa8f171306a112 |
 | GasBridge            | 0xfdf7c22ca4704dfef46e7e5ef53dca1d5a9f8e12 |
-| CyberNFTGate         | 0xda801609f04c3f230f558bbd0f545804c83f238c |
+| CyberNFTGate         | 0xb636433d8081593b02b1eccf1118ad05c100e0a4 |

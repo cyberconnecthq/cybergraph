@@ -22,6 +22,8 @@ contract CyberProjectNFTV2 is ERC1155Supply, AccessControl, Pausable {
     error MintNotStarted();
     /// @notice Incorrect payment
     error IncorrectPayment();
+    /// @notice Invalid amount
+    error InvalidAmount();
 
     /*//////////////////////////////////////////////////////////////
                                 STORAGE
@@ -142,6 +144,12 @@ contract CyberProjectNFTV2 is ERC1155Supply, AccessControl, Pausable {
         uint256 tokenId,
         uint256 amount
     ) external payable whenNotPaused {
+        if (amount == 0) {
+            revert InvalidAmount();
+        }
+        if (to == address(0)) {
+            revert InvalidAddressZero();
+        }
         if (bytes(tokenInfo[tokenId].tokenURI).length == 0) {
             revert NotCreatedToken();
         }
