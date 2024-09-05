@@ -20,3 +20,4 @@
 | CyberRelayer         | 0x0e3ba6be9b3aaf4c6de0c9aee2b2c565e29437ae |
 | WorkInCryptoNFT      | 0x7edb358e871ff2aa79239d408aa53ce3d73b6fb1 |
 | CyberProjectNFTV2    | 0xf78df34502fe8553512f83c56f3e0b8878512706 |
+| SSBonusWeek          | 0x760e1298f1b8c491e2715b2989861c5a994db672 |

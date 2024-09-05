@@ -18,10 +18,7 @@ contract WithdrawGasBridge is Script, DeploySetting {
             block.chainid == DeploySetting.BASE ||
             block.chainid == DeploySetting.BLAST
         ) {
-            LibDeploy.withdrawGasBridge(
-                vm,
-                address(0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12)
-            );
+            LibDeploy.withdrawGasBridge(vm);
         }
         vm.stopBroadcast();
     }

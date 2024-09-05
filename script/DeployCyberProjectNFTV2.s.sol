@@ -19,7 +19,7 @@ contract DeployCyberProjectNFTV2 is Script, DeploySetting {
                 vm,
                 deployParams.deployerContract,
                 deployParams.protocolOwner,
-                0x5B56aeBACc4c2994C9A6572527A6c2296e6D34F6
+                0x300e65412d8fc248CDD0429b2e10aD2360094B00
             );
         }
         vm.stopBroadcast();

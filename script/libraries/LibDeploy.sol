@@ -42,6 +42,7 @@ import { CyberVaultV3 } from "../../src/periphery/CyberVaultV3.sol";
 import { WorkInCryptoNFT } from "../../src/periphery/WorkInCryptoNFT.sol";
 import { CyberNFTGate } from "../../src/periphery/CyberNFTGate.sol";
 import { CyberProjectNFTV2 } from "../../src/periphery/CyberProjectNFTV2.sol";
+import { SSBonusWeek } from "../../src/periphery/SSBonusWeek.sol";
 import { GasBridge } from "../../src/periphery/GasBridge.sol";
 import { CyberNewEraGate } from "../../src/periphery/CyberNewEraGate.sol";
 import { CyberNewEra } from "../../src/periphery/CyberNewEra.sol";
@@ -231,8 +232,18 @@ library LibDeploy {
         require(ISoul(soul).isMinter(target) == isMinter, "NOT_CORRECT_MINTER");
     }
 
-    function withdrawGasBridge(Vm, address gasBridge) internal {
-        GasBridge(gasBridge).withdraw(address(0), gasBridge.balance);
+    function withdrawGasBridge(Vm) internal {
+        GasBridge(0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12).withdraw(
+            address(0),
+            0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12.balance
+        );
+        CyberNewEraGate(0x23e235aE376F08a9C2e6d08A8Bfa8F171306A112).withdraw(
+            address(0),
+            0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12.balance
+        );
+        CyberNFTGate(0xb636433D8081593b02b1ecCF1118Ad05c100e0A4).withdraw(
+            address(0)
+        );
     }
 
     function deployFactory(
@@ -782,18 +793,18 @@ library LibDeploy {
         Vm vm,
         address _dc,
         address owner,
-        address phi
+        address cyber
     ) internal {
         Create2Deployer dc = Create2Deployer(_dc);
-        address cyberProjectNFTV2 = dc.deploy(
+        address ssBonusWeek = dc.deploy(
             abi.encodePacked(
-                type(CyberProjectNFTV2).creationCode,
-                abi.encode(owner, phi, owner)
+                type(SSBonusWeek).creationCode,
+                abi.encode(owner, cyber)
             ),
             SALT
         );
 
-        _write(vm, "CyberProjectNFTV2", cyberProjectNFTV2);
+        _write(vm, "SSBonusWeek", ssBonusWeek);
     }
 
     function changeOwnership(
