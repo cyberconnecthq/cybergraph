@@ -24,6 +24,9 @@ const writeAbi = async () => {
     "CyberNewEra.sol/CyberNewEra.json",
     "CyberNFTGate.sol/CyberNFTGate.json",
     "CyberProjectNFTV2.sol/CyberProjectNFTV2.json",
+    "CyberRelayGate.sol/CyberRelayGate.json",
+    "CyberNFT.sol/CyberNFT.json",
+    "CyberMintNFTRelayHook.sol/CyberMintNFTRelayHook.json",
   ];
   const ps = folders.map(async (file) => {
     const f = await fs.readFile(path.join("./out", file), "utf8");

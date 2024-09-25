@@ -6,12 +6,16 @@ import "forge-std/Script.sol";
 import { DeploySetting } from "./libraries/DeploySetting.sol";
 import { LibDeploy } from "./libraries/LibDeploy.sol";
 
-contract WithdrawGasBridge is Script, DeploySetting {
+contract DeployCyberRelayGate is Script, DeploySetting {
     function run() external {
         _setDeployParams();
         vm.startBroadcast();
 
-        LibDeploy.withdrawGasBridge(vm);
+        LibDeploy.deployCyberRelayGate(
+            vm,
+            deployParams.deployerContract,
+            deployParams.protocolOwner
+        );
 
         vm.stopBroadcast();
     }
