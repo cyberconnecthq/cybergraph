@@ -78,7 +78,10 @@ contract CyberRelayGate is Ownable, Pausable, Initializable, UUPSUpgradeable {
             value: msg.value
         }(msg.sender, destination, data);
 
-        require(address(this).balance == valueBefore, "BALANCE_CHANGED");
+        require(
+            address(this).balance == valueBefore - msg.value,
+            "BALANCE_CHANGED"
+        );
 
         emit Relay(
             requestId,

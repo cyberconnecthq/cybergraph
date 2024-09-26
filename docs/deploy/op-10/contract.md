@@ -28,5 +28,5 @@
 | CyberNewEraGate       | 0x23e235ae376f08a9c2e6d08a8bfa8f171306a112 |
 | GasBridge             | 0xfdf7c22ca4704dfef46e7e5ef53dca1d5a9f8e12 |
 | CyberNFTGate          | 0xb636433d8081593b02b1eccf1118ad05c100e0a4 |
-| CyberRelayGate(Impl)  | 0x08cc0ad8a7352cdcc047a5f054df63c1b7f8e80b |
-| CyberRelayGate(Proxy) | 0x9356b95392eeb834ebff98bc0ccc1e2ed5867100 |
+| CyberRelayGate(Impl)  | 0x0f9540c4e4845ffce51e62602d50af7082e6be7a |
+| CyberRelayGate(Proxy) | 0x9071ff33aef10a1c20f206ad654bb8a5bee976aa |

@@ -25,7 +25,8 @@ contract CyberMintNFTRelayHook is ICyberRelayGateHook, Ownable {
         uint256 fee;
     }
 
-    mapping(address => mapping(uint256 => mapping(address => MintFeeConfig))) mintFeeConfigs;
+    mapping(address => mapping(uint256 => mapping(address => MintFeeConfig)))
+        public mintFeeConfigs;
 
     /*//////////////////////////////////////////////////////////////
                             EVENTS

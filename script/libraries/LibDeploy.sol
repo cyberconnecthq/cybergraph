@@ -831,7 +831,7 @@ library LibDeploy {
         );
 
         CyberNFT(cyberNFT).setURI(
-            "https//metadata.cyberconnect.dev/nfts/general-nfts/"
+            "https://metadata.cyberconnect.dev/nfts/general-nfts/"
         );
         CyberNFT(cyberNFT).grantRole(
             keccak256("MANAGER_ROLE"),
@@ -868,7 +868,7 @@ library LibDeploy {
         CyberMintNFTRelayHook hook = CyberMintNFTRelayHook(nftRelayHook);
 
         // bnb
-        hook.configMintFee(nft, 1, address(0), true, recipient, 0.0004 ether);
+        hook.configMintFee(nft, 1, address(0), true, recipient, 0.00004 ether);
         // FOUR
         hook.configMintFee(nft, 1, erc20FeeToken, true, recipient, 4 ether);
     }

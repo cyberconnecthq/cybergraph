@@ -32,6 +32,7 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
     uint256 public price4Letter;
     uint256 public price5To9Letter;
     uint256 public price10AndMoreLetter;
+    uint256 public fixedFee;
 
     mapping(address => uint256) public nonces;
 
@@ -68,6 +69,7 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
         signer = _signer;
         recipient = _recipient;
         usdOracle = AggregatorV3Interface(_oracleAddress);
+        fixedFee = 0.000003 ether;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -108,7 +110,7 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
             sig.deadline
         );
 
-        uint256 cost = (getPriceWei(cid) * discount) / BASE;
+        uint256 cost = (getPriceWei(cid) * discount) / BASE + fixedFee;
 
         _chargeAndRefundOverPayment(cost, msgSender);
 
@@ -162,7 +164,7 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
         }
     }
 
-    function config(
+    function configPrices(
         address _recipient,
         uint256[4] memory prices
     ) external onlyOwner {
@@ -179,6 +181,10 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
             prices[2],
             prices[3]
         );
+    }
+
+    function setFixedFee(uint256 _fixedFee) external onlyOwner {
+        fixedFee = _fixedFee;
     }
 
     /*//////////////////////////////////////////////////////////////
