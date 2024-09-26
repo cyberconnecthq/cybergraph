@@ -6,9 +6,17 @@ import { AccessControl } from "openzeppelin-contracts/contracts/access/AccessCon
 import { Pausable } from "openzeppelin-contracts/contracts/security/Pausable.sol";
 import { ERC1155 } from "openzeppelin-contracts/contracts/token/ERC1155/ERC1155.sol";
 import { ERC1155Supply } from "openzeppelin-contracts/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
+import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Initializable.sol";
+import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 import { Strings } from "openzeppelin-contracts/contracts/utils/Strings.sol";
 
-contract CyberNFT is ERC1155Supply, AccessControl, Pausable {
+contract CyberNFT is
+    ERC1155Supply,
+    AccessControl,
+    Pausable,
+    UUPSUpgradeable,
+    Initializable
+{
     using Strings for uint256;
     /*//////////////////////////////////////////////////////////////
                                 STORAGE
@@ -17,20 +25,13 @@ contract CyberNFT is ERC1155Supply, AccessControl, Pausable {
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
     /*//////////////////////////////////////////////////////////////
-                            CONSTRUCTOR
+                            CONSTRUCTOR & INITIALIZER
     //////////////////////////////////////////////////////////////*/
-    constructor(address owner_) ERC1155("") {
-        _grantRole(DEFAULT_ADMIN_ROLE, owner_);
-        _grantRole(MANAGER_ROLE, owner_);
-    }
+    constructor() ERC1155("") {}
 
-    function name() public pure returns (string memory) {
-        return "Cyber NFT";
-    }
-
-    /// @dev Returns the token collection symbol.
-    function symbol() public pure returns (string memory) {
-        return "CyberNFT";
+    function initialize(address _owner) external initializer {
+        _grantRole(DEFAULT_ADMIN_ROLE, _owner);
+        _grantRole(MANAGER_ROLE, _owner);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -81,4 +82,19 @@ contract CyberNFT is ERC1155Supply, AccessControl, Pausable {
             ERC1155.supportsInterface(interfaceId) ||
             AccessControl.supportsInterface(interfaceId);
     }
+
+    function name() public pure returns (string memory) {
+        return "Cyber NFT";
+    }
+
+    function symbol() public pure returns (string memory) {
+        return "CyberNFT";
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                            ONLY OWNER 
+    //////////////////////////////////////////////////////////////*/
+    function _authorizeUpgrade(
+        address
+    ) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 }

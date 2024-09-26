@@ -17,7 +17,7 @@ contract DeployNFTRelayHook is Script, DeploySetting {
                 deployParams.deployerContract,
                 deployParams.protocolOwner,
                 0x9071ff33aEF10A1C20F206AD654bB8a5BEe976aa,
-                0x4bd1246F9814a84E79f92b5Fe7083aC3994Fc205,
+                0x60A1b9c6900C6cEF0e08B939cc00635Ad7DF02a1,
                 deployParams.backendSigner,
                 0xB21C65A0903B8c4da0F2Bc59104A5376157a44Ef
             );
@@ -27,7 +27,7 @@ contract DeployNFTRelayHook is Script, DeploySetting {
                 deployParams.deployerContract,
                 deployParams.protocolOwner,
                 0x9071ff33aEF10A1C20F206AD654bB8a5BEe976aa,
-                0x4bd1246F9814a84E79f92b5Fe7083aC3994Fc205,
+                0x60A1b9c6900C6cEF0e08B939cc00635Ad7DF02a1,
                 0x16Daa4649035D5a0A7E76361caf75a46F1A1062a,
                 0x21FD16cD0eF24A49D28429921e335bb0C1bfAdB3
             );

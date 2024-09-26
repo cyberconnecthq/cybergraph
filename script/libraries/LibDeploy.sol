@@ -826,14 +826,25 @@ library LibDeploy {
 
     function deployCyberNFT(Vm vm, address _dc, address owner) internal {
         Create2Deployer dc = Create2Deployer(_dc);
+        address cyberNFTImpl = dc.deploy(type(CyberNFT).creationCode, SALT);
+
+        _write(vm, "CyberNFT(Impl)", cyberNFTImpl);
+
         address cyberNFT = dc.deploy(
-            abi.encodePacked(type(CyberNFT).creationCode, abi.encode(owner)),
+            abi.encodePacked(
+                type(ERC1967Proxy).creationCode,
+                abi.encode(
+                    cyberNFTImpl,
+                    abi.encodeWithSelector(CyberNFT.initialize.selector, owner)
+                )
+            ),
             SALT
         );
 
         CyberNFT(cyberNFT).setURI(
             "https://metadata.cyberconnect.dev/nfts/general-nfts/"
         );
+
         CyberNFT(cyberNFT).grantRole(
             keccak256("MANAGER_ROLE"),
             0x0e3Ba6BE9b3AAf4c6dE0C9AEe2b2c565E29437Ae
@@ -888,15 +899,16 @@ library LibDeploy {
         address erc20FeeToken
     ) internal {
         Create2Deployer dc = Create2Deployer(_dc);
-        address nftRelayHook = dc.deploy(
-            abi.encodePacked(
-                type(CyberMintNFTRelayHook).creationCode,
-                abi.encode(owner)
-            ),
-            SALT
-        );
+        // address nftRelayHook = dc.deploy(
+        //     abi.encodePacked(
+        //         type(CyberMintNFTRelayHook).creationCode,
+        //         abi.encode(owner)
+        //     ),
+        //     SALT
+        // );
+        address nftRelayHook = 0x9da98CC2655aEEfC9f56043C184ce8C87652a196;
 
-        _write(vm, "CyberMintNFTRelayHook", nftRelayHook);
+        // _write(vm, "CyberMintNFTRelayHook", nftRelayHook);
 
         CyberRelayGate relatGate = CyberRelayGate(relayGate);
 
