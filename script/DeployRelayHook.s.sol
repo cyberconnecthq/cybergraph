@@ -36,3 +36,25 @@ contract DeployNFTRelayHook is Script, DeploySetting {
         vm.stopBroadcast();
     }
 }
+
+contract DeployCyberIDRelayHook is Script, DeploySetting {
+    function run() external {
+        _setDeployParams();
+        vm.startBroadcast();
+
+        if (block.chainid == DeploySetting.SEPOLIA) {
+            LibDeploy.deployCyberIdRelayHook(
+                vm,
+                deployParams.deployerContract,
+                deployParams.protocolOwner,
+                deployParams.backendSigner,
+                0x9071ff33aEF10A1C20F206AD654bB8a5BEe976aa,
+                0x58688732998f6c9f7Bde811C6576AD471C373061,
+                deployParams.backendSigner,
+                0x694AA1769357215DE4FAC081bf1f309aDC325306
+            );
+        }
+
+        vm.stopBroadcast();
+    }
+}

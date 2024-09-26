@@ -53,6 +53,7 @@ import { CyberFrog } from "../../src/periphery/CyberFrog.sol";
 import { CyberRelayGate } from "../../src/periphery/CyberRelayGate.sol";
 import { CyberMintNFTRelayHook } from "../../src/periphery/CyberMintNFTRelayHook.sol";
 import { CyberNFT } from "../../src/periphery/CyberNFT.sol";
+import { CyberIDPermissionedRelayHook } from "../../src/periphery/CyberIDPermissionedRelayHook.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -839,6 +840,42 @@ library LibDeploy {
         );
 
         _write(vm, "CyberNFT", cyberNFT);
+    }
+
+    function deployCyberIdRelayHook(
+        Vm vm,
+        address _dc,
+        address owner,
+        address signer,
+        address relayGate,
+        address cyberId,
+        address recipient,
+        address usdOracle
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address cyberIdRelayHook = dc.deploy(
+            abi.encodePacked(
+                type(CyberIDPermissionedRelayHook).creationCode,
+                abi.encode(owner, signer, usdOracle)
+            ),
+            SALT
+        );
+
+        _write(vm, "CyberIDPermissionedRelayHook", cyberIdRelayHook);
+
+        CyberRelayGate relatGate = CyberRelayGate(relayGate);
+
+        relatGate.setDestination(cyberId, true, cyberIdRelayHook);
+
+        CyberIDPermissionedRelayHook hook = CyberIDPermissionedRelayHook(
+            cyberIdRelayHook
+        );
+
+        // bnb
+        hook.configPrices(
+            recipient,
+            [uint256(100 ether), 40 ether, 10 ether, 4 ether]
+        );
     }
 
     function deployNFTRelayHook(

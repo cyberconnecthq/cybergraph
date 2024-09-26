@@ -26,8 +26,8 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
 
     address public immutable signer;
     AggregatorV3Interface public immutable usdOracle;
-    address public recipient;
 
+    address public recipient;
     uint256 public price3Letter;
     uint256 public price4Letter;
     uint256 public price5To9Letter;
@@ -59,15 +59,9 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
                             CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    constructor(
-        address _owner,
-        address _signer,
-        address _recipient,
-        address _oracleAddress
-    ) {
+    constructor(address _owner, address _signer, address _oracleAddress) {
         _transferOwnership(_owner);
         signer = _signer;
-        recipient = _recipient;
         usdOracle = AggregatorV3Interface(_oracleAddress);
         fixedFee = 0.000003 ether;
     }
@@ -110,7 +104,7 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
             sig.deadline
         );
 
-        uint256 cost = (getPriceWei(cid) * discount) / BASE + fixedFee;
+        uint256 cost = getPriceWei(cid, discount);
 
         _chargeAndRefundOverPayment(cost, msgSender);
 
@@ -131,8 +125,11 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
                             PUBLIC VIEW
     //////////////////////////////////////////////////////////////*/
 
-    function getPriceWei(string memory cid) public view returns (uint256) {
-        return _attoUSDToWei(_getUSDPrice(cid));
+    function getPriceWei(
+        string memory cid,
+        uint256 discount
+    ) public view returns (uint256) {
+        return (_attoUSDToWei(_getUSDPrice(cid)) * discount) / BASE + fixedFee;
     }
 
     /*//////////////////////////////////////////////////////////////
