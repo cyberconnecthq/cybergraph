@@ -11,7 +11,7 @@ contract DeployNFTRelayHook is Script, DeploySetting {
         _setDeployParams();
         vm.startBroadcast();
 
-        if (block.chainid == DeploySetting.SEPOLIA) {
+        if (block.chainid == DeploySetting.OP_SEPOLIA) {
             LibDeploy.deployNFTRelayHook(
                 vm,
                 deployParams.deployerContract,
@@ -19,7 +19,7 @@ contract DeployNFTRelayHook is Script, DeploySetting {
                 0x9071ff33aEF10A1C20F206AD654bB8a5BEe976aa,
                 0x4bd1246F9814a84E79f92b5Fe7083aC3994Fc205,
                 deployParams.backendSigner,
-                0x7169D38820dfd117C3FA1f22a697dBA58d90BA06
+                0xB21C65A0903B8c4da0F2Bc59104A5376157a44Ef
             );
         } else if (block.chainid == DeploySetting.BNB) {
             LibDeploy.deployNFTRelayHook(
@@ -42,7 +42,7 @@ contract DeployCyberIDRelayHook is Script, DeploySetting {
         _setDeployParams();
         vm.startBroadcast();
 
-        if (block.chainid == DeploySetting.SEPOLIA) {
+        if (block.chainid == DeploySetting.OP_SEPOLIA) {
             LibDeploy.deployCyberIdRelayHook(
                 vm,
                 deployParams.deployerContract,
@@ -51,7 +51,7 @@ contract DeployCyberIDRelayHook is Script, DeploySetting {
                 0x9071ff33aEF10A1C20F206AD654bB8a5BEe976aa,
                 0x58688732998f6c9f7Bde811C6576AD471C373061,
                 deployParams.backendSigner,
-                0x694AA1769357215DE4FAC081bf1f309aDC325306
+                0x61Ec26aA57019C486B10502285c5A3D4A4750AD7
             );
         }
 
