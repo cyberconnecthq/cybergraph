@@ -55,6 +55,14 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
         uint256 price10AndMoreLetter
     );
 
+    event SigUsed(
+        address account,
+        uint256 nonce,
+        string cid,
+        uint256 discount,
+        uint256 cost
+    );
+
     /*//////////////////////////////////////////////////////////////
                             CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
@@ -84,6 +92,7 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
             (string, address, uint256, uint8, bytes32, bytes32, uint256)
         );
 
+        uint256 currentNonce = nonces[to]++;
         _requiresExpectedSigner(
             _hashTypedDataV4(
                 keccak256(
@@ -92,7 +101,7 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
                         keccak256(bytes(cid)),
                         to,
                         discount,
-                        nonces[to]++,
+                        currentNonce,
                         sig.deadline
                     )
                 )
@@ -107,6 +116,8 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
         uint256 cost = getPriceWei(cid, discount);
 
         _chargeAndRefundOverPayment(cost, msgSender);
+
+        emit SigUsed(msgSender, currentNonce, cid, discount, cost);
 
         RelayParams memory relayParams;
         relayParams.to = destination;
