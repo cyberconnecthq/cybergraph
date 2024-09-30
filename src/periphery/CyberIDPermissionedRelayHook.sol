@@ -122,9 +122,9 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
         RelayParams memory relayParams;
         relayParams.to = destination;
         relayParams.value = 0;
-        BatchRegisterCyberIdParams[1] memory params = [
-            BatchRegisterCyberIdParams(cid, to, false)
-        ];
+        BatchRegisterCyberIdParams[]
+            memory params = new BatchRegisterCyberIdParams[](1);
+        params[0] = BatchRegisterCyberIdParams(cid, to, false);
         relayParams.callData = abi.encodeWithSelector(
             ICyberID.privilegedRegister.selector,
             params
@@ -177,6 +177,7 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
         uint256[4] memory prices
     ) external onlyOwner {
         require(_recipient != address(0), "INVALID_RECIPIENT");
+        recipient = _recipient;
         price3Letter = prices[0];
         price4Letter = prices[1];
         price5To9Letter = prices[2];
