@@ -54,6 +54,7 @@ import { CyberRelayGate } from "../../src/periphery/CyberRelayGate.sol";
 import { CyberMintNFTRelayHook } from "../../src/periphery/CyberMintNFTRelayHook.sol";
 import { CyberNFT } from "../../src/periphery/CyberNFT.sol";
 import { CyberIDPermissionedRelayHook } from "../../src/periphery/CyberIDPermissionedRelayHook.sol";
+import { AggregatorV3Interface } from "../../src/interfaces/AggregatorV3Interface.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -863,6 +864,17 @@ library LibDeploy {
         address recipient,
         address usdOracle
     ) internal {
+        (
+            uint80 roundId,
+            int256 price,
+            ,
+            uint256 updatedAt,
+
+        ) = AggregatorV3Interface(usdOracle).latestRoundData();
+        // current price 2600-2700
+        require(roundId != 0, "INVALID_ORACLE_ROUND_ID");
+        require(price > 2600 * 1e8, "INVALID_ORACLE_PRICE");
+        require(updatedAt > block.timestamp - 24 hours, "STALE_ORACLE_PRICE");
         Create2Deployer dc = Create2Deployer(_dc);
         address cyberIdRelayHook = dc.deploy(
             abi.encodePacked(
