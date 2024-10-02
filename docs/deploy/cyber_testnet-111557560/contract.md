@@ -21,3 +21,5 @@
 | WorkInCryptoNFT      | 0x7edb358e871ff2aa79239d408aa53ce3d73b6fb1 |
 | CyberProjectNFTV2    | 0xf78df34502fe8553512f83c56f3e0b8878512706 |
 | SSBonusWeek          | 0x760e1298f1b8c491e2715b2989861c5a994db672 |
+| CyberNFT(Impl)       | 0xb8776d0b58ad7cd1a78f4ee8e7fb65d28ebd322c |
+| CyberNFT(Proxy)      | 0x60a1b9c6900c6cef0e08b939cc00635ad7df02a1 |
