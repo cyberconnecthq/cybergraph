@@ -871,9 +871,8 @@ library LibDeploy {
             uint256 updatedAt,
 
         ) = AggregatorV3Interface(usdOracle).latestRoundData();
-        // current price 2600-2700
         require(roundId != 0, "INVALID_ORACLE_ROUND_ID");
-        require(price > 2600 * 1e8, "INVALID_ORACLE_PRICE");
+        require(price > 2400 * 1e8, "INVALID_ORACLE_PRICE");
         require(updatedAt > block.timestamp - 24 hours, "STALE_ORACLE_PRICE");
         Create2Deployer dc = Create2Deployer(_dc);
         address cyberIdRelayHook = dc.deploy(
@@ -894,7 +893,6 @@ library LibDeploy {
             cyberIdRelayHook
         );
 
-        // bnb
         hook.configPrices(
             recipient,
             [uint256(100 ether), 40 ether, 10 ether, 4 ether]

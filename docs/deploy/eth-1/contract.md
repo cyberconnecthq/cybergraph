@@ -27,4 +27,4 @@
 | CyberNFTGate                 | 0xb636433d8081593b02b1eccf1118ad05c100e0a4 |
 | CyberRelayGate(Impl)         | 0x0f9540c4e4845ffce51e62602d50af7082e6be7a |
 | CyberRelayGate(Proxy)        | 0x9071ff33aef10a1c20f206ad654bb8a5bee976aa |
-| CyberIDPermissionedRelayHook | 0xae51e3fca50d28b0a78d0ca479e45c7be052c657 |
+| CyberIDPermissionedRelayHook | 0x2d900f93c1af21ed480215283bc76a370ce74604 |

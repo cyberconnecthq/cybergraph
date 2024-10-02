@@ -117,7 +117,7 @@ contract CyberIDPermissionedRelayHook is ICyberRelayGateHook, EIP712, Ownable {
 
         _chargeAndRefundOverPayment(cost, msgSender);
 
-        emit SigUsed(msgSender, currentNonce, cid, discount, cost);
+        emit SigUsed(to, currentNonce, cid, discount, cost);
 
         RelayParams memory relayParams;
         relayParams.to = destination;
