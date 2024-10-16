@@ -50,6 +50,11 @@ import { CyberRelayer } from "../../src/periphery/CyberRelayer.sol";
 import { CyberPaymaster } from "../../src/paymaster/CyberPaymaster.sol";
 import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 import { CyberFrog } from "../../src/periphery/CyberFrog.sol";
+import { CyberRelayGate } from "../../src/periphery/CyberRelayGate.sol";
+import { CyberMintNFTRelayHook } from "../../src/periphery/CyberMintNFTRelayHook.sol";
+import { CyberNFT } from "../../src/periphery/CyberNFT.sol";
+import { CyberIDPermissionedRelayHook } from "../../src/periphery/CyberIDPermissionedRelayHook.sol";
+import { AggregatorV3Interface } from "../../src/interfaces/AggregatorV3Interface.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -233,17 +238,21 @@ library LibDeploy {
     }
 
     function withdrawGasBridge(Vm) internal {
-        GasBridge(0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12).withdraw(
-            address(0),
-            0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12.balance
-        );
-        CyberNewEraGate(0x23e235aE376F08a9C2e6d08A8Bfa8F171306A112).withdraw(
-            address(0),
-            0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12.balance
-        );
-        CyberNFTGate(0xb636433D8081593b02b1ecCF1118Ad05c100e0A4).withdraw(
-            address(0)
-        );
+        // GasBridge(0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12).withdraw(
+        //     address(0),
+        //     0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12.balance
+        // );
+        // CyberNewEraGate(0x23e235aE376F08a9C2e6d08A8Bfa8F171306A112).withdraw(
+        //     address(0),
+        //     0xFdF7c22ca4704dfEF46E7e5eF53dcA1d5a9f8E12.balance
+        // );
+        // CyberNFTGate(0xb636433D8081593b02b1ecCF1118Ad05c100e0A4).withdraw(
+        //     address(0)
+        // );
+        // TokenReceiver(0xcd97405Fb58e94954E825E46dB192b916A45d412).withdraw(
+        //     0x7884f7F04F994da14302a16Cf15E597e31eebECf,
+        //     0xcd97405Fb58e94954E825E46dB192b916A45d412.balance
+        // );
     }
 
     function deployFactory(
@@ -787,6 +796,140 @@ library LibDeploy {
         );
 
         _write(vm, "CyberNFTGate", cyberNFTGate);
+    }
+
+    function deployCyberRelayGate(Vm vm, address _dc, address owner) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+
+        address cyberRelayGateImpl = dc.deploy(
+            type(CyberRelayGate).creationCode,
+            SALT
+        );
+
+        _write(vm, "CyberRelayGate(Impl)", cyberRelayGateImpl);
+
+        address cyberRelayGateProxy = dc.deploy(
+            abi.encodePacked(
+                type(ERC1967Proxy).creationCode,
+                abi.encode(
+                    cyberRelayGateImpl,
+                    abi.encodeWithSelector(
+                        CyberRelayGate.initialize.selector,
+                        owner
+                    )
+                )
+            ),
+            SALT
+        );
+
+        _write(vm, "CyberRelayGate(Proxy)", cyberRelayGateProxy);
+    }
+
+    function deployCyberNFT(Vm vm, address _dc, address owner) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address cyberNFTImpl = dc.deploy(type(CyberNFT).creationCode, SALT);
+
+        _write(vm, "CyberNFT(Impl)", cyberNFTImpl);
+
+        address cyberNFT = dc.deploy(
+            abi.encodePacked(
+                type(ERC1967Proxy).creationCode,
+                abi.encode(
+                    cyberNFTImpl,
+                    abi.encodeWithSelector(CyberNFT.initialize.selector, owner)
+                )
+            ),
+            SALT
+        );
+
+        CyberNFT(cyberNFT).setURI(
+            "https://metadata.cyberconnect.dev/nfts/general-nfts/"
+        );
+
+        CyberNFT(cyberNFT).grantRole(
+            keccak256("MANAGER_ROLE"),
+            0x0e3Ba6BE9b3AAf4c6dE0C9AEe2b2c565E29437Ae
+        );
+
+        _write(vm, "CyberNFT", cyberNFT);
+    }
+
+    function deployCyberIdRelayHook(
+        Vm vm,
+        address _dc,
+        address owner,
+        address signer,
+        address relayGate,
+        address cyberId,
+        address recipient,
+        address usdOracle
+    ) internal {
+        (
+            uint80 roundId,
+            int256 price,
+            ,
+            uint256 updatedAt,
+
+        ) = AggregatorV3Interface(usdOracle).latestRoundData();
+        require(roundId != 0, "INVALID_ORACLE_ROUND_ID");
+        require(price > 2400 * 1e8, "INVALID_ORACLE_PRICE");
+        require(updatedAt > block.timestamp - 24 hours, "STALE_ORACLE_PRICE");
+        Create2Deployer dc = Create2Deployer(_dc);
+        address cyberIdRelayHook = dc.deploy(
+            abi.encodePacked(
+                type(CyberIDPermissionedRelayHook).creationCode,
+                abi.encode(owner, signer, usdOracle)
+            ),
+            SALT
+        );
+
+        _write(vm, "CyberIDPermissionedRelayHook", cyberIdRelayHook);
+
+        CyberRelayGate relatGate = CyberRelayGate(relayGate);
+
+        relatGate.setDestination(cyberId, true, cyberIdRelayHook);
+
+        CyberIDPermissionedRelayHook hook = CyberIDPermissionedRelayHook(
+            cyberIdRelayHook
+        );
+
+        hook.configPrices(
+            recipient,
+            [uint256(100 ether), 40 ether, 10 ether, 4 ether]
+        );
+    }
+
+    function deployNFTRelayHook(
+        Vm vm,
+        address _dc,
+        address owner,
+        address relayGate,
+        address nft,
+        address recipient,
+        address erc20FeeToken
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        // address nftRelayHook = dc.deploy(
+        //     abi.encodePacked(
+        //         type(CyberMintNFTRelayHook).creationCode,
+        //         abi.encode(owner)
+        //     ),
+        //     SALT
+        // );
+        address nftRelayHook = 0x9da98CC2655aEEfC9f56043C184ce8C87652a196;
+
+        // _write(vm, "CyberMintNFTRelayHook", nftRelayHook);
+
+        CyberRelayGate relatGate = CyberRelayGate(relayGate);
+
+        relatGate.setDestination(nft, true, nftRelayHook);
+
+        CyberMintNFTRelayHook hook = CyberMintNFTRelayHook(nftRelayHook);
+
+        // bnb
+        hook.configMintFee(nft, 1, address(0), true, recipient, 0.00004 ether);
+        // FOUR
+        hook.configMintFee(nft, 1, erc20FeeToken, true, recipient, 4 ether);
     }
 
     function deployCyberProjectNFTV2(

@@ -15,11 +15,10 @@ contract DeployCyberProjectNFTV2 is Script, DeploySetting {
             block.chainid == DeploySetting.CYBER_TESTNET ||
             block.chainid == DeploySetting.CYBER
         ) {
-            LibDeploy.deployCyberProjectNFTV2(
+            LibDeploy.deployCyberNFT(
                 vm,
                 deployParams.deployerContract,
-                deployParams.protocolOwner,
-                0x300e65412d8fc248CDD0429b2e10aD2360094B00
+                deployParams.protocolOwner
             );
         }
         vm.stopBroadcast();
