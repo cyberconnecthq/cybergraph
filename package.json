@@ -33,6 +33,7 @@
     "set_minter:mumbai": "source .env.mumbai && FOUNDRY_PROFILE=stg forge script script/SetSoulMinter.s.sol:SetSoulMinter --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --legacy --etherscan-api-key $API_KEY -vvv",
     "set_minter:cyber_testnet": "source .env.cyber_testnet.owner && FOUNDRY_PROFILE=stg forge script script/SetSoulMinter.s.sol:SetSoulMinter --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv",
     "set_minter:cyber": "source .env.cyber.owner && FOUNDRY_PROFILE=prd forge script script/SetSoulMinter.s.sol:SetSoulMinter --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv",
+    "set_minter:op": "source .env.op.owner && FOUNDRY_PROFILE=prd forge script script/SetSoulMinter.s.sol:SetSoulMinter --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv",
     "withdraw_gas_bridge:eth": "source .env.eth.owner && FOUNDRY_PROFILE=prd forge script script/WithdrawGasBridge.s.sol:WithdrawGasBridge --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv",
     "withdraw_gas_bridge:op": "source .env.op.owner && FOUNDRY_PROFILE=prd forge script script/WithdrawGasBridge.s.sol:WithdrawGasBridge --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv",
     "withdraw_gas_bridge:base": "source .env.base.owner && FOUNDRY_PROFILE=prd forge script script/WithdrawGasBridge.s.sol:WithdrawGasBridge --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast -vvv",

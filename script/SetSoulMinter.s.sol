@@ -13,7 +13,8 @@ contract SetSoulMinter is Script, DeploySetting {
 
         if (
             block.chainid == DeploySetting.CYBER_TESTNET ||
-            block.chainid == DeploySetting.CYBER
+            block.chainid == DeploySetting.CYBER ||
+            block.chainid == DeploySetting.OPTIMISM
         ) {
             LibDeploy.setSoulMinter(
                 vm,
