@@ -75,6 +75,7 @@
     "deploy_deployer:cyber": "source .env.cyber && FOUNDRY_PROFILE=prd forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY   --broadcast --slow  -vvv",
     "deploy_deployer:amoy": "source .env.amoy && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --broadcast --slow  -vvv",
     "deploy_deployer:imx_testnet": "source .env.imx_testnet && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer  --with-gas-price 11gwei --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --broadcast --slow  -vvv",
+    "deploy_deployer:odyssey_testnet": "source .env.odyssey_testnet && FOUNDRY_PROFILE=stg forge script script/DeployCreate2Deployer.s.sol:DeployerCreate2Deployer  --rpc-url $RPC_URL --private-key $PRIVATE_KEY  --broadcast  -vvv",
     "deploy_all:arbitrum_goerli": "source .env.arbitrum_goerli && FOUNDRY_PROFILE=stg forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --etherscan-api-key $API_KEY -vvv",
     "deploy_all:eth": "source .env.eth && FOUNDRY_PROFILE=prd forge script script/DeployAll.s.sol:DeployAll --slow  --verify --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --etherscan-api-key $API_KEY -vvv",
     "deploy_all:opbnb": "source .env.opbnb && FOUNDRY_PROFILE=prd forge script script/DeployAll.s.sol:DeployAll --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --etherscan-api-key $API_KEY -vvv",

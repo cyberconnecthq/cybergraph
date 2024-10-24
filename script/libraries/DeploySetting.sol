@@ -47,6 +47,7 @@ contract DeploySetting {
     uint256 internal constant CYBER_TESTNET = 111557560;
     uint256 internal constant AMOY = 80002;
     uint256 internal constant IMX_TESTNET = 13473;
+    uint256 internal constant ODYSSEY_TESTNET = 911867;
 
     function _setDeployParams() internal {
         if (
