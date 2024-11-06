@@ -224,17 +224,20 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
             (bool refundSuccess, ) = refundTo.call{ value: overpayment }("");
             require(refundSuccess, "REFUND_FAILED");
         }
-        if (cost > 0) {
-            if (costRecipient != feeRecipient)  {
+        if (costRecipient != feeRecipient)  {
+            if (cost > 0) {
                 (bool costChargeSuccess, ) = costRecipient.call{ value: cost }("");
                 require(costChargeSuccess, "COST_CHARGE_FAILED");
+            }
+            if (fee > 0) {
                 (bool feeChargeSuccess, ) = feeRecipient.call{ value: fee }("");
                 require(feeChargeSuccess, "FEE_CHARGE_FAILED");
-            } else {
+            }
+        } else {
+            if (cost + fee > 0) {
                 (bool chargeSuccess, ) = costRecipient.call{ value: cost + fee }("");
                 require(chargeSuccess, "CHARGE_FAILED");
             }
-
         }
     }
 }
