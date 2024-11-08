@@ -43,6 +43,13 @@ contract YumeRelayGate is Ownable, Pausable, Initializable, UUPSUpgradeable {
         bytes callData
     );
 
+    event DestinationUpdated(
+        uint256 chainId,
+        address destination,
+        bool enabled,
+        address hook
+    );
+
     /*//////////////////////////////////////////////////////////////
                             STORAGE
     //////////////////////////////////////////////////////////////*/
@@ -54,9 +61,7 @@ contract YumeRelayGate is Ownable, Pausable, Initializable, UUPSUpgradeable {
                         CONSTRUCTOR & INITIALIZER
     //////////////////////////////////////////////////////////////*/
 
-    constructor() {}
-
-    function initialize(address _owner) external initializer {
+    constructor(address _owner) {
         _transferOwnership(_owner);
     }
 
@@ -98,6 +103,10 @@ contract YumeRelayGate is Ownable, Pausable, Initializable, UUPSUpgradeable {
             relayParams.value,
             relayParams.callData
         );
+    }
+
+    function getRelayDestination(uint256 destinationChainId, address destination) external view returns (RelayDestination memory) {
+        return relayDestinations[destinationChainId][destination];
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -156,6 +165,7 @@ contract YumeRelayGate is Ownable, Pausable, Initializable, UUPSUpgradeable {
             enabled,
             IYumeRelayGateHook(hook)
         );
+        emit DestinationUpdated(destinationChainId, destination, enabled, hook);
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}

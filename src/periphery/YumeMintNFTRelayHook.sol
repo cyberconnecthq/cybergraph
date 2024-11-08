@@ -25,7 +25,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
     }
 
     struct MintFeeConfig {
-        bool enable;
+        bool enabled;
         address recipient;
         uint fee;
     }
@@ -89,7 +89,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         require(amount > 0, "INVALID_AMOUNT");
 
         MintFeeConfig memory mintFeeConfig = mintFeeConfigs[chainId];
-        require(mintFeeConfig.enable, "MINT_FEE_NOT_ALLOWED");
+        require(mintFeeConfig.enabled, "MINT_FEE_NOT_ALLOWED");
 
         MintPriceConfig memory mintPriceConfig = mintPriceConfigs[chainId][entryPoint][nft][tokenId];
         require(mintPriceConfig.enabled, "MINT_PRICE_NOT_ALLOWED");
@@ -114,6 +114,25 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
             amount
         );
         return relayParams;
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                    EXTERNAL
+    //////////////////////////////////////////////////////////////*/
+
+    function getMintPriceConfig(
+        uint256 chainId,
+        address entryPoint,
+        address nft,
+        uint256 tokenId
+    ) external view returns (MintPriceConfig memory) {
+        return mintPriceConfigs[chainId][entryPoint][nft][tokenId];
+    }
+
+    function getMintFeeConfig(
+        uint256 chainId
+    ) external view returns (MintFeeConfig memory) {
+        return mintFeeConfigs[chainId];
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -145,7 +164,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         require(recipient != address(0), "INVALID_RECIPIENT");
 
         MintFeeConfig memory mintFeeConfig = mintFeeConfigs[chainId];
-        require(mintFeeConfig.enable, "INVALID_CHAIN_ID");
+        require(mintFeeConfig.enabled, "INVALID_CHAIN_ID");
 
         mintPriceConfigs[chainId][entryPoint][nft][tokenId] = MintPriceConfig(
             enabled,
