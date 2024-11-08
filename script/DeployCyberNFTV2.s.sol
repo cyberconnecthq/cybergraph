@@ -14,13 +14,15 @@ contract UpgradeCyberNFT is Script, DeploySetting {
             LibDeploy.upgradeCyberNFT(
                 vm,
                 deployParams.deployerContract,
-                0x60A1b9c6900C6cEF0e08B939cc00635Ad7DF02a1
+                0x60A1b9c6900C6cEF0e08B939cc00635Ad7DF02a1,
+                0x15d4fD9130E1304086F4419ACd8Bc513a3E7b279
             );
         } else if (block.chainid == DeploySetting.CYBER) {
             LibDeploy.upgradeCyberNFT(
                 vm,
                 deployParams.deployerContract,
-                0x60A1b9c6900C6cEF0e08B939cc00635Ad7DF02a1
+                0x60A1b9c6900C6cEF0e08B939cc00635Ad7DF02a1,
+                0x15d4fD9130E1304086F4419ACd8Bc513a3E7b279
             );
         }
         vm.stopBroadcast();

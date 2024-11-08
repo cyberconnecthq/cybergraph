@@ -826,15 +826,21 @@ library LibDeploy {
         _write(vm, "CyberRelayGate(Proxy)", cyberRelayGateProxy);
     }
 
-    function upgradeCyberNFT(Vm vm, address _dc, address vaultProxy) internal {
-        Create2Deployer dc = Create2Deployer(_dc);
-        address cyberNFTV2Impl = dc.deploy(
-            type(CyberNFTV2).creationCode,
-            SALT
-        );
-        _write(vm, "CyberNFTV2(Impl)", cyberNFTV2Impl);
+    function upgradeCyberNFT(
+        Vm vm,
+        address _dc,
+        address nftProxy,
+        address recipient
+    ) internal {
+        // Create2Deployer dc = Create2Deployer(_dc);
+        // address cyberNFTV2Impl = dc.deploy(type(CyberNFTV2).creationCode, SALT);
+        // _write(vm, "CyberNFTV2(Impl)", cyberNFTV2Impl);
 
-        UUPSUpgradeable(vaultProxy).upgradeTo(cyberNFTV2Impl);
+        // UUPSUpgradeable(nftProxy).upgradeTo(cyberNFTV2Impl);
+
+        CyberNFTV2(nftProxy).setRecipient(recipient);
+        CyberNFTV2(nftProxy).setMintPriceConfig(2, true, 0.0002 ether);
+        CyberNFTV2(nftProxy).setMintPriceConfig(3, true, 0.0002 ether);
     }
 
     function deployCyberNFT(Vm vm, address _dc, address owner) internal {
