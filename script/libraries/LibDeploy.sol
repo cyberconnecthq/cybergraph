@@ -55,6 +55,7 @@ import { CyberMintNFTRelayHook } from "../../src/periphery/CyberMintNFTRelayHook
 import { CyberNFT } from "../../src/periphery/CyberNFT.sol";
 import { CyberIDPermissionedRelayHook } from "../../src/periphery/CyberIDPermissionedRelayHook.sol";
 import { AggregatorV3Interface } from "../../src/interfaces/AggregatorV3Interface.sol";
+import { CyberNFTV2 } from "../../src/periphery/CyberNFTV2.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -823,6 +824,17 @@ library LibDeploy {
         );
 
         _write(vm, "CyberRelayGate(Proxy)", cyberRelayGateProxy);
+    }
+
+    function upgradeCyberNFT(Vm vm, address _dc, address vaultProxy) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address cyberNFTV2Impl = dc.deploy(
+            type(CyberNFTV2).creationCode,
+            SALT
+        );
+        _write(vm, "CyberNFTV2(Impl)", cyberNFTV2Impl);
+
+        UUPSUpgradeable(vaultProxy).upgradeTo(cyberNFTV2Impl);
     }
 
     function deployCyberNFT(Vm vm, address _dc, address owner) internal {

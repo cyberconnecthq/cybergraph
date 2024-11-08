@@ -10,7 +10,7 @@ import { Initializable } from "openzeppelin-contracts/contracts/proxy/utils/Init
 import { UUPSUpgradeable } from "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 import { Strings } from "openzeppelin-contracts/contracts/utils/Strings.sol";
 
-contract CyberNFT is
+contract CyberNFTV2 is
     ERC1155Supply,
     AccessControl,
     Pausable,
