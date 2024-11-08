@@ -22,13 +22,13 @@ contract CyberNFT is
                                 STORAGE
     //////////////////////////////////////////////////////////////*/
 
-    bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
-    address public recipient;
-
     struct MintPriceConfig {
         bool enable;
         uint256 price;
     }
+
+    bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
+    address public recipient;
 
     mapping(uint256 => MintPriceConfig) public mintPriceConfigs;
 
@@ -58,7 +58,7 @@ contract CyberNFT is
         _setURI(newuri);
     }
 
-    function setRecipient(address _recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setRecipient(address _recipient) external onlyRole(MANAGER_ROLE) {
         require(_recipient != address(0), "INVALID_RECIPIENT");
         recipient = _recipient;
     }
@@ -67,7 +67,7 @@ contract CyberNFT is
         uint256 tokenId,
         bool enable,
         uint256 price
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(MANAGER_ROLE) {
         require(tokenId != 0, "INVALID_TOKEN_ID");
         mintPriceConfigs[tokenId] = MintPriceConfig(enable, price);
     }
@@ -83,7 +83,7 @@ contract CyberNFT is
         _mint(to, tokenId, amount, "");
     }
 
-    function mintWithoutRole(
+    function publicMint(
         address to,
         uint256 tokenId,
         uint256 amount
@@ -127,14 +127,6 @@ contract CyberNFT is
 
     function symbol() public pure returns (string memory) {
         return "CyberNFT";
-    }
-
-    function getRecipient() public view returns (address) {
-        return recipient;
-    }
-
-    function getMintPriceConfig(uint256 tokenId) public view returns (MintPriceConfig memory) {
-        return mintPriceConfigs[tokenId];
     }
 
     /*//////////////////////////////////////////////////////////////
