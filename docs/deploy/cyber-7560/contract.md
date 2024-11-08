@@ -24,3 +24,4 @@
 | SSBonusWeek          | 0x760e1298f1b8c491e2715b2989861c5a994db672 |
 | CyberNFT(Impl)       | 0xb8776d0b58ad7cd1a78f4ee8e7fb65d28ebd322c |
 | CyberNFT(Proxy)      | 0x60a1b9c6900c6cef0e08b939cc00635ad7df02a1 |
+| CyberNFTV2(Impl)     | 0x2079739052cb3bb9b8d1cb783ac9afc906b3a857 |
