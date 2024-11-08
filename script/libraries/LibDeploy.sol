@@ -905,20 +905,23 @@ library LibDeploy {
         address owner,
         address relayGate,
         address nft,
-        address recipient,
-        address erc20FeeToken
+        address recipient
     ) internal {
         Create2Deployer dc = Create2Deployer(_dc);
-        // address nftRelayHook = dc.deploy(
-        //     abi.encodePacked(
-        //         type(CyberMintNFTRelayHook).creationCode,
-        //         abi.encode(owner)
-        //     ),
-        //     SALT
-        // );
-        address nftRelayHook = 0x9da98CC2655aEEfC9f56043C184ce8C87652a196;
+        address nftRelayHook = dc.deploy(
+            abi.encodePacked(
+                type(CyberMintNFTRelayHook).creationCode,
+                abi.encode(owner)
+            ),
+            SALT
+        );
+        require(
+            nftRelayHook == 0x9da98CC2655aEEfC9f56043C184ce8C87652a196,
+            "WRONG_NFT_RELAY_HOOK"
+        );
+        // address nftRelayHook = 0x9da98CC2655aEEfC9f56043C184ce8C87652a196;
 
-        // _write(vm, "CyberMintNFTRelayHook", nftRelayHook);
+        _write(vm, "CyberMintNFTRelayHook", nftRelayHook);
 
         CyberRelayGate relatGate = CyberRelayGate(relayGate);
 
@@ -926,10 +929,9 @@ library LibDeploy {
 
         CyberMintNFTRelayHook hook = CyberMintNFTRelayHook(nftRelayHook);
 
-        // bnb
-        hook.configMintFee(nft, 1, address(0), true, recipient, 0.00004 ether);
-        // FOUR
-        hook.configMintFee(nft, 1, erc20FeeToken, true, recipient, 4 ether);
+        // eth
+        hook.configMintFee(nft, 2, address(0), true, recipient, 0.0002 ether);
+        hook.configMintFee(nft, 3, address(0), true, recipient, 0.0002 ether);
     }
 
     function deployCyberProjectNFTV2(
