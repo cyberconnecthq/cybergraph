@@ -27,7 +27,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
     struct MintFeeConfig {
         bool enabled;
         address recipient;
-        uint fee;
+        uint256 fee;
     }
 
     struct BatchConfigMintFeeParams {

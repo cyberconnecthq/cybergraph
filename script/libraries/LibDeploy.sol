@@ -55,6 +55,8 @@ import { CyberMintNFTRelayHook } from "../../src/periphery/CyberMintNFTRelayHook
 import { CyberNFT } from "../../src/periphery/CyberNFT.sol";
 import { CyberIDPermissionedRelayHook } from "../../src/periphery/CyberIDPermissionedRelayHook.sol";
 import { AggregatorV3Interface } from "../../src/interfaces/AggregatorV3Interface.sol";
+import {YumeRelayGate} from "../../src/periphery/YumeRelayGate.sol";
+import {YumeMintNFTRelayHook} from "../../src/periphery/YumeMintNFTRelayHook.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -825,6 +827,33 @@ library LibDeploy {
         _write(vm, "CyberRelayGate(Proxy)", cyberRelayGateProxy);
     }
 
+    function deployYumeRelayGate(Vm vm, address _dc, address owner) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+
+        address yumeRelayGateImpl = dc.deploy(
+            type(YumeRelayGate).creationCode,
+            SALT
+        );
+
+        _write(vm, "YumeRelayGate(Impl)", yumeRelayGateImpl);
+
+        address yumeRelayGateProxy = dc.deploy(
+            abi.encodePacked(
+                type(ERC1967Proxy).creationCode,
+                abi.encode(
+                    yumeRelayGateImpl,
+                    abi.encodeWithSelector(
+                        CyberRelayGate.initialize.selector,
+                        owner
+                    )
+                )
+            ),
+            SALT
+        );
+
+        _write(vm, "YumeRelayGate(Proxy)", yumeRelayGateProxy);
+    }
+
     function deployCyberNFT(Vm vm, address _dc, address owner) internal {
         Create2Deployer dc = Create2Deployer(_dc);
         address cyberNFTImpl = dc.deploy(type(CyberNFT).creationCode, SALT);
@@ -930,6 +959,23 @@ library LibDeploy {
         hook.configMintFee(nft, 1, address(0), true, recipient, 0.00004 ether);
         // FOUR
         hook.configMintFee(nft, 1, erc20FeeToken, true, recipient, 4 ether);
+    }
+
+    function deployYumeRelayHook(
+        Vm vm,
+        address _dc,
+        address owner
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+         address yumeRelayHook = dc.deploy(
+             abi.encodePacked(
+                 type(YumeMintNFTRelayHook).creationCode,
+                 abi.encode(owner)
+             ),
+             SALT
+         );
+
+         _write(vm, "YumeMintNFTRelayHook", yumeRelayHook);
     }
 
     function deployCyberProjectNFTV2(
