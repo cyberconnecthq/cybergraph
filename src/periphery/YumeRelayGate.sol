@@ -105,10 +105,6 @@ contract YumeRelayGate is Ownable, Pausable, Initializable, UUPSUpgradeable {
         );
     }
 
-    function getRelayDestination(uint256 destinationChainId, address destination) external view returns (RelayDestination memory) {
-        return relayDestinations[destinationChainId][destination];
-    }
-
     /*//////////////////////////////////////////////////////////////
                             ONLY OWNER 
     //////////////////////////////////////////////////////////////*/

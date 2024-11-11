@@ -117,25 +117,6 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
     }
 
     /*//////////////////////////////////////////////////////////////
-                    EXTERNAL
-    //////////////////////////////////////////////////////////////*/
-
-    function getMintPriceConfig(
-        uint256 chainId,
-        address entryPoint,
-        address nft,
-        uint256 tokenId
-    ) external view returns (MintPriceConfig memory) {
-        return mintPriceConfigs[chainId][entryPoint][nft][tokenId];
-    }
-
-    function getMintFeeConfig(
-        uint256 chainId
-    ) external view returns (MintFeeConfig memory) {
-        return mintFeeConfigs[chainId];
-    }
-
-    /*//////////////////////////////////////////////////////////////
                     ONLY OWNER
     //////////////////////////////////////////////////////////////*/
 

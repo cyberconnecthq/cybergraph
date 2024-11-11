@@ -4,7 +4,7 @@ pragma solidity 0.8.14;
 
 import {YumeRelayGate} from "../src/periphery/YumeRelayGate.sol";
 import {YumeMintNFTRelayHook} from "../src/periphery/YumeMintNFTRelayHook.sol";
-import {RelayParams} from "../src/interfaces/IYumeRelayGateHook.sol";
+import {RelayParams, IYumeRelayGateHook} from "../src/interfaces/IYumeRelayGateHook.sol";
 
 import "forge-std/console.sol";
 import "forge-std/Test.sol";
@@ -83,10 +83,10 @@ contract YumeRelayTest is Test {
 
         hook.configMintFee(1, true, alice, 1 ether);
 
-        YumeMintNFTRelayHook.MintFeeConfig memory mintFeeConfig =  hook.getMintFeeConfig(1);
-        require(mintFeeConfig.enabled, "WRONG_ENABLED");
-        require(mintFeeConfig.fee == 1 ether, "WRONG_FEE");
-        require(mintFeeConfig.recipient == alice, "WRONG_RECIPIENT");
+        (bool enabled, address recipient, uint256 fee) =  hook.mintFeeConfigs(1);
+        require(enabled, "WRONG_ENABLED");
+        require(fee == 1 ether, "WRONG_FEE");
+        require(recipient == alice, "WRONG_RECIPIENT");
     }
 
     function testHookBatchConfigMintFee() public {
@@ -103,15 +103,15 @@ contract YumeRelayTest is Test {
 
         hook.batchConfigMintFee(params);
 
-        YumeMintNFTRelayHook.MintFeeConfig memory mintFeeConfig1 =  hook.getMintFeeConfig(1);
-        require(mintFeeConfig1.enabled, "WRONG_ENABLED");
-        require(mintFeeConfig1.fee == 1 ether, "WRONG_FEE");
-        require(mintFeeConfig1.recipient == alice, "WRONG_RECIPIENT");
+        (bool enabled, address recipient, uint256 fee) =  hook.mintFeeConfigs(1);
+        require(enabled, "WRONG_ENABLED");
+        require(fee == 1 ether, "WRONG_FEE");
+        require(recipient == alice, "WRONG_RECIPIENT");
 
-        YumeMintNFTRelayHook.MintFeeConfig memory mintFeeConfig2 =  hook.getMintFeeConfig(2);
-        require(mintFeeConfig2.enabled, "WRONG_ENABLED");
-        require(mintFeeConfig2.fee == 2 ether, "WRONG_FEE");
-        require(mintFeeConfig2.recipient == bob, "WRONG_RECIPIENT");
+        (bool enabled2, address recipient2, uint256 fee2) =  hook.mintFeeConfigs(2);
+        require(enabled2, "WRONG_ENABLED");
+        require(fee2 == 2 ether, "WRONG_FEE");
+        require(recipient2 == bob, "WRONG_RECIPIENT");
     }
 
     function testHookConfigMintPrice() public {
@@ -128,10 +128,10 @@ contract YumeRelayTest is Test {
         emit MintPriceConfigUpdated(1, entryPoint, nft, tokenId, true, bob, 1 ether);
         hook.configMintPrice(1, entryPoint, nft, tokenId, true, bob, 1 ether);
 
-        YumeMintNFTRelayHook.MintPriceConfig memory mintPriceConfig =  hook.getMintPriceConfig(1, entryPoint, nft, tokenId);
-        require(mintPriceConfig.enabled, "WRONG_ENABLED");
-        require(mintPriceConfig.price == 1 ether, "WRONG_PRICE");
-        require(mintPriceConfig.recipient == bob, "WRONG_RECIPIENT");
+        (bool enabled, address recipient, uint256 price) =  hook.mintPriceConfigs(1, entryPoint, nft, tokenId);
+        require(enabled, "WRONG_ENABLED");
+        require(price == 1 ether, "WRONG_PRICE");
+        require(recipient == bob, "WRONG_RECIPIENT");
     }
 
     function testHookWithoutConfig() public {
@@ -203,9 +203,9 @@ contract YumeRelayTest is Test {
         emit DestinationUpdated(1, entryPoint, true, address(hook));
         relayGate.setDestination(1, entryPoint, true, address(hook));
 
-        YumeRelayGate.RelayDestination memory relayDestination = relayGate.getRelayDestination(1, entryPoint);
-        require(relayDestination.enabled, "WRONG_ENABLED");
-        require(relayDestination.hook == hook, "WRONG_HOOK");
+        (bool enabled, IYumeRelayGateHook hook) = relayGate.relayDestinations(1, entryPoint);
+        require(enabled, "WRONG_ENABLED");
+        require(hook == hook, "WRONG_HOOK");
     }
 
     function testRelayGateBatchSetDestination() public {
@@ -222,13 +222,13 @@ contract YumeRelayTest is Test {
 
         relayGate.batchSetDestination(params);
 
-        YumeRelayGate.RelayDestination memory relayDestination1 = relayGate.getRelayDestination(1, entryPoint);
-        require(relayDestination1.enabled, "WRONG_ENABLED");
-        require(relayDestination1.hook == hook, "WRONG_HOOK");
+        (bool enabled, IYumeRelayGateHook hookAddr) = relayGate.relayDestinations(1, entryPoint);
+        require(enabled, "WRONG_ENABLED");
+        require(hookAddr == hook, "WRONG_HOOK");
 
-        YumeRelayGate.RelayDestination memory relayDestination2 = relayGate.getRelayDestination(2, entryPoint);
-        require(relayDestination2.enabled, "WRONG_ENABLED");
-        require(relayDestination2.hook == hook, "WRONG_HOOK");
+        (bool enabled2, IYumeRelayGateHook hookAddr2) = relayGate.relayDestinations(2, entryPoint);
+        require(enabled2, "WRONG_ENABLED");
+        require(hookAddr2 == hook, "WRONG_HOOK");
     }
 
     function testRelayGateRelayWithoutDestination() public {
