@@ -55,8 +55,8 @@ import { CyberMintNFTRelayHook } from "../../src/periphery/CyberMintNFTRelayHook
 import { CyberNFT } from "../../src/periphery/CyberNFT.sol";
 import { CyberIDPermissionedRelayHook } from "../../src/periphery/CyberIDPermissionedRelayHook.sol";
 import { AggregatorV3Interface } from "../../src/interfaces/AggregatorV3Interface.sol";
-import {YumeRelayGate} from "../../src/periphery/YumeRelayGate.sol";
-import {YumeMintNFTRelayHook} from "../../src/periphery/YumeMintNFTRelayHook.sol";
+import { YumeRelayGate } from "../../src/periphery/YumeRelayGate.sol";
+import { YumeMintNFTRelayHook } from "../../src/periphery/YumeMintNFTRelayHook.sol";
 
 library LibDeploy {
     // create2 deploy all contract with this protocol salt
@@ -843,7 +843,7 @@ library LibDeploy {
                 abi.encode(
                     yumeRelayGateImpl,
                     abi.encodeWithSelector(
-                        CyberRelayGate.initialize.selector,
+                        YumeRelayGate.initialize.selector,
                         owner
                     )
                 )
@@ -961,21 +961,17 @@ library LibDeploy {
         hook.configMintFee(nft, 1, erc20FeeToken, true, recipient, 4 ether);
     }
 
-    function deployYumeRelayHook(
-        Vm vm,
-        address _dc,
-        address owner
-    ) internal {
+    function deployYumeRelayHook(Vm vm, address _dc, address owner) internal {
         Create2Deployer dc = Create2Deployer(_dc);
-         address yumeRelayHook = dc.deploy(
-             abi.encodePacked(
-                 type(YumeMintNFTRelayHook).creationCode,
-                 abi.encode(owner)
-             ),
-             SALT
-         );
+        address yumeRelayHook = dc.deploy(
+            abi.encodePacked(
+                type(YumeMintNFTRelayHook).creationCode,
+                abi.encode(owner)
+            ),
+            SALT
+        );
 
-         _write(vm, "YumeMintNFTRelayHook", yumeRelayHook);
+        _write(vm, "YumeMintNFTRelayHook", yumeRelayHook);
     }
 
     function deployCyberProjectNFTV2(

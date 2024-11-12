@@ -11,7 +11,8 @@ contract DeployNFTRelayHook is Script, DeploySetting {
         _setDeployParams();
         vm.startBroadcast();
 
-        if (block.chainid == DeploySetting.OP_SEPOLIA ||
+        if (
+            block.chainid == DeploySetting.OP_SEPOLIA ||
             block.chainid == DeploySetting.CYBER_TESTNET
         ) {
             LibDeploy.deployYumeRelayHook(
@@ -19,7 +20,7 @@ contract DeployNFTRelayHook is Script, DeploySetting {
                 deployParams.deployerContract,
                 deployParams.protocolOwner
             );
-        } else if(
+        } else if (
             block.chainid == DeploySetting.CYBER ||
             block.chainid == DeploySetting.ARBITRUM ||
             block.chainid == DeploySetting.OPTIMISM ||

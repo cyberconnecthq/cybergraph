@@ -54,14 +54,18 @@ contract YumeRelayGate is Ownable, Pausable, Initializable, UUPSUpgradeable {
                             STORAGE
     //////////////////////////////////////////////////////////////*/
 
-    mapping(uint256 => mapping(address => mapping(bytes32 => bool))) public requestIdUsed;
-    mapping(uint256 => mapping(address => RelayDestination)) public relayDestinations;
+    mapping(uint256 => mapping(address => mapping(bytes32 => bool)))
+        public requestIdUsed;
+    mapping(uint256 => mapping(address => RelayDestination))
+        public relayDestinations;
 
     /*//////////////////////////////////////////////////////////////
                         CONSTRUCTOR & INITIALIZER
     //////////////////////////////////////////////////////////////*/
 
-    constructor(address _owner) {
+    constructor() {}
+
+    function initialize(address _owner) external initializer {
         _transferOwnership(_owner);
     }
 
@@ -78,10 +82,15 @@ contract YumeRelayGate is Ownable, Pausable, Initializable, UUPSUpgradeable {
         require(destination != address(0), "INVALID_ADDRESS_ZERO");
         require(requestId != bytes32(0), "INVALID_REQUEST_ID");
 
-        RelayDestination memory relayDestination = relayDestinations[destinationChainId][destination];
+        RelayDestination memory relayDestination = relayDestinations[
+            destinationChainId
+        ][destination];
         require(relayDestination.enabled, "DESTINATION_DISABLED");
         require(address(relayDestination.hook) != address(0), "HOOK_NOT_SET");
-        require(!requestIdUsed[destinationChainId][destination][requestId], "REQUEST_ID_USED");
+        require(
+            !requestIdUsed[destinationChainId][destination][requestId],
+            "REQUEST_ID_USED"
+        );
         requestIdUsed[destinationChainId][destination][requestId] = true;
 
         uint256 valueBefore = address(this).balance;
@@ -138,7 +147,9 @@ contract YumeRelayGate is Ownable, Pausable, Initializable, UUPSUpgradeable {
         _setDestination(destinationChainId, destination, enabled, hook);
     }
 
-    function batchSetDestination(BatchSetDestinationParams[] calldata params) external onlyOwner {
+    function batchSetDestination(
+        BatchSetDestinationParams[] calldata params
+    ) external onlyOwner {
         for (uint256 i = 0; i < params.length; i++) {
             _setDestination(
                 params[i].destinationChainId,
@@ -148,6 +159,10 @@ contract YumeRelayGate is Ownable, Pausable, Initializable, UUPSUpgradeable {
             );
         }
     }
+
+    /*//////////////////////////////////////////////////////////////
+                PRIVATE
+    //////////////////////////////////////////////////////////////*/
 
     function _setDestination(
         uint256 destinationChainId,

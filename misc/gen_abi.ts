@@ -28,6 +28,8 @@ const writeAbi = async () => {
     "CyberNFT.sol/CyberNFT.json",
     "CyberMintNFTRelayHook.sol/CyberMintNFTRelayHook.json",
     "CyberIDPermissionedRelayHook.sol/CyberIDPermissionedRelayHook.json",
+    "YumeMintNFTRelayHook.sol/YumeMintNFTRelayHook.json",
+    "YumeRelayGate.sol/YumeRelayGate.json",
   ];
   const ps = folders.map(async (file) => {
     const f = await fs.readFile(path.join("./out", file), "utf8");
