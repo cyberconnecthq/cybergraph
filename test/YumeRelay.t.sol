@@ -19,6 +19,8 @@ contract YumeRelayTest is Test {
     address public nft = address(0x6);
     uint256 public tokenId = 1;
     uint256 public amount = 1;
+    uint256 public price = 1 ether;
+    bytes public mintData = bytes("0x");
     bytes32 public requestId =
         0x0000000000000000000000000000000000000000000000000000000000000001;
     bytes32 public requestId2 =
@@ -32,16 +34,6 @@ contract YumeRelayTest is Test {
         relayGate.initialize(owner);
         hook = new YumeMintNFTRelayHook(owner);
     }
-
-    event MintPriceConfigUpdated(
-        uint256 chainId,
-        address entryPoint,
-        address nft,
-        uint256 tokenId,
-        bool enabled,
-        address recipient,
-        uint256 price
-    );
 
     event MintFeeConfigUpdated(
         uint256 chainId,
@@ -72,10 +64,6 @@ contract YumeRelayTest is Test {
         vm.prank(alice);
         vm.expectRevert("Ownable: caller is not the owner");
         hook.configMintFee(1, true, alice, 1 ether);
-
-        vm.prank(alice);
-        vm.expectRevert("Ownable: caller is not the owner");
-        hook.configMintPrice(1, entryPoint, nft, tokenId, true, alice, 1 ether);
     }
 
     function testHookConfigMintFee() public {
@@ -132,40 +120,18 @@ contract YumeRelayTest is Test {
         require(recipient2 == bob, "WRONG_RECIPIENT");
     }
 
-    function testHookConfigMintPrice() public {
-        vm.startPrank(owner);
-
-        vm.expectRevert("INVALID_CHAIN_ID");
-        hook.configMintPrice(1, entryPoint, nft, tokenId, true, alice, 1 ether);
-
-        vm.expectEmit(false, false, false, true);
-        emit MintFeeConfigUpdated(1, true, alice, 1 ether);
-        hook.configMintFee(1, true, alice, 1 ether);
-
-        vm.expectEmit(false, false, false, true);
-        emit MintPriceConfigUpdated(
-            1,
-            entryPoint,
-            nft,
-            tokenId,
-            true,
-            bob,
-            1 ether
-        );
-        hook.configMintPrice(1, entryPoint, nft, tokenId, true, bob, 1 ether);
-
-        (bool enabled, address recipient, uint256 price) = hook
-            .mintPriceConfigs(1, entryPoint, nft, tokenId);
-        require(enabled, "WRONG_ENABLED");
-        require(price == 1 ether, "WRONG_PRICE");
-        require(recipient == bob, "WRONG_RECIPIENT");
-    }
-
     function testHookWithoutConfig() public {
         vm.prank(charlie);
         vm.deal(charlie, 10 ether);
         vm.expectRevert("MINT_FEE_NOT_ALLOWED");
-        bytes memory callData = abi.encode(charlie, nft, tokenId, amount);
+        bytes memory callData = abi.encode(
+            charlie,
+            nft,
+            tokenId,
+            amount,
+            price,
+            mintData
+        );
         hook.processRelay{ value: 2 ether }(charlie, 1, entryPoint, callData);
     }
 
@@ -176,24 +142,19 @@ contract YumeRelayTest is Test {
         emit MintFeeConfigUpdated(1, true, alice, 1 ether);
         hook.configMintFee(1, true, alice, 1 ether);
 
-        vm.expectEmit(false, false, false, true);
-        emit MintPriceConfigUpdated(
-            1,
-            entryPoint,
-            nft,
-            tokenId,
-            true,
-            bob,
-            1 ether
-        );
-        hook.configMintPrice(1, entryPoint, nft, tokenId, true, bob, 1 ether);
-
         vm.stopPrank();
 
         vm.startPrank(charlie);
 
         vm.deal(charlie, 10 ether);
-        bytes memory callData = abi.encode(charlie, nft, tokenId, amount);
+        bytes memory callData = abi.encode(
+            charlie,
+            nft,
+            tokenId,
+            amount,
+            price,
+            mintData
+        );
 
         vm.expectRevert("INSUFFICIENT_FUNDS");
         hook.processRelay{ value: 1 ether }(charlie, 1, entryPoint, callData);
@@ -205,29 +166,28 @@ contract YumeRelayTest is Test {
             callData
         );
         require(relayParams.to == entryPoint, "WRONG_TO");
-        require(relayParams.value == 1 ether, "WRONG_VALUE");
+        require(relayParams.value == price * amount, "WRONG_VALUE");
         require(
             keccak256(relayParams.callData) ==
                 keccak256(
                     abi.encodeWithSignature(
-                        "mint(address, address, uint256, uint256)",
+                        "mint(address, address, uint256, uint256, bytes)",
                         charlie,
                         nft,
                         tokenId,
-                        amount
+                        amount,
+                        mintData
                     )
                 ),
             "WRONG_CALL_DATA"
         );
 
-        require(alice.balance == 1 ether, "WRONG_ALICE_BAL");
-        require(bob.balance == 1 ether, "WRONG_BOB_BAL");
+        require(alice.balance == 2 ether, "WRONG_ALICE_BAL");
         require(charlie.balance == 8 ether, "WRONG_CHARLIE_BAL");
         require(address(hook).balance == 0, "WRONG_CONTRACT_BAL");
 
         hook.processRelay{ value: 3 ether }(charlie, 1, entryPoint, callData);
-        require(alice.balance == 2 ether, "WRONG_ALICE_BAL");
-        require(bob.balance == 2 ether, "WRONG_BOB_BAL");
+        require(alice.balance == 4 ether, "WRONG_ALICE_BAL");
         require(charlie.balance == 6 ether, "WRONG_CHARLIE_BAL");
         require(address(hook).balance == 0, "WRONG_CONTRACT_BAL");
 
@@ -318,7 +278,7 @@ contract YumeRelayTest is Test {
             requestId,
             1,
             entryPoint,
-            abi.encode(charlie, nft, tokenId, amount)
+            abi.encode(charlie, nft, tokenId, amount, price, mintData)
         );
     }
 
@@ -333,18 +293,6 @@ contract YumeRelayTest is Test {
         emit MintFeeConfigUpdated(1, true, alice, 1 ether);
         hook.configMintFee(1, true, alice, 1 ether);
 
-        vm.expectEmit(false, false, false, true);
-        emit MintPriceConfigUpdated(
-            1,
-            entryPoint,
-            nft,
-            tokenId,
-            true,
-            bob,
-            1 ether
-        );
-        hook.configMintPrice(1, entryPoint, nft, tokenId, true, bob, 1 ether);
-
         vm.stopPrank();
 
         vm.startPrank(charlie);
@@ -355,7 +303,7 @@ contract YumeRelayTest is Test {
             requestId,
             1,
             entryPoint,
-            abi.encode(charlie, nft, tokenId, amount)
+            abi.encode(charlie, nft, tokenId, amount, price, mintData)
         );
 
         vm.expectEmit(false, false, false, true);
@@ -364,24 +312,24 @@ contract YumeRelayTest is Test {
             charlie,
             1,
             entryPoint,
-            1 ether,
+            price * amount,
             abi.encodeWithSignature(
-                "mint(address, address, uint256, uint256)",
+                "mint(address, address, uint256, uint256, bytes)",
                 charlie,
                 nft,
                 tokenId,
-                amount
+                amount,
+                mintData
             )
         );
         relayGate.relay{ value: 2 ether }(
             requestId,
             1,
             entryPoint,
-            abi.encode(charlie, nft, tokenId, amount)
+            abi.encode(charlie, nft, tokenId, amount, price, mintData)
         );
 
-        require(alice.balance == 1 ether, "WRONG_ALICE_BAL");
-        require(bob.balance == 1 ether, "WRONG_BOB_BAL");
+        require(alice.balance == 2 ether, "WRONG_ALICE_BAL");
         require(charlie.balance == 8 ether, "WRONG_CHARLIE_BAL");
         require(address(hook).balance == 0, "WRONG_CONTRACT_BAL");
         require(address(relayGate).balance == 0, "WRONG_CONTRACT_BAL");
@@ -391,7 +339,7 @@ contract YumeRelayTest is Test {
             requestId,
             1,
             entryPoint,
-            abi.encode(charlie, nft, tokenId, amount)
+            abi.encode(charlie, nft, tokenId, amount, price, mintData)
         );
 
         vm.expectEmit(false, false, false, true);
@@ -400,23 +348,23 @@ contract YumeRelayTest is Test {
             charlie,
             1,
             entryPoint,
-            1 ether,
+            price * amount,
             abi.encodeWithSignature(
-                "mint(address, address, uint256, uint256)",
+                "mint(address, address, uint256, uint256, bytes)",
                 charlie,
                 nft,
                 tokenId,
-                amount
+                amount,
+                mintData
             )
         );
         relayGate.relay{ value: 3 ether }(
             requestId2,
             1,
             entryPoint,
-            abi.encode(charlie, nft, tokenId, amount)
+            abi.encode(charlie, nft, tokenId, amount, price, mintData)
         );
-        require(alice.balance == 2 ether, "WRONG_ALICE_BAL");
-        require(bob.balance == 2 ether, "WRONG_BOB_BAL");
+        require(alice.balance == 4 ether, "WRONG_ALICE_BAL");
         require(charlie.balance == 6 ether, "WRONG_CHARLIE_BAL");
         require(address(hook).balance == 0, "WRONG_CONTRACT_BAL");
         require(address(relayGate).balance == 0, "WRONG_CONTRACT_BAL");

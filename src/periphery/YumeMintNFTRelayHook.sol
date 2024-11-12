@@ -18,12 +18,6 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
                             STORAGE
     //////////////////////////////////////////////////////////////*/
 
-    struct MintPriceConfig {
-        bool enabled;
-        address recipient;
-        uint256 price;
-    }
-
     struct MintFeeConfig {
         bool enabled;
         address recipient;
@@ -37,23 +31,10 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         uint256 fee;
     }
 
-    mapping(uint256 => mapping(address => mapping(address => mapping(uint256 => MintPriceConfig))))
-        public mintPriceConfigs;
-
     mapping(uint256 => MintFeeConfig) public mintFeeConfigs;
     /*//////////////////////////////////////////////////////////////
                             EVENTS
     //////////////////////////////////////////////////////////////*/
-
-    event MintPriceConfigUpdated(
-        uint256 chainId,
-        address entryPoint,
-        address nft,
-        uint256 tokenId,
-        bool enabled,
-        address recipient,
-        uint256 price
-    );
 
     event MintFeeConfigUpdated(
         uint256 chainId,
@@ -80,10 +61,17 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         address entryPoint,
         bytes calldata data
     ) external payable override returns (RelayParams memory) {
-        (address to, address nft, uint256 tokenId, uint256 amount) = abi.decode(
-            data,
-            (address, address, uint256, uint256)
-        );
+        (
+            address to,
+            address nft,
+            uint256 tokenId,
+            uint256 amount,
+            uint256 price,
+            bytes memory mintData
+        ) = abi.decode(
+                data,
+                (address, address, uint256, uint256, uint256, bytes)
+            );
 
         require(entryPoint != address(0), "INVALID_DESTINATION");
         require(nft != address(0), "INVALID_NFT");
@@ -93,29 +81,23 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         MintFeeConfig memory mintFeeConfig = mintFeeConfigs[chainId];
         require(mintFeeConfig.enabled, "MINT_FEE_NOT_ALLOWED");
 
-        MintPriceConfig memory mintPriceConfig = mintPriceConfigs[chainId][
-            entryPoint
-        ][nft][tokenId];
-        require(mintPriceConfig.enabled, "MINT_PRICE_NOT_ALLOWED");
-
-        uint256 cost = mintPriceConfig.price * amount;
+        uint256 cost = price * amount;
         _chargeAndRefundOverPayment(
             msgSender,
-            mintPriceConfig.recipient,
-            cost,
             mintFeeConfig.recipient,
-            mintFeeConfig.fee
+            cost + mintFeeConfig.fee
         );
 
         RelayParams memory relayParams;
         relayParams.to = entryPoint;
         relayParams.value = cost;
         relayParams.callData = abi.encodeWithSignature(
-            "mint(address, address, uint256, uint256)",
+            "mint(address, address, uint256, uint256, bytes)",
             to,
             nft,
             tokenId,
-            amount
+            amount,
+            mintData
         );
         return relayParams;
     }
@@ -134,37 +116,6 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
                 IERC20(token).balanceOf(address(this))
             );
         }
-    }
-
-    function configMintPrice(
-        uint256 chainId,
-        address entryPoint,
-        address nft,
-        uint256 tokenId,
-        bool enabled,
-        address recipient,
-        uint256 price
-    ) external onlyOwner {
-        require(nft != address(0), "INVALID_NFT");
-        require(recipient != address(0), "INVALID_RECIPIENT");
-
-        MintFeeConfig memory mintFeeConfig = mintFeeConfigs[chainId];
-        require(mintFeeConfig.enabled, "INVALID_CHAIN_ID");
-
-        mintPriceConfigs[chainId][entryPoint][nft][tokenId] = MintPriceConfig(
-            enabled,
-            recipient,
-            price
-        );
-        emit MintPriceConfigUpdated(
-            chainId,
-            entryPoint,
-            nft,
-            tokenId,
-            enabled,
-            recipient,
-            price
-        );
     }
 
     function configMintFee(
@@ -206,42 +157,25 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
 
     function _chargeAndRefundOverPayment(
         address refundTo,
-        address costRecipient,
-        uint256 cost,
-        address feeRecipient,
-        uint256 fee
+        address recipient,
+        uint256 cost
     ) internal {
-        require(msg.value >= cost + fee, "INSUFFICIENT_FUNDS");
+        require(msg.value >= cost, "INSUFFICIENT_FUNDS");
         /**
          * Already checked msg.value >= cost
          */
         uint256 overpayment;
         unchecked {
-            overpayment = msg.value - cost - fee;
+            overpayment = msg.value - cost;
         }
 
         if (overpayment > 0) {
             (bool refundSuccess, ) = refundTo.call{ value: overpayment }("");
             require(refundSuccess, "REFUND_FAILED");
         }
-        if (costRecipient != feeRecipient) {
-            if (cost > 0) {
-                (bool costChargeSuccess, ) = costRecipient.call{ value: cost }(
-                    ""
-                );
-                require(costChargeSuccess, "COST_CHARGE_FAILED");
-            }
-            if (fee > 0) {
-                (bool feeChargeSuccess, ) = feeRecipient.call{ value: fee }("");
-                require(feeChargeSuccess, "FEE_CHARGE_FAILED");
-            }
-        } else {
-            if (cost + fee > 0) {
-                (bool chargeSuccess, ) = costRecipient.call{
-                    value: cost + fee
-                }("");
-                require(chargeSuccess, "CHARGE_FAILED");
-            }
+        if (cost > 0) {
+            (bool chargeSuccess, ) = recipient.call{ value: cost }("");
+            require(chargeSuccess, "CHARGE_FAILED");
         }
     }
 }
