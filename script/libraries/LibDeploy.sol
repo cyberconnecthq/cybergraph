@@ -55,6 +55,7 @@ import { CyberMintNFTRelayHook } from "../../src/periphery/CyberMintNFTRelayHook
 import { CyberNFT } from "../../src/periphery/CyberNFT.sol";
 import { CyberIDPermissionedRelayHook } from "../../src/periphery/CyberIDPermissionedRelayHook.sol";
 import { AggregatorV3Interface } from "../../src/interfaces/AggregatorV3Interface.sol";
+import { CyberNFTV2 } from "../../src/periphery/CyberNFTV2.sol";
 import { YumeRelayGate } from "../../src/periphery/YumeRelayGate.sol";
 import { YumeMintNFTRelayHook } from "../../src/periphery/YumeMintNFTRelayHook.sol";
 
@@ -827,6 +828,23 @@ library LibDeploy {
         _write(vm, "CyberRelayGate(Proxy)", cyberRelayGateProxy);
     }
 
+    function upgradeCyberNFT(
+        Vm vm,
+        address _dc,
+        address nftProxy,
+        address recipient
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address cyberNFTV2Impl = dc.deploy(type(CyberNFTV2).creationCode, SALT);
+        _write(vm, "CyberNFTV2(Impl)", cyberNFTV2Impl);
+
+        UUPSUpgradeable(nftProxy).upgradeTo(cyberNFTV2Impl);
+
+        CyberNFTV2(nftProxy).setRecipient(recipient);
+        CyberNFTV2(nftProxy).setMintPriceConfig(2, true, 0.0002 ether);
+        CyberNFTV2(nftProxy).setMintPriceConfig(3, true, 0.0002 ether);
+    }
+
     function deployYumeRelayGate(Vm vm, address _dc, address owner) internal {
         Create2Deployer dc = Create2Deployer(_dc);
 
@@ -934,20 +952,23 @@ library LibDeploy {
         address owner,
         address relayGate,
         address nft,
-        address recipient,
-        address erc20FeeToken
+        address recipient
     ) internal {
         Create2Deployer dc = Create2Deployer(_dc);
-        // address nftRelayHook = dc.deploy(
-        //     abi.encodePacked(
-        //         type(CyberMintNFTRelayHook).creationCode,
-        //         abi.encode(owner)
-        //     ),
-        //     SALT
-        // );
-        address nftRelayHook = 0x9da98CC2655aEEfC9f56043C184ce8C87652a196;
+        address nftRelayHook = dc.deploy(
+            abi.encodePacked(
+                type(CyberMintNFTRelayHook).creationCode,
+                abi.encode(owner)
+            ),
+            SALT
+        );
+        require(
+            nftRelayHook == 0x9da98CC2655aEEfC9f56043C184ce8C87652a196,
+            "WRONG_NFT_RELAY_HOOK"
+        );
+        // address nftRelayHook = 0x9da98CC2655aEEfC9f56043C184ce8C87652a196;
 
-        // _write(vm, "CyberMintNFTRelayHook", nftRelayHook);
+        _write(vm, "CyberMintNFTRelayHook", nftRelayHook);
 
         CyberRelayGate relatGate = CyberRelayGate(relayGate);
 
@@ -955,10 +976,9 @@ library LibDeploy {
 
         CyberMintNFTRelayHook hook = CyberMintNFTRelayHook(nftRelayHook);
 
-        // bnb
-        hook.configMintFee(nft, 1, address(0), true, recipient, 0.00004 ether);
-        // FOUR
-        hook.configMintFee(nft, 1, erc20FeeToken, true, recipient, 4 ether);
+        // eth
+        hook.configMintFee(nft, 2, address(0), true, recipient, 0.0002 ether);
+        hook.configMintFee(nft, 3, address(0), true, recipient, 0.0002 ether);
     }
 
     function deployYumeRelayHook(Vm vm, address _dc, address owner) internal {

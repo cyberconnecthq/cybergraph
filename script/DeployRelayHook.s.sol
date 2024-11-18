@@ -18,8 +18,7 @@ contract DeployNFTRelayHook is Script, DeploySetting {
                 deployParams.protocolOwner,
                 0x9071ff33aEF10A1C20F206AD654bB8a5BEe976aa,
                 0x60A1b9c6900C6cEF0e08B939cc00635Ad7DF02a1,
-                deployParams.backendSigner,
-                0xB21C65A0903B8c4da0F2Bc59104A5376157a44Ef
+                deployParams.backendSigner
             );
         } else if (block.chainid == DeploySetting.BNB) {
             LibDeploy.deployNFTRelayHook(
@@ -28,8 +27,22 @@ contract DeployNFTRelayHook is Script, DeploySetting {
                 deployParams.protocolOwner,
                 0x9071ff33aEF10A1C20F206AD654bB8a5BEe976aa,
                 0x60A1b9c6900C6cEF0e08B939cc00635Ad7DF02a1,
-                0x16Daa4649035D5a0A7E76361caf75a46F1A1062a,
-                0x21FD16cD0eF24A49D28429921e335bb0C1bfAdB3
+                0x16Daa4649035D5a0A7E76361caf75a46F1A1062a
+            );
+        } else if (
+            block.chainid == DeploySetting.OPTIMISM ||
+            block.chainid == DeploySetting.ARBITRUM ||
+            block.chainid == DeploySetting.ETH ||
+            block.chainid == DeploySetting.BLAST ||
+            block.chainid == DeploySetting.BASE
+        ) {
+            LibDeploy.deployNFTRelayHook(
+                vm,
+                deployParams.deployerContract,
+                deployParams.protocolOwner,
+                0x9071ff33aEF10A1C20F206AD654bB8a5BEe976aa,
+                0x60A1b9c6900C6cEF0e08B939cc00635Ad7DF02a1,
+                0x15d4fD9130E1304086F4419ACd8Bc513a3E7b279
             );
         }
 
