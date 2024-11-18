@@ -6,7 +6,9 @@ import { Ownable } from "openzeppelin-contracts/contracts/access/Ownable.sol";
 import { IERC20 } from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "../interfaces/IYumeRelayGateHook.sol";
+import { RelayParams, IYumeRelayGateHook } from "../interfaces/IYumeRelayGateHook.sol";
+import { IYumeEngine } from "../interfaces/IYumeEngine.sol";
+import { DataTypes } from "../libraries/DataTypes.sol";
 
 /**
  * @title YumeMintNFTRelayHook
@@ -61,16 +63,115 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         address entryPoint,
         bytes calldata data
     ) external payable override returns (RelayParams memory) {
+        if (bytes4(data[0:4]) == IYumeEngine.createCollection.selector) {
+            return
+                processCreateCollectionRelay(
+                    msgSender,
+                    chainId,
+                    entryPoint,
+                    data[4:]
+                );
+        } else if (bytes4(data[0:4]) == IYumeEngine.createToken.selector) {
+            return
+                processCreateTokenRelay(
+                    msgSender,
+                    chainId,
+                    entryPoint,
+                    data[4:]
+                );
+        } else if (bytes4(data[0:4]) == IYumeEngine.mintWithEth.selector) {
+            return processMintRelay(msgSender, chainId, entryPoint, data[4:]);
+        } else {
+            revert("INVALID_ACTION");
+        }
+    }
+
+    function processCreateCollectionRelay(
+        address msgSender,
+        uint256 chainId,
+        address entryPoint,
+        bytes calldata data
+    ) internal returns (RelayParams memory) {
         (
-            address to,
+            DataTypes.CreateTokenParams memory params,
+            string memory collectionName
+        ) = abi.decode(data, (DataTypes.CreateTokenParams, string));
+
+        require(bytes(collectionName).length != 0, "INVALID_COLLECTION_NAME");
+        require(params.rewards.length != 0, "INVALID_CREATOR_REWARDS");
+
+        MintFeeConfig memory mintFeeConfig = mintFeeConfigs[chainId];
+        require(mintFeeConfig.enabled, "MINT_FEE_NOT_ALLOWED");
+
+        _chargeAndRefundOverPayment(
+            msgSender,
+            mintFeeConfig.recipient,
+            mintFeeConfig.fee
+        );
+
+        RelayParams memory relayParams;
+        relayParams.to = entryPoint;
+        relayParams.value = 0;
+        relayParams.callData = abi.encodeWithSelector(
+            IYumeEngine.createCollection.selector,
+            params,
+            collectionName,
+            msg.sender
+        );
+        return relayParams;
+    }
+
+    function processCreateTokenRelay(
+        address msgSender,
+        uint256 chainId,
+        address entryPoint,
+        bytes calldata data
+    ) internal returns (RelayParams memory) {
+        (address nft, DataTypes.CreateTokenParams memory params) = abi.decode(
+            data,
+            (address, DataTypes.CreateTokenParams)
+        );
+
+        require(nft != address(0), "INVALID_NFT_ADDRESS");
+        require(params.rewards.length != 0, "INVALID_CREATOR_REWARDS");
+
+        MintFeeConfig memory mintFeeConfig = mintFeeConfigs[chainId];
+        require(mintFeeConfig.enabled, "MINT_FEE_NOT_ALLOWED");
+
+        _chargeAndRefundOverPayment(
+            msgSender,
+            mintFeeConfig.recipient,
+            mintFeeConfig.fee
+        );
+
+        RelayParams memory relayParams;
+        relayParams.to = entryPoint;
+        relayParams.value = 0;
+        relayParams.callData = abi.encodeWithSelector(
+            IYumeEngine.createToken.selector,
+            nft,
+            params
+        );
+        return relayParams;
+    }
+
+    function processMintRelay(
+        address msgSender,
+        uint256 chainId,
+        address entryPoint,
+        bytes calldata data
+    ) internal returns (RelayParams memory) {
+        (
             address nft,
             uint256 tokenId,
+            address to,
             uint256 amount,
-            uint256 price,
-            bytes memory mintData
+            address mintReferral,
+            bytes memory mintData,
+            uint256 price
         ) = abi.decode(
                 data,
-                (address, address, uint256, uint256, uint256, bytes)
+                (address, uint256, address, uint256, address, bytes, uint256)
             );
 
         require(entryPoint != address(0), "INVALID_DESTINATION");
@@ -91,12 +192,13 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         RelayParams memory relayParams;
         relayParams.to = entryPoint;
         relayParams.value = cost;
-        relayParams.callData = abi.encodeWithSignature(
-            "mint(address, address, uint256, uint256, bytes)",
-            to,
+        relayParams.callData = abi.encodeWithSelector(
+            IYumeEngine.mintWithEth.selector,
             nft,
             tokenId,
+            to,
             amount,
+            mintReferral,
             mintData
         );
         return relayParams;

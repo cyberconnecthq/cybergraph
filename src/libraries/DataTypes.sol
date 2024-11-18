@@ -150,4 +150,19 @@ library DataTypes {
         string key;
         string value;
     }
+
+    struct CreatorReward {
+        address creator;
+        uint256 percentage;
+    }
+
+    struct CreateTokenParams {
+        string tokenURI;
+        uint256 maxSupply;
+        uint256 startTime;
+        uint256 endTime;
+        uint256 mintPrice;
+        address createReferral;
+        CreatorReward[] rewards;
+    }
 }

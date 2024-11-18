@@ -5,6 +5,7 @@ pragma solidity 0.8.14;
 import { YumeRelayGate } from "../src/periphery/YumeRelayGate.sol";
 import { YumeMintNFTRelayHook } from "../src/periphery/YumeMintNFTRelayHook.sol";
 import { RelayParams, IYumeRelayGateHook } from "../src/interfaces/IYumeRelayGateHook.sol";
+import { IYumeEngine } from "../src/interfaces/IYumeEngine.sol";
 
 import "forge-std/console.sol";
 import "forge-std/Test.sol";
@@ -17,6 +18,7 @@ contract YumeRelayTest is Test {
     address public charlie = address(0x4);
     address public entryPoint = address(0x5);
     address public nft = address(0x6);
+    address public mintReferral = address(0x7);
     uint256 public tokenId = 1;
     uint256 public amount = 1;
     uint256 public price = 1 ether;
@@ -123,7 +125,7 @@ contract YumeRelayTest is Test {
     function testHookWithoutConfig() public {
         vm.prank(charlie);
         vm.deal(charlie, 10 ether);
-        vm.expectRevert("MINT_FEE_NOT_ALLOWED");
+        vm.expectRevert("INVALID_ACTION");
         bytes memory callData = abi.encode(
             charlie,
             nft,
@@ -131,6 +133,20 @@ contract YumeRelayTest is Test {
             amount,
             price,
             mintData
+        );
+        hook.processRelay{ value: 2 ether }(charlie, 1, entryPoint, callData);
+
+        vm.prank(charlie);
+        vm.expectRevert("MINT_FEE_NOT_ALLOWED");
+        callData = abi.encodeWithSelector(
+            IYumeEngine.mintWithEth.selector,
+            nft,
+            tokenId,
+            charlie,
+            amount,
+            mintReferral,
+            mintData,
+            price
         );
         hook.processRelay{ value: 2 ether }(charlie, 1, entryPoint, callData);
     }
@@ -147,13 +163,15 @@ contract YumeRelayTest is Test {
         vm.startPrank(charlie);
 
         vm.deal(charlie, 10 ether);
-        bytes memory callData = abi.encode(
-            charlie,
+        bytes memory callData = abi.encodeWithSelector(
+            IYumeEngine.mintWithEth.selector,
             nft,
             tokenId,
+            charlie,
             amount,
-            price,
-            mintData
+            mintReferral,
+            mintData,
+            price
         );
 
         vm.expectRevert("INSUFFICIENT_FUNDS");
@@ -170,12 +188,13 @@ contract YumeRelayTest is Test {
         require(
             keccak256(relayParams.callData) ==
                 keccak256(
-                    abi.encodeWithSignature(
-                        "mint(address, address, uint256, uint256, bytes)",
-                        charlie,
+                    abi.encodeWithSelector(
+                        IYumeEngine.mintWithEth.selector,
                         nft,
                         tokenId,
+                        charlie,
                         amount,
+                        mintReferral,
                         mintData
                     )
                 ),
@@ -303,7 +322,16 @@ contract YumeRelayTest is Test {
             requestId,
             1,
             entryPoint,
-            abi.encode(charlie, nft, tokenId, amount, price, mintData)
+            abi.encodeWithSelector(
+                IYumeEngine.mintWithEth.selector,
+                nft,
+                tokenId,
+                charlie,
+                amount,
+                mintReferral,
+                mintData,
+                price
+            )
         );
 
         vm.expectEmit(false, false, false, true);
@@ -313,12 +341,13 @@ contract YumeRelayTest is Test {
             1,
             entryPoint,
             price * amount,
-            abi.encodeWithSignature(
-                "mint(address, address, uint256, uint256, bytes)",
-                charlie,
+            abi.encodeWithSelector(
+                IYumeEngine.mintWithEth.selector,
                 nft,
                 tokenId,
+                charlie,
                 amount,
+                mintReferral,
                 mintData
             )
         );
@@ -326,7 +355,16 @@ contract YumeRelayTest is Test {
             requestId,
             1,
             entryPoint,
-            abi.encode(charlie, nft, tokenId, amount, price, mintData)
+            abi.encodeWithSelector(
+                IYumeEngine.mintWithEth.selector,
+                nft,
+                tokenId,
+                charlie,
+                amount,
+                mintReferral,
+                mintData,
+                price
+            )
         );
 
         require(alice.balance == 2 ether, "WRONG_ALICE_BAL");
@@ -339,22 +377,32 @@ contract YumeRelayTest is Test {
             requestId,
             1,
             entryPoint,
-            abi.encode(charlie, nft, tokenId, amount, price, mintData)
+            abi.encodeWithSelector(
+                IYumeEngine.mintWithEth.selector,
+                nft,
+                tokenId,
+                charlie,
+                amount,
+                mintReferral,
+                mintData,
+                price
+            )
         );
 
         vm.expectEmit(false, false, false, true);
         emit Relay(
             requestId2,
             charlie,
-            1,
+            amount,
             entryPoint,
             price * amount,
-            abi.encodeWithSignature(
-                "mint(address, address, uint256, uint256, bytes)",
-                charlie,
+            abi.encodeWithSelector(
+                IYumeEngine.mintWithEth.selector,
                 nft,
                 tokenId,
+                charlie,
                 amount,
+                mintReferral,
                 mintData
             )
         );
@@ -362,7 +410,16 @@ contract YumeRelayTest is Test {
             requestId2,
             1,
             entryPoint,
-            abi.encode(charlie, nft, tokenId, amount, price, mintData)
+            abi.encodeWithSelector(
+                IYumeEngine.mintWithEth.selector,
+                nft,
+                tokenId,
+                charlie,
+                amount,
+                mintReferral,
+                mintData,
+                price
+            )
         );
         require(alice.balance == 4 ether, "WRONG_ALICE_BAL");
         require(charlie.balance == 6 ether, "WRONG_CHARLIE_BAL");
