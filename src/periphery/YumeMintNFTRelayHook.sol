@@ -63,7 +63,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         address entryPoint,
         bytes calldata data
     ) external payable override returns (RelayParams memory) {
-        if (bytes4(data[0:4]) == IYumeEngine.createCollection.selector) {
+        if (bytes4(data[0:4]) == IYumeEngine.relayCreateCollection.selector) {
             return
                 _processCreateCollectionRelay(
                     msgSender,
@@ -71,7 +71,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
                     entryPoint,
                     data[4:]
                 );
-        } else if (bytes4(data[0:4]) == IYumeEngine.createToken.selector) {
+        } else if (bytes4(data[0:4]) == IYumeEngine.relayCreateToken.selector) {
             return
                 _processCreateTokenRelay(
                     msgSender,
@@ -155,7 +155,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         relayParams.to = entryPoint;
         relayParams.value = 0;
         relayParams.callData = abi.encodeWithSelector(
-            IYumeEngine.createCollection.selector,
+            IYumeEngine.relayCreateCollection.selector,
             params,
             collectionName,
             msgSender
@@ -190,9 +190,10 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         relayParams.to = entryPoint;
         relayParams.value = 0;
         relayParams.callData = abi.encodeWithSelector(
-            IYumeEngine.createToken.selector,
+            IYumeEngine.relayCreateToken.selector,
             nft,
-            params
+            params,
+            msgSender
         );
         return relayParams;
     }

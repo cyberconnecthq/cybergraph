@@ -5,15 +5,16 @@ pragma solidity 0.8.14;
 import { DataTypes } from "../libraries/DataTypes.sol";
 
 interface IYumeEngine {
-    function createCollection(
+    function relayCreateCollection(
         DataTypes.CreateTokenParams calldata createTokenParams,
         string calldata collectionName,
-        address creator
+        address msgSender
     ) external returns (address);
 
-    function createToken(
+    function relayCreateToken(
         address nft,
-        DataTypes.CreateTokenParams calldata createTokenParams
+        DataTypes.CreateTokenParams calldata createTokenParams,
+        address msgSender
     ) external returns (uint256);
 
     function mintWithEth(
