@@ -65,7 +65,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
     ) external payable override returns (RelayParams memory) {
         if (bytes4(data[0:4]) == IYumeEngine.createCollection.selector) {
             return
-                processCreateCollectionRelay(
+                _processCreateCollectionRelay(
                     msgSender,
                     chainId,
                     entryPoint,
@@ -73,14 +73,14 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
                 );
         } else if (bytes4(data[0:4]) == IYumeEngine.createToken.selector) {
             return
-                processCreateTokenRelay(
+                _processCreateTokenRelay(
                     msgSender,
                     chainId,
                     entryPoint,
                     data[4:]
                 );
         } else if (bytes4(data[0:4]) == IYumeEngine.mintWithEth.selector) {
-            return processMintRelay(msgSender, chainId, entryPoint, data[4:]);
+            return _processMintRelay(msgSender, chainId, entryPoint, data[4:]);
         } else {
             revert("INVALID_ACTION");
         }
@@ -128,7 +128,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
                                 PRIVATE
     //////////////////////////////////////////////////////////////*/
 
-    function processCreateCollectionRelay(
+    function _processCreateCollectionRelay(
         address msgSender,
         uint256 chainId,
         address entryPoint,
@@ -158,12 +158,12 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
             IYumeEngine.createCollection.selector,
             params,
             collectionName,
-            msg.sender
+            msgSender
         );
         return relayParams;
     }
 
-    function processCreateTokenRelay(
+    function _processCreateTokenRelay(
         address msgSender,
         uint256 chainId,
         address entryPoint,
@@ -197,7 +197,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         return relayParams;
     }
 
-    function processMintRelay(
+    function _processMintRelay(
         address msgSender,
         uint256 chainId,
         address entryPoint,
