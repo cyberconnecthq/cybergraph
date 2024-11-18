@@ -17,7 +17,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
     using SafeERC20 for IERC20;
 
     /*//////////////////////////////////////////////////////////////
-                            STORAGE
+                                STORAGE
     //////////////////////////////////////////////////////////////*/
 
     struct MintFeeConfig {
@@ -35,7 +35,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
 
     mapping(uint256 => MintFeeConfig) public mintFeeConfigs;
     /*//////////////////////////////////////////////////////////////
-                            EVENTS
+                                EVENTS
     //////////////////////////////////////////////////////////////*/
 
     event MintFeeConfigUpdated(
@@ -86,12 +86,54 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         }
     }
 
+    /*//////////////////////////////////////////////////////////////
+                                ONLY OWNER
+    //////////////////////////////////////////////////////////////*/
+
+    function rescueToken(address token) external onlyOwner {
+        if (token == address(0)) {
+            (bool success, ) = owner().call{ value: address(this).balance }("");
+            require(success, "WITHDRAW_FAILED");
+        } else {
+            IERC20(token).safeTransfer(
+                owner(),
+                IERC20(token).balanceOf(address(this))
+            );
+        }
+    }
+
+    function configMintFee(
+        uint256 chainId,
+        bool enabled,
+        address recipient,
+        uint256 fee
+    ) external onlyOwner {
+        _configMintFee(chainId, enabled, recipient, fee);
+    }
+
+    function batchConfigMintFee(
+        BatchConfigMintFeeParams[] calldata params
+    ) external onlyOwner {
+        for (uint256 i = 0; i < params.length; i++) {
+            _configMintFee(
+                params[i].chainId,
+                params[i].enabled,
+                params[i].recipient,
+                params[i].fee
+            );
+        }
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                                PRIVATE
+    //////////////////////////////////////////////////////////////*/
+
     function processCreateCollectionRelay(
         address msgSender,
         uint256 chainId,
         address entryPoint,
         bytes calldata data
-    ) internal returns (RelayParams memory) {
+    ) private returns (RelayParams memory) {
         (
             DataTypes.CreateTokenParams memory params,
             string memory collectionName
@@ -126,7 +168,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         uint256 chainId,
         address entryPoint,
         bytes calldata data
-    ) internal returns (RelayParams memory) {
+    ) private returns (RelayParams memory) {
         (address nft, DataTypes.CreateTokenParams memory params) = abi.decode(
             data,
             (address, DataTypes.CreateTokenParams)
@@ -160,7 +202,7 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         uint256 chainId,
         address entryPoint,
         bytes calldata data
-    ) internal returns (RelayParams memory) {
+    ) private returns (RelayParams memory) {
         (
             address nft,
             uint256 tokenId,
@@ -204,54 +246,12 @@ contract YumeMintNFTRelayHook is IYumeRelayGateHook, Ownable {
         return relayParams;
     }
 
-    /*//////////////////////////////////////////////////////////////
-                    ONLY OWNER
-    //////////////////////////////////////////////////////////////*/
-
-    function rescueToken(address token) external onlyOwner {
-        if (token == address(0)) {
-            (bool success, ) = owner().call{ value: address(this).balance }("");
-            require(success, "WITHDRAW_FAILED");
-        } else {
-            IERC20(token).safeTransfer(
-                owner(),
-                IERC20(token).balanceOf(address(this))
-            );
-        }
-    }
-
-    function configMintFee(
-        uint256 chainId,
-        bool enabled,
-        address recipient,
-        uint256 fee
-    ) external onlyOwner {
-        _configMintFee(chainId, enabled, recipient, fee);
-    }
-
-    function batchConfigMintFee(
-        BatchConfigMintFeeParams[] calldata params
-    ) external onlyOwner {
-        for (uint256 i = 0; i < params.length; i++) {
-            _configMintFee(
-                params[i].chainId,
-                params[i].enabled,
-                params[i].recipient,
-                params[i].fee
-            );
-        }
-    }
-
-    /*//////////////////////////////////////////////////////////////
-                    PRIVATE
-    //////////////////////////////////////////////////////////////*/
-
     function _configMintFee(
         uint256 chainId,
         bool enabled,
         address recipient,
         uint256 fee
-    ) internal {
+    ) private {
         require(recipient != address(0), "INVALID_RECIPIENT");
         mintFeeConfigs[chainId] = MintFeeConfig(enabled, recipient, fee);
         emit MintFeeConfigUpdated(chainId, enabled, recipient, fee);
