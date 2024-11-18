@@ -51,6 +51,12 @@ contract DeployAll is Script, DeploySetting {
                 deployParams.backendSigner,
                 true
             );
+        } else if (block.chainid == DeploySetting.APE_TESTNET) {
+            LibDeploy.simpleDeployAll(
+                vm,
+                deployParams.deployerContract,
+                deployParams.backendSigner
+            );
         }
         vm.stopBroadcast();
     }
