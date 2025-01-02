@@ -26,3 +26,4 @@
 | CyberRelayGate(Proxy)        | 0x9071ff33aef10a1c20f206ad654bb8a5bee976aa |
 | CyberMintNFTRelayHook        | 0x9da98cc2655aeefc9f56043c184ce8c87652a196 |
 | CyberIDPermissionedRelayHook | 0x485d32f86c523ddcba83207c07bde782ad9ad180 |
+| SnakeRelayHook               | 0x0b3d085dcb71196a9e52aca69165128538181821 |

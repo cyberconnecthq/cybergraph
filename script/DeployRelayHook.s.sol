@@ -126,3 +126,33 @@ contract DeployCyberIDRelayHook is Script, DeploySetting {
         vm.stopBroadcast();
     }
 }
+
+contract DeploySnakeRelayHook is Script, DeploySetting {
+    function run() external {
+        _setDeployParams();
+        vm.startBroadcast();
+        if (block.chainid == DeploySetting.OP_SEPOLIA) {
+            LibDeploy.deploySnakeRelayHook(
+                vm,
+                deployParams.deployerContract,
+                0xB82681f70CBd189Ed61Aa751A7912CC54f757aE3,
+                0x9071ff33aEF10A1C20F206AD654bB8a5BEe976aa
+            );
+        } else if (
+            block.chainid == DeploySetting.OPTIMISM ||
+            block.chainid == DeploySetting.ETH ||
+            block.chainid == DeploySetting.BLAST ||
+            block.chainid == DeploySetting.BASE ||
+            block.chainid == DeploySetting.ARBITRUM
+        ) {
+            LibDeploy.deploySnakeRelayHook(
+                vm,
+                deployParams.deployerContract,
+                0x4Ce41028c305208Ab87d5681836f9E373CF741A1,
+                0x9071ff33aEF10A1C20F206AD654bB8a5BEe976aa
+            );
+        }
+
+        vm.stopBroadcast();
+    }
+}

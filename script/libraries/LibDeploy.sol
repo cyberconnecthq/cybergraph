@@ -54,6 +54,7 @@ import { CyberRelayGate } from "../../src/periphery/CyberRelayGate.sol";
 import { CyberMintNFTRelayHook } from "../../src/periphery/CyberMintNFTRelayHook.sol";
 import { CyberNFT } from "../../src/periphery/CyberNFT.sol";
 import { CyberIDPermissionedRelayHook } from "../../src/periphery/CyberIDPermissionedRelayHook.sol";
+import { SnakeRelayHook } from "../../src/periphery/SnakeRelayHook.sol";
 import { AggregatorV3Interface } from "../../src/interfaces/AggregatorV3Interface.sol";
 import { CyberNFTV2 } from "../../src/periphery/CyberNFTV2.sol";
 
@@ -924,6 +925,32 @@ library LibDeploy {
         );
 
         _write(vm, "CyberNFT", cyberNFT);
+    }
+
+    function deploySnakeRelayHook(
+        Vm vm,
+        address _dc,
+        address recipient,
+        address relayGate
+    ) internal {
+        Create2Deployer dc = Create2Deployer(_dc);
+        address snakeRelayHook = dc.deploy(
+            abi.encodePacked(
+                type(SnakeRelayHook).creationCode,
+                abi.encode(recipient)
+            ),
+            SALT
+        );
+
+        _write(vm, "SnakeRelayHook", snakeRelayHook);
+
+        CyberRelayGate relatGate = CyberRelayGate(relayGate);
+
+        relatGate.setDestination(
+            0x000000000000000000000000000000000000dEaD,
+            true,
+            snakeRelayHook
+        );
     }
 
     function deployCyberIdRelayHook(
