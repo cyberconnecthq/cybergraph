@@ -163,7 +163,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
             deployParams.protocolSafe = address(
                 0x3c9A8527B4a1555d93D092212EF2aee7176b6ef4
@@ -192,7 +192,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
             deployParams.protocolSafe = address(
                 0x91D60cd0f1F03442Dc899c9bD0592CF5F3aAb58d
@@ -217,7 +217,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
             deployParams.protocolSafe = address(
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
@@ -236,7 +236,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
             deployParams.protocolSafe = address(
                 0x712ED050b30F3d952376FF8fb7F63ee815f7a757
@@ -303,7 +303,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
         } else if (block.chainid == CYBER) {
             deployParams.deployerContract = address(
