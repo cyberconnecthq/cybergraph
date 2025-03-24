@@ -25,3 +25,5 @@
 | CyberNFT(Proxy)      | 0x60a1b9c6900c6cef0e08b939cc00635ad7df02a1 |
 | CyberNFTV2(Impl)     | 0x2079739052cb3bb9b8d1cb783ac9afc906b3a857 |
 | AIWhispererNFT       | 0x182ea3daa2182ca25d933fb9a6936f61b0f6aae4 |
+| CyberOracle(Impl)    | 0x3122879fccac9660b1b76d29e3581194538463b6 |
+| CyberOracle(Proxy)   | 0xfc0d41f89f43a54e8b2cce3a9f064b15682a0f22 |

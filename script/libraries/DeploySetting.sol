@@ -103,7 +103,7 @@ contract DeploySetting {
                 0xAd09648A3b2e725d606c6440Ef3D1FB9693BAC1B
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
         } else if (block.chainid == LINEA) {
             deployParams.deployerContract = address(
@@ -122,7 +122,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
         } else if (block.chainid == BNB) {
             deployParams.deployerContract = address(
@@ -138,7 +138,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
             deployParams.protocolSafe = address(
                 0xf9E12df9428F1a15BC6CfD4092ADdD683738cE96
@@ -255,7 +255,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
         } else if (block.chainid == SCROLL) {
             deployParams.deployerContract = address(
@@ -271,7 +271,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
         } else if (block.chainid == MANTLE) {
             deployParams.deployerContract = address(
@@ -287,7 +287,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
         } else if (block.chainid == BLAST) {
             deployParams.deployerContract = address(
@@ -319,7 +319,7 @@ contract DeploySetting {
                 0x7884f7F04F994da14302a16Cf15E597e31eebECf
             );
             deployParams.backendSigner = address(
-                0x2A2EA826102c067ECE82Bc6E2B7cf38D7EbB1B82
+                0xB6f53FCF8a8F9e2b9D7C5fCf1D6D052496e8A098
             );
         } else {
             revert("PARAMS_NOT_SET");
