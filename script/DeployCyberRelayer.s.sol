@@ -13,7 +13,10 @@ contract DeployCyberRelayer is Script, DeploySetting {
 
         if (
             block.chainid == DeploySetting.CYBER_TESTNET ||
-            block.chainid == DeploySetting.CYBER
+            block.chainid == DeploySetting.CYBER ||
+            block.chainid == DeploySetting.ETH ||
+            block.chainid == DeploySetting.BASE ||
+            block.chainid == DeploySetting.SEPOLIA
         ) {
             LibDeploy.deployCyberRelayer(
                 vm,

@@ -25,6 +25,7 @@ const writeAbi = async () => {
     "CyberNFTGate.sol/CyberNFTGate.json",
     "CyberProjectNFTV2.sol/CyberProjectNFTV2.json",
     "CyberRelayGate.sol/CyberRelayGate.json",
+    "CyberRelayer.sol/CyberRelayer.json",
     "CyberNFT.sol/CyberNFT.json",
     "CyberNFTV2.sol/CyberNFTV2.json",
     "CyberMintNFTRelayHook.sol/CyberMintNFTRelayHook.json",

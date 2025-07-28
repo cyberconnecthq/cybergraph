@@ -28,3 +28,4 @@
 | CyberMintNFTRelayHook        | 0x9da98cc2655aeefc9f56043c184ce8c87652a196 |
 | SnakeRelayHook               | 0xa75923039547f22bfdd7c3bb8e5fccefcbb2515a |
 | CyberIDPermissionedRelayHook | 0x6a522a004a0561ba00861a0d2623434833e1e3a7 |
+| CyberRelayer                 | 0xcb85a473c8f91b87f3b42fd6b85744919bfcd72a |
